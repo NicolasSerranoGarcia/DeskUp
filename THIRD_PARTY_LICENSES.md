@@ -55,3 +55,56 @@ Unless required by applicable law or agreed to in writing, software distributed
 under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 CONDITIONS OF ANY KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations under the License.
+```
+
+---
+
+## wxWidgets
+
+**License:** wxWIndows Library License  
+**Source:** https://www.github.com/wxWidgets/wxWidgets
+
+```
+wxWindows Library Licence, Version 3.1
+
+Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al
+
+Everyone is permitted to copy and distribute verbatim copies of this licence document, but changing it is not allowed.
+
+WXWINDOWS LIBRARY LICENCE
+TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+This library is free software; you can redistribute it and/or modify it
+under the terms of the GNU Library General Public Licence as published by
+the Free Software Foundation; either version 2 of the Licence, or (at your
+option) any later version.
+
+This library is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU Library General Public
+Licence for more details.
+
+You should have received a copy of the GNU Library General Public Licence
+along with this software, usually in a file named COPYING.LIB. If not,
+write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth
+Floor, Boston, MA 02110-1307 USA.
+
+EXCEPTION NOTICE
+
+1. As a special exception, the copyright holders of this library give
+   permission for additional uses of the text contained in this release of the
+   library as licenced under the wxWindows Library Licence, applying either
+   version 3.1 of the Licence, or (at your option) any later version of the
+   Licence document.
+
+2. The exception is that you may use, copy, link, modify and distribute
+   under your own terms, binary object code versions of works based on the
+   Library.
+
+3. If you copy code from files distributed under the terms of the GNU
+   General Public Licence or the GNU Library General Public Licence into a
+   copy of this library, as this licence permits, the exception does not apply
+   to the code that you add in this way. To avoid misleading anyone as to the
+   status of such modified files, you must delete this exception notice from
+   such code and/or adjust the licensing conditions notice accordingly.
+```
