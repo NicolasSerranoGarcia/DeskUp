@@ -1,17 +1,10 @@
 #include "desk_up_frame.h"
 
-enum
-{
-    ID_Hello = 1
-};
-
-
 DeskUpFrame::DeskUpFrame()
-        : wxFrame(nullptr, wxID_ANY, "Hello World")
+        : wxFrame(nullptr, wxID_ANY, "DeskUp")
 {
     wxMenu *menuFile = new wxMenu;
-    menuFile->Append(ID_Hello, "&Hello...\tCtrl+H",
-                     "Help string shown in status bar for this menu item");
+    menuFile->Append(wxID_ADD, "Add workspace \tctrl+N");
     menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
  
@@ -25,9 +18,9 @@ DeskUpFrame::DeskUpFrame()
     SetMenuBar(menuBar);
  
     CreateStatusBar();
-    SetStatusText("Welcome to wxWidgets!");
+    SetStatusText("Welcome to DeskUp!");
 
-    Bind(wxEVT_MENU, &DeskUpFrame::OnHello, this, ID_Hello);
+    Bind(wxEVT_MENU, &DeskUpFrame::OnAdd, this, wxID_ADD);
     Bind(wxEVT_MENU, &DeskUpFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &DeskUpFrame::OnExit, this, wxID_EXIT);
 }
@@ -39,11 +32,11 @@ void DeskUpFrame::OnExit(wxCommandEvent& event)
 
 void DeskUpFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("This is a wxWidgets Hello World example",
-                 "About Hello World", wxOK | wxICON_INFORMATION);
+    wxMessageBox("About DeskUp message",
+                 "About DeskUp", wxOK | wxICON_INFORMATION);
 }
 
-void DeskUpFrame::OnHello(wxCommandEvent& event)
+void DeskUpFrame::OnAdd(wxCommandEvent& event)
 {
-    wxLogMessage("Hello world from wxWidgets!");
+    wxLogMessage("You will add a workspace here :)! Be patient");
 }

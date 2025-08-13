@@ -6,7 +6,7 @@ class DeskUpFrame : public wxFrame{
         DeskUpFrame();
 
     private:
-    void OnHello(wxCommandEvent& event);
+    void OnAdd(wxCommandEvent& event);
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 };

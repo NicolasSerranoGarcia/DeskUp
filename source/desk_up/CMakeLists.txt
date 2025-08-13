@@ -6,5 +6,12 @@ add_library(desk_up_library STATIC
 )
 
 target_include_directories(desk_up_library PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
+${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+target_link_libraries(desk_up_library PRIVATE ${wxWidgets_LIBRARIES})
+
+
+target_include_directories(desk_up_library PRIVATE ${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+
+target_link_libraries(desk_up_library PRIVATE desk_up_frame_library)

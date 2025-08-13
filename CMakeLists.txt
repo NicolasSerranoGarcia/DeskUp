@@ -1,7 +1,7 @@
 #---General---#
 
 #set the minimum required version of CMake that other computers must use for this program
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.25)
 
 #Read the version from the file
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
@@ -36,6 +36,25 @@ target_compile_options(DeskUp-compiler-flags INTERFACE
                         "$<${is-gcc-type-cxx}:$<BUILD_INTERFACE:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>>"
                         "$<${is-msvc-cxx}:$<BUILD_INTERFACE:-W3>>"
 )
+
+#---add flags for wxwidgets using wx-config---#
+
+add_library(wxWidget-compiler-flags INTERFACE)
+
+execute_process(
+    COMMAND wx-config --libs
+    OUTPUT_VARIABLE WX_LIBS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(
+    COMMAND wx-config --cxxflags
+    OUTPUT_VARIABLE WX_CXXFLAGS
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+target_compile_options(wxWidget-compiler-flags INTERFACE ${WX_CXXFLAGS})
+target_link_libraries(wxWidget-compiler-flags INTERFACE ${WX_LIBS})
 
 #---Add CPM installer from cmake/---#
 
@@ -82,15 +101,33 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
   target_compile_definitions(DeskUp PRIVATE NDEBUG)
 endif()
 
+#---add wxWdigets---#
+
+find_package(wxWidgets REQUIRED COMPONENTS net core base)
+
+if(wxWidgets_USE_FILE)
+    include(${wxWidgets_USE_FILE})
+endif()
+
+target_link_libraries(DeskUp PRIVATE ${wxWidgets_LIBRARIES})
+
 #---Link the project libraries---#
 target_link_libraries(DeskUp INTERFACE DeskUp-compiler-flags)
+target_link_libraries(DeskUp INTERFACE wxWidget-compiler-flags)
 
+#---dependencies of main.cc---#
 
-add_subdirectory(source/desk_up)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 
 
 #Here we are accessing the library defined in that CMakeLists.txt and linking it to the main executable 
 target_link_libraries(DeskUp PRIVATE desk_up_library)
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+
+
+#Here we are accessing the library defined in that CMakeLists.txt and linking it to the main executable 
+target_link_libraries(DeskUp PRIVATE desk_up_frame_library)
 
 #---If there is a need to install (f.e CI/CD release)---#
 
@@ -107,6 +144,12 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/install")
 #As previously we changed the CMAKE_INSTALL_PREFIX env. variable to point to the install directory, when running
 #cmake --install ., the DeskUp will go into install/bin
 install(TARGETS DeskUp DESTINATION bin)
+
+##---install wxWidget's and GTK libs in the package---#
+
+install(FILES /usr/lib/x86_64-linux-gnu/libwx_gtk3u_core-3.2.so DESTINATION lib)
+install(FILES /usr/lib/x86_64-linux-gnu/libgtk-3.so DESTINATION lib)
+set(CMAKE_INSTALL_RPATH "$ORIGIN/../lib")
 
 #Support for CPack
 
