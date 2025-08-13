@@ -1,3 +1,0 @@
-/home/nico/Escritorio/DeskUp/build/_CPack_Packages/Linux/TGZ/DeskUp--Linux/bin/DeskUp
-/home/nico/Escritorio/DeskUp/build/_CPack_Packages/Linux/TGZ/DeskUp--Linux/lib/libwx_gtk3u_core-3.2.so
-/home/nico/Escritorio/DeskUp/build/_CPack_Packages/Linux/TGZ/DeskUp--Linux/lib/libgtk-3.so
