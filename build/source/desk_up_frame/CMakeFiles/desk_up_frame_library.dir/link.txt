@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../libdesk_up_frame_library.a CMakeFiles/desk_up_frame_library.dir/desk_up_frame.cc.o
+/usr/bin/ranlib ../../libdesk_up_frame_library.a

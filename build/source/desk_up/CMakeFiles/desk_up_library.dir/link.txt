@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../libdesk_up_library.a CMakeFiles/desk_up_library.dir/desk_up.cc.o
+/usr/bin/ranlib ../../libdesk_up_library.a

@@ -1,0 +1,1 @@
+/usr/bin/c++  -pthread -O3 -DNDEBUG CMakeFiles/DeskUp.dir/source/main.cc.o -o DeskUp  -L/usr/local/lib -pthread -lwx_baseu_net-3.3 -lwx_gtk3u_core-3.3 -lwx_baseu-3.3 libdesk_up_library.a libdesk_up_frame_library.a -L/usr/local/lib -pthread -lwx_baseu_net-3.3 -lwx_gtk3u_core-3.3 -lwx_baseu-3.3 
