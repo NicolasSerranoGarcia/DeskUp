@@ -1,0 +1,199 @@
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+
+name: Release multi-platform with CPack packages
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    outputs:
+      package-path: ${{ steps.set-path.outputs.package-path }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Package with CPack
+      working-directory: build
+      run: cpack
+
+    - name: Get package path
+      id: set-path
+      run: |
+        PACKAGE_FILE=$(ls build/*.tgz build/*.tar.gz 2>/dev/null || echo "")
+        echo "package-path=$PACKAGE_FILE" >> $GITHUB_OUTPUT
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: linux-package
+        path: |
+          build/*.tgz
+          build/*.tar.gz
+
+  build-windows:
+    runs-on: windows-latest
+    outputs:
+      package-path: ${{ steps.set-path.outputs.package-path }}
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configure CMake
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl
+
+    - name: Build project
+      run: cmake --build build --config Release
+
+    - name: Package with CPack
+      working-directory: build
+      run: cpack
+
+    - name: Get package path
+      id: set-path
+      shell: powershell
+      run: |
+        $package = Get-ChildItem build/*.zip | Select-Object -First 1
+        echo "package-path=$($package.FullName)" >> $env:GITHUB_OUTPUT
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: windows-package
+        path: build/*.zip
+
+  release:
+    needs: [build-linux, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download Linux package
+      uses: actions/download-artifact@v5
+      with:
+        name: linux-package
+        path: ./linux
+
+    - name: Download Windows package
+      uses: actions/download-artifact@v5
+      with:
+        name: windows-package
+        path: ./windows
+
+    - name: Generate release notes from GitHub
+      id: notes
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data } = await github.rest.repos.generateReleaseNotes({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: context.ref.replace('refs/tags/', '')
+          });
+          core.setOutput("notes", data.body);
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: |
+          ### 🔒 Windows Security Notice
+
+          ⚠️ When running the \`.exe\` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
+
+          This application is safe to use and does **not** contain any malware. The warning appears simply because the executable is new and unsigned.
+
+          #### How to run the application on Windows:
+
+          First, download the zip file and decompress it
+
+          1. After launching the \`.exe\`, if you see the blue "Windows protected your PC" screen:
+            - Click on **"More info"**
+            - Then click on **"Run anyway"**
+
+          <p align="center">
+          <img width="367" height="323" alt="image" src="./assets/windows-security-screen.png" />
+          </p>
+
+          2. Make sure all \`.dll\` files remain in the same folder as the \`.exe\`.
+
+          3. You do **not** need to install anything else — all dependencies are included.
+
+          ---
+
+          #### How to run the application on Linux:
+
+          1. Download the `.tgz` package and extract it:
+
+          ```bash
+          tar -xzf package-name.tgz
+          ```
+
+          2. Navigate into the extracted folder and run the executable:
+
+          ```bash
+          cd package-name
+          ./appname
+          ```
+
+          3. Make sure you have execute permissions; if not, add them with:
+
+          ```bash
+          chmod +x appname
+          ```
+
+          No additional dependencies are required if using the provided package.
+
+
+          🚀 **Release notes** (automatically generated)
+
+          ${{ steps.notes.outputs.notes }}
+
+        draft: false
+        prerelease: false
+
+    - name: Find Linux package file
+      id: find-package
+      run: |
+        FILE=$(ls ./linux/*.tgz ./linux/*.tar.gz 2>/dev/null | head -n 1)
+        echo "package_path=$FILE" >> $GITHUB_OUTPUT
+
+    - name: Upload Linux asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find-package.outputs.package_path }}
+        asset_name: appname-${{ github.ref_name }}-Linux.tgz
+        asset_content_type: application/gzip
+
+    - name: Find Windows package file
+      id: find-windows-package
+      run: |
+        FILE=$(ls ./windows/*.zip | head -n 1)
+        echo "package_path=$FILE" >> $GITHUB_OUTPUT
+
+    - name: Upload Windows asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find-windows-package.outputs.package_path }}
+        asset_name: appname-${{ github.ref_name }}-Windows.zip
+        asset_content_type: application/zip
