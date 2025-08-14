@@ -1,3 +1,6 @@
 build
 install
 .vscode/*
+resources.rc
+resources.o
+assets/icon.ico
