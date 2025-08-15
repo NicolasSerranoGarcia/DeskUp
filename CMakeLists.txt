@@ -19,21 +19,37 @@ target_compile_options(DeskUp-compiler-flags INTERFACE
     "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/W3>"
 )
 
-# Link flags for MinGW
-if (WIN32)
+#Add flags for tests, benchmarks and other tools
+
+include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
+
+# Link flags
+if(WIN32)
     target_link_options(DeskUp-compiler-flags INTERFACE
         -static
         -static-libgcc
         -static-libstdc++
     )
-endif()
+elseif(UNIX AND NOT APPLE)
+    target_link_options(DeskUp-compiler-flags INTERFACE
+        -static-libgcc
+        -static-libstdc++
+    )
 
+    set(wxWidgets_CONFIG_EXECUTABLE "$ENV{HOME}/wx-static/bin/wx-config")
+endif()
+    
 # --- wxWidgets static ---
 set(wxWidgets_USE_STATIC ON)
 find_package(wxWidgets REQUIRED COMPONENTS net core base)
+
 if(wxWidgets_USE_FILE)
     include(${wxWidgets_USE_FILE})
 endif()
+
 
 # --- Sub-libraries (without linking wxWidgets) ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
@@ -79,9 +95,7 @@ install(TARGETS DeskUp DESTINATION bin)
 # --- CPack ---
 if(WIN32)
     set(CPACK_GENERATOR "ZIP")
-elseif(APPLE)
-    set(CPACK_GENERATOR "TGZ")
-elseif(UNIX)
+elseif(UNIX AND NOT APPLE)
     set(CPACK_GENERATOR "TGZ")
 endif()
 

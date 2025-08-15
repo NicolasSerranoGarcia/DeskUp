@@ -3,7 +3,9 @@
 DeskUpFrame::DeskUpFrame()
         : wxFrame(nullptr, wxID_ANY, "DeskUp")
 {
-    SetIcon(wxICON(IDI_APPLICATION));
+    #ifdef WIN32
+        SetIcon(wxICON(IDI_APPLICATION));
+    #endif
     wxMenu *menuFile = new wxMenu;
     menuFile->Append(wxID_ADD, "Add workspace \tctrl+N");
     menuFile->AppendSeparator();
