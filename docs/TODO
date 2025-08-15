@@ -1,1 +1,7 @@
 # Start
+
+[] Add previous documentation of Cmake-test for information about flags
+
+[] Add support for tests using the CMake-test ones.  
+
+[] Adapt workflows from CMake-test to work: needs to download wxWidgets
