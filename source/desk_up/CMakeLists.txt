@@ -4,14 +4,14 @@ add_library(desk_up_library STATIC
     desk_up.h
 )
 
-target_compile_definitions(desk_up_library PRIVATE wxWidgets_STATIC)
+target_compile_definitions(desk_up_library PUBLIC wxWidgets_STATIC)
 
-target_include_directories(desk_up_library PRIVATE
+target_include_directories(desk_up_library PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${wxWidgets_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/source/desk_up_frame
 )
 
-target_link_libraries(desk_up_library PRIVATE
+target_link_libraries(desk_up_library PUBLIC
     desk_up_frame_library
 )

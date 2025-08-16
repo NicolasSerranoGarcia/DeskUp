@@ -1,6 +1,5 @@
 #include <wx/wx.h>
 
-
 class DeskUpFrame : public wxFrame{
     public:
         DeskUpFrame();

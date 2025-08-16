@@ -1,4 +1,4 @@
-#include "wx/wx.h"
+#include <wx/wx.h>
 
 #include "desk_up/desk_up.h"
 

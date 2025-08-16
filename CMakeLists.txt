@@ -19,13 +19,6 @@ target_compile_options(DeskUp-compiler-flags INTERFACE
     "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/W3>"
 )
 
-#Add flags for tests, benchmarks and other tools
-
-include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
-
 # Link flags
 if(WIN32)
     target_link_options(DeskUp-compiler-flags INTERFACE
@@ -50,6 +43,12 @@ if(wxWidgets_USE_FILE)
     include(${wxWidgets_USE_FILE})
 endif()
 
+#Add flags for tests, benchmarks and other tools
+
+include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
 
 # --- Sub-libraries (without linking wxWidgets) ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
@@ -104,3 +103,5 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VERSION_MAJOR "${DeskUp_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${DeskUp_VERSION_MINOR}")
 include(CPack)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

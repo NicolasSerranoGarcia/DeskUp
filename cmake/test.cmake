@@ -25,6 +25,8 @@ if(BUILD_TESTS)
 
     add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
+    
+
 else()
     message(STATUS "Building tests is DISABLED")
 endif()
