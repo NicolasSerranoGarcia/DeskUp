@@ -118,7 +118,7 @@ jobs:
 
 
     - name: Configure CMake
-      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl -DwxWidgets_DIR="$env:USERPROFILE/wx-static/lib/cmake/wxWidgets" -DwxWidgets_INCLUDE_DIRS="$env:USERPROFILE\wx-static\include;$env:USERPROFILE\wx-static\lib\vc_x64_lib\mswud"
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl -DwxWidgets_DIR="$env:USERPROFILE/wx-static/lib/cmake/wxWidgets" -DwxWidgets_INCLUDE_DIRS="$env:USERPROFILE\wx-static\include;$env:USERPROFILE\wx-static\lib\vc_x64_lib\mswud" -DwxWidgets_CONFIGURATION=mswud
 
 
 

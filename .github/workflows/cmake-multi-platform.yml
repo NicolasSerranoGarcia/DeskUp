@@ -123,6 +123,7 @@ jobs:
         -DwxWidgets_ROOT_DIR="$env:USERPROFILE\wx-static"
         -DwxWidgets_LIB_DIR="$env:USERPROFILE\wx-static\lib\vc_x64_lib"
         -DwxWidgets_INCLUDE_DIRS="$env:USERPROFILE\wx-static\include;$env:USERPROFILE\wx-static\lib\vc_x64_lib\mswud"
+        -DwxWidgets_CONFIGURATION=mswud
         -S ${{ github.workspace }}
       shell: pwsh
       
