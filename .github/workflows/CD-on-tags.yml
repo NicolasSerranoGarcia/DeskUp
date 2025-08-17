@@ -106,7 +106,12 @@ jobs:
         cmake --build . --parallel
 
         Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
-        cmake --install . --prefix "$env:USERPROFILE\wx-static"
+        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\include"
+        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\lib"
+
+        Copy-Item -Recurse -Force "..\include\*" "$env:USERPROFILE\wx-static\include\"
+        Copy-Item -Recurse -Force "lib\vc_x64_lib\*" "$env:USERPROFILE\wx-static\lib\"
+
 
         Pop-Location
         Pop-Location
