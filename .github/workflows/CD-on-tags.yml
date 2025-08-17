@@ -106,19 +106,15 @@ jobs:
         cmake --build . --parallel
 
         Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
-        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\include"
-        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\lib"
-
-        Copy-Item -Recurse -Force "..\include\*" "$env:USERPROFILE\wx-static\include\"
-        Copy-Item -Recurse -Force "lib\vc_x64_lib\*" "$env:USERPROFILE\wx-static\lib\"
-
+        cmake --install . --prefix "$env:USERPROFILE\wx-static"
 
         Pop-Location
         Pop-Location
 
 
     - name: Configure CMake
-      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl -DwxWidgets_ROOT_DIR="$env:USERPROFILE/wx-static" -DwxWidgets_LIB_DIR="$env:USERPROFILE/wx-static/lib/vc_x64_lib"
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl -DwxWidgets_DIR="$env:USERPROFILE/wx-static/lib/cmake/wxWidgets"
+
 
     - name: Build project
       run: cmake --build build --config Release

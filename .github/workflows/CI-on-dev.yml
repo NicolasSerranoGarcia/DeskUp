@@ -102,13 +102,9 @@ jobs:
           -DCMAKE_INSTALL_PREFIX="$env:USERPROFILE\wx-static"
 
         cmake --build . --parallel
-
+        
         Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
-        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\include"
-        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\lib"
-
-        Copy-Item -Recurse -Force "..\include\*" "$env:USERPROFILE\wx-static\include\"
-        Copy-Item -Recurse -Force "lib\vc_x64_lib\*" "$env:USERPROFILE\wx-static\lib\"
+        cmake --install . --prefix "$env:USERPROFILE\wx-static"
 
         Pop-Location
         Pop-Location
@@ -122,8 +118,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DBUILD_TESTS=ON
         -DBUILD_BENCHMARK=ON
-        -DwxWidgets_ROOT_DIR="$env:USERPROFILE/wx-static"
-        -DwxWidgets_LIB_DIR="$env:USERPROFILE/wx-static/lib/vc_x64_lib"
+        -DwxWidgets_DIR="$env:USERPROFILE/wx-static/lib/cmake/wxWidgets"
         -S ${{ github.workspace }}
 
     - name: Build
