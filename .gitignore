@@ -3,3 +3,4 @@ install
 .vscode/*
 docs/html
 docs/latex
+appimagetool-x86_64.AppImage

@@ -43,6 +43,25 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
+    - name: Download wxWidgets
+      run: |
+        wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
+        tar xf wxWidgets-3.2.5.tar.bz2
+        cd wxWidgets-3.2.5
+        mkdir build-static
+        cd build-static
+
+        cmake .. \
+          -DwxBUILD_SHARED=OFF \
+          -DwxBUILD_STATIC=ON \
+          -DwxBUILD_TOOLKIT=gtk3 \
+          -DwxBUILD_SAMPLES=OFF \
+          -DwxBUILD_TESTS=OFF \
+          -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
+
+        cmake --build . --parallel
+        cmake --install .
+
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type

@@ -18,6 +18,25 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Download wxWidgets
+      run: |
+        wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
+        tar xf wxWidgets-3.2.5.tar.bz2
+        cd wxWidgets-3.2.5
+        mkdir build-static
+        cd build-static
+
+        cmake .. \
+          -DwxBUILD_SHARED=OFF \
+          -DwxBUILD_STATIC=ON \
+          -DwxBUILD_TOOLKIT=gtk3 \
+          -DwxBUILD_SAMPLES=OFF \
+          -DwxBUILD_TESTS=OFF \
+          -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
+
+        cmake --build . --parallel
+        cmake --install .
+
     - name: Configure CMake
       run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++
 
@@ -140,26 +159,26 @@ jobs:
           1. Download the `.tgz` package and extract it:
 
           ```bash
-          tar -xzf package-name.tgz
+          tar -xzf DeskUp-x.y.z-Linux.tgz
           ```
 
           2. Navigate into the extracted folder and run the executable:
 
           ```bash
-          cd package-name
-          ./appname
+          cd DeskUp-x.y.z-Linux
+          ./DeskUp
           ```
 
           3. Make sure you have execute permissions; if not, add them with:
 
           ```bash
-          chmod +x appname
+          chmod +x DeskUp
           ```
 
           No additional dependencies are required if using the provided package.
 
 
-          🚀 **Release notes** (automatically generated)
+          🚀 **Release notes**
 
           ${{ steps.notes.outputs.notes }}
 
@@ -179,7 +198,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ${{ steps.find-package.outputs.package_path }}
-        asset_name: appname-${{ github.ref_name }}-Linux.tgz
+        asset_name: DeskUp-${{ github.ref_name }}-Linux.tgz
         asset_content_type: application/gzip
 
     - name: Find Windows package file
@@ -195,5 +214,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ${{ steps.find-windows-package.outputs.package_path }}
-        asset_name: appname-${{ github.ref_name }}-Windows.zip
+        asset_name: DeskUp-${{ github.ref_name }}-Windows.zip
         asset_content_type: application/zip
