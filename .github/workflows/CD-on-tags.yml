@@ -50,7 +50,7 @@ jobs:
           -DwxBUILD_TOOLKIT=gtk3 \
           -DwxBUILD_SAMPLES=OFF \
           -DwxBUILD_TESTS=OFF \
-          -DwxUSE_REGEX=ON `
+          -DwxUSE_REGEX=builtin `
           -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
 
         cmake --build . --parallel

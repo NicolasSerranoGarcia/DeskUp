@@ -99,7 +99,7 @@ jobs:
           -DwxBUILD_TOOLKIT=msw `
           -DwxBUILD_SAMPLES=OFF `
           -DwxBUILD_TESTS=OFF `
-          -DwxUSE_REGEX=ON `
+          -DwxUSE_REGEX=builtin `
           -DCMAKE_INSTALL_PREFIX="$env:USERPROFILE\wx-static"
 
         cmake --build . --parallel
