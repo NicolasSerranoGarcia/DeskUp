@@ -74,7 +74,6 @@ jobs:
 
         cmake .. \
           -DwxBUILD_SHARED=OFF \
-          -DwxBUILD_STATIC=ON \
           -DwxBUILD_TOOLKIT=gtk3 \
           -DwxBUILD_SAMPLES=OFF \
           -DwxBUILD_TESTS=OFF \
@@ -97,10 +96,10 @@ jobs:
 
         cmake .. `
           -DwxBUILD_SHARED=OFF `
-          -DwxBUILD_STATIC=ON `
           -DwxBUILD_TOOLKIT=msw `
           -DwxBUILD_SAMPLES=OFF `
           -DwxBUILD_TESTS=OFF `
+          -DwxUSE_REGEX=ON `
           -DCMAKE_INSTALL_PREFIX="$env:USERPROFILE\wx-static"
 
         cmake --build . --parallel
