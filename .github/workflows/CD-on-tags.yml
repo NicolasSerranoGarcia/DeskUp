@@ -50,7 +50,6 @@ jobs:
           -DwxBUILD_TOOLKIT=gtk3 \
           -DwxBUILD_SAMPLES=OFF \
           -DwxBUILD_TESTS=OFF \
-          -DwxUSE_REGEX=OFF `
           -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
 
         cmake --build . --parallel
@@ -107,7 +106,12 @@ jobs:
         cmake --build . --parallel
 
         Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
-        cmake --install .
+        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\include"
+        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\lib"
+
+        Copy-Item -Recurse -Force "..\include\*" "$env:USERPROFILE\wx-static\include\"
+        Copy-Item -Recurse -Force "lib\vc_x64_lib\*" "$env:USERPROFILE\wx-static\lib\"
+
 
         Pop-Location
         Pop-Location
