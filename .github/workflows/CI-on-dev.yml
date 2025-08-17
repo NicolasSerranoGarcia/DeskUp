@@ -122,6 +122,8 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DBUILD_TESTS=ON
         -DBUILD_BENCHMARK=ON
+        -DwxWidgets_ROOT_DIR="$env:USERPROFILE/wx-static"
+        -DwxWidgets_LIB_DIR="$env:USERPROFILE/wx-static/lib/vc_x64_lib"
         -S ${{ github.workspace }}
 
     - name: Build

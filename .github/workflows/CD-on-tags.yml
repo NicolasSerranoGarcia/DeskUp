@@ -118,7 +118,7 @@ jobs:
 
 
     - name: Configure CMake
-      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl
+      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl -DwxWidgets_ROOT_DIR="$env:USERPROFILE/wx-static" -DwxWidgets_LIB_DIR="$env:USERPROFILE/wx-static/lib/vc_x64_lib"
 
     - name: Build project
       run: cmake --build build --config Release
