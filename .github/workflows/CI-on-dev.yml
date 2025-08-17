@@ -43,7 +43,28 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Download wxWidgets
+    - name: Install GTK and dependencies
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          libgtk-3-dev \
+          libglib2.0-dev \
+          libpango1.0-dev \
+          libcairo2-dev \
+          libgdk-pixbuf2.0-dev \
+          libatk1.0-dev \
+          libepoxy-dev \
+          libx11-dev \
+          libxext-dev \
+          libxrandr-dev \
+          libxi-dev \
+          libxinerama-dev \
+          libxcursor-dev
+
+    - name: Download wxWidgets on Linux
+      if: matrix.os == 'ubuntu-latest'
       run: |
         wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
         tar xf wxWidgets-3.2.5.tar.bz2
@@ -61,6 +82,34 @@ jobs:
 
         cmake --build . --parallel
         cmake --install .
+
+    - name: Download and build wxWidgets on Windows
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.zip" -OutFile "$env:USERPROFILE\wxWidgets-3.2.5.zip"
+        Expand-Archive -Path "$env:USERPROFILE\wxWidgets-3.2.5.zip" -DestinationPath "$env:USERPROFILE\wxWidgets-3.2.5"
+
+        Push-Location "$env:USERPROFILE\wxWidgets-3.2.5"
+        Remove-Item -Recurse -Force build-static -ErrorAction SilentlyContinue
+        mkdir build-static
+        Push-Location build-static
+
+        cmake .. `
+          -DwxBUILD_SHARED=OFF `
+          -DwxBUILD_STATIC=ON `
+          -DwxBUILD_TOOLKIT=msw `
+          -DwxBUILD_SAMPLES=OFF `
+          -DwxBUILD_TESTS=OFF `
+          -DCMAKE_INSTALL_PREFIX="$env:USERPROFILE\wx-static"
+
+        cmake --build . --parallel
+
+        Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
+        cmake --install .
+
+        Pop-Location
+        Pop-Location
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.

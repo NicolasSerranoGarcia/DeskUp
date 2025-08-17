@@ -83,14 +83,17 @@ jobs:
         cmake --build . --parallel
         cmake --install .
 
-    - name: Download wxWidgets on Windows
+    - name: Download and build wxWidgets on Windows
       if: matrix.os == 'windows-latest'
+      shell: pwsh
       run: |
-        Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.zip" -OutFile "wxWidgets-3.2.5.zip"
-        Expand-Archive -Path "wxWidgets-3.2.5.zip" -DestinationPath "$env:USERPROFILE\wxWidgets-3.2.5"
-        cd "$env:USERPROFILE\wxWidgets-3.2.5"
+        Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.zip" -OutFile "$env:USERPROFILE\wxWidgets-3.2.5.zip"
+        Expand-Archive -Path "$env:USERPROFILE\wxWidgets-3.2.5.zip" -DestinationPath "$env:USERPROFILE\wxWidgets-3.2.5"
+
+        Push-Location "$env:USERPROFILE\wxWidgets-3.2.5"
+        Remove-Item -Recurse -Force build-static -ErrorAction SilentlyContinue
         mkdir build-static
-        cd build-static
+        Push-Location build-static
 
         cmake .. `
           -DwxBUILD_SHARED=OFF `
@@ -101,7 +104,12 @@ jobs:
           -DCMAKE_INSTALL_PREFIX="$env:USERPROFILE\wx-static"
 
         cmake --build . --parallel
+
+        Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
         cmake --install .
+
+        Pop-Location
+        Pop-Location
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
