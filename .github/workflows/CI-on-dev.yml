@@ -124,6 +124,7 @@ jobs:
         -DBUILD_BENCHMARK=ON
         -DwxWidgets_ROOT_DIR="$env:USERPROFILE/wx-static"
         -DwxWidgets_LIB_DIR="$env:USERPROFILE/wx-static/lib/vc_x64_lib"
+        -DwxWidgets_INCLUDE_DIRS="$env:USERPROFILE\wx-static\include;$env:USERPROFILE\wx-static\lib\vc_x64_lib\mswud"
         -S ${{ github.workspace }}
 
     - name: Build
