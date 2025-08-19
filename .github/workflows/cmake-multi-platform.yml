@@ -93,16 +93,16 @@ jobs:
         -S ${{ github.workspace }}
       shell: bash
 
-    - name: Setup MSYS2 (Windows only)
-      if: matrix.os == 'windows-latest'
-      shell: pwsh
-      run: |
-        choco install msys2 --no-progress -y
-        refreshenv
-        C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain wget make cmake"
-        echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          base-devel
+          mingw-w64-x86_64-toolchain
+          wget
+          make
+          cmake
 
     - name: Build wxWidgets (Windows)
       if: matrix.os == 'windows-latest'
