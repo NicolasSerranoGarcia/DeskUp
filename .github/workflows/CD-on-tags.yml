@@ -94,7 +94,7 @@ jobs:
     - name: Install wxWidgets with vcpkg (Windows only)
       shell: pwsh
       run: |
-        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static[svg-off]
+        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets[svg-off]:x64-windows-static
 
 
 
