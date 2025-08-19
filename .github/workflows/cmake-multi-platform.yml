@@ -102,7 +102,7 @@ jobs:
           mingw-w64-x86_64-toolchain
           wget
           make
-          cmake
+          mingw-w64-x86_64-cmake
 
     - name: Build wxWidgets (Windows)
       if: matrix.os == 'windows-latest'
@@ -131,7 +131,7 @@ jobs:
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
-          -G "MSYS Makefiles" \
+          -G "Unix Makefiles" \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_TESTS=ON \
           -DBUILD_BENCHMARK=ON \
