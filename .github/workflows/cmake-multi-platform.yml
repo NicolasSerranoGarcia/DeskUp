@@ -116,7 +116,6 @@ jobs:
         -DwxBUILD_SHARED=OFF
         -G "MSYS Makefiles"
         -DCMAKE_PREFIX_PATH="C:/msys64/mingw64"
-        -DCMAKE_PREFIX_PATH="C:/msys64/mingw64" `
         -DCMAKE_INCLUDE_PATH="C:/msys64/mingw64/include/wx-3.2" `
         -DCMAKE_LIBRARY_PATH="C:/msys64/mingw64/lib" `
         -S ${{ github.workspace }}

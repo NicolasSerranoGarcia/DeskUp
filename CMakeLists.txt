@@ -48,16 +48,23 @@ endif()
 
 set(wxWidgets_USE_STATIC ON)
 if(WIN32)
+    # Usar wxWidgets estático
     set(wxWidgets_USE_STATIC ON)
-    # Definir rutas explícitas si find_package CONFIG no funciona
-    find_path(wxWidgets_INCLUDE_DIR wx/wx.h
-        PATHS "C:/msys64/mingw64/include/wx-3.2"
+
+    # Paths de MSYS2
+    set(wxRoot "C:/msys64/mingw64")
+    set(wxIncludeDir "${wxRoot}/include/wx-3.2")
+    set(wxLibDir "${wxRoot}/lib")
+
+    include_directories(${wxIncludeDir})
+
+    set(wxWidgets_LIBRARIES
+        ${wxLibDir}/libwx_baseu-3.2.a
+        ${wxLibDir}/libwx_mswu_core-3.2.a
+        ${wxLibDir}/libwx_mswu_net-3.2.a
     )
-    find_library(wxWidgets_CORE_LIBRARY NAMES wxbase32u wxmsw32u_core
-        PATHS "C:/msys64/mingw64/lib"
-    )
-    include_directories(${wxWidgets_INCLUDE_DIR})
-    target_link_libraries(DeskUp PRIVATE ${wxWidgets_CORE_LIBRARY})
+
+    target_link_libraries(DeskUp PRIVATE ${wxWidgets_LIBRARIES})
 else()
     find_package(wxWidgets REQUIRED COMPONENTS net core base)
     if (wxWidgets_USE_FILE)
