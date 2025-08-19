@@ -85,18 +85,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup vcpkg (Windows only)
+    - name: Setup MSYS2 (Windows only)
       shell: pwsh
       run: |
-        git clone https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg
-        & $env:USERPROFILE\vcpkg\bootstrap-vcpkg.bat
+        choco install msys2 --no-progress -y
+        refreshenv
 
-    - name: Install wxWidgets with vcpkg (Windows only)
-      shell: pwsh
-      run: |
-        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets[svg-off]:x64-windows-static
-
-
+        # Update packages and install wxWidgets and toolchain
+        C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-wxWidgets mingw-w64-x86_64-toolchain"
 
     - name: Configure CMake (Windows)
       shell: pwsh
@@ -106,11 +104,11 @@ jobs:
         -DCMAKE_BUILD_TYPE=Release
         -DBUILD_TESTS=ON
         -DBUILD_BENCHMARK=ON
-        -Dwxwidgets_use_static=ON
-        -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        -DwxWidgets_DIR="$env:USERPROFILE/vcpkg/installed/x64-windows-static/share/wxwidgets"
-        -DwxWidgets_CONFIGURATION=mswud
+        -DwxBUILD_SHARED=OFF
+        -G "MSYS Makefiles"
+        -DCMAKE_PREFIX_PATH="C:/msys64/mingw64"
         -S ${{ github.workspace }}
+
 
     - name: Build project
       run: cmake --build build --config Release
