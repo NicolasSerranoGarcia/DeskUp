@@ -51,16 +51,18 @@ endif()
 set(wxWidgets_USE_STATIC ON)
 if(WIN32)
     set(wxRoot "$ENV{HOME}/wx-static")
-    include_directories(${wxRoot}/include ${wxRoot}/lib/wx/include/msw-unicode-static-3.2)
-    link_directories(${wxRoot}/lib)
+    set(wxIncludeDir "${wxRoot}/include/wx-3.2")
+    set(wxLibDir "${wxRoot}/lib")
+    set(wxConfigIncludeDir "${wxLibDir}/wx/include/msw-unicode-static-3.2")
+
+    include_directories(${wxIncludeDir} ${wxConfigIncludeDir})
+    link_directories(${wxLibDir})
 
     set(wxWidgets_LIBRARIES
-        wx_baseu-3.2
-        wx_mswu_core-3.2
-        wx_mswu_net-3.2
+        ${wxLibDir}/libwx_baseu-3.2.a
+        ${wxLibDir}/libwx_mswu_core-3.2.a
+        ${wxLibDir}/libwx_mswu_net-3.2.a
     )
-
-    target_link_libraries(DeskUp PRIVATE ${wxWidgets_LIBRARIES})
 else()
     find_package(wxWidgets REQUIRED COMPONENTS core base)
     if (wxWidgets_USE_FILE)
