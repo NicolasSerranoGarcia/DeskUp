@@ -108,24 +108,24 @@ jobs:
     - name: Add MinGW to PATH
       run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
-    - name: Configure CMake (Windows)
+    - name: Configure & Build CMake (Windows)
       if: matrix.os == 'windows-latest'
-      shell: pwsh
-      run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DBUILD_TESTS=ON
-        -DBUILD_BENCHMARK=ON
-        -DwxBUILD_SHARED=OFF
-        -G "MSYS Makefiles"
-        -DCMAKE_PREFIX_PATH="C:/msys64/mingw64"
-        -DCMAKE_INCLUDE_PATH="C:/msys64/mingw64/include/wx-3.2" `
-        -DCMAKE_LIBRARY_PATH="C:/msys64/mingw64/lib" `
-        -S ${{ github.workspace }}
-
-
+      shell: bash
+      run: |
+        export PATH="/c/msys64/mingw64/bin:$PATH"
+        mkdir -p build
+        cd build
+        cmake .. \
+          -G "MSYS Makefiles" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DwxBUILD_SHARED=OFF \
+          -DCMAKE_PREFIX_PATH="/c/msys64/mingw64" \
+          -DCMAKE_INCLUDE_PATH="/c/msys64/mingw64/include/wx-3.2" \
+          -DCMAKE_LIBRARY_PATH="/c/msys64/mingw64/lib"
+        make -j$(nproc)
       
     - name: Build
+      if: matrix.os == 'ubuntu-latest'
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
