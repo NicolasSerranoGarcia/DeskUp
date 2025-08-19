@@ -130,8 +130,11 @@ jobs:
           -DBUILD_BENCHMARK=ON \
           -DCMAKE_PREFIX_PATH=$HOME/wx-static \
 
-    - name: Build Project
-      run: cmake --build build --config Release
+    - name: Build Project (Windows)
+      shell: msys2 {0}
+      run: |
+        export PATH="/c/msys64/mingw64/bin:$PATH"
+        cmake --build build --parallel
 
     - name: Package with CPack
       working-directory: build
