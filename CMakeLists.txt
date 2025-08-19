@@ -64,7 +64,7 @@ if(WIN32)
     )
 
     target_link_libraries(DeskUp PRIVATE ${wxWidgets_LIBRARIES})
-else()z`
+else()
     find_package(wxWidgets REQUIRED COMPONENTS net core base)
     if (wxWidgets_USE_FILE)
         include(${wxWidgets_USE_FILE})
