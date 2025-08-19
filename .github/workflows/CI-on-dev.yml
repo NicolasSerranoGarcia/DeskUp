@@ -94,6 +94,7 @@ jobs:
       shell: bash
 
     - name: Setup MSYS2
+      if: matrix.os == 'windows-latest'
       uses: msys2/setup-msys2@v2
       with:
         update: true
