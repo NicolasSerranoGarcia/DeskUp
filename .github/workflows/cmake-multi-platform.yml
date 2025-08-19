@@ -116,7 +116,7 @@ jobs:
         refreshenv
         C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
         C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain wget make cmake"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain wget make cmake wget"
 
     - name: Build wxWidgets (Windows)
       if: matrix.os == 'windows-latest'
