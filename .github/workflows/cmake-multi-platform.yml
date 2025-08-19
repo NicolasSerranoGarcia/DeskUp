@@ -103,7 +103,7 @@ jobs:
         # Update packages and install wxWidgets and toolchain
         C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
         C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-wxwidgets3.2-msw mingw-w64-x86_64-toolchain"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-wxwidgets3.2 mingw-w64-x86_64-toolchain"
 
     - name: Add MinGW to PATH
       run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
