@@ -94,7 +94,8 @@ jobs:
     - name: Install wxWidgets with vcpkg (Windows only)
       shell: pwsh
       run: |
-        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static & & $env:USERPROFILE\vcpkg\vcpkg install nanosvg:x64-windows-static
+        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static
+        & $env:USERPROFILE\vcpkg\vcpkg install nanosvg:x64-windows-static
 
 
 
