@@ -48,15 +48,14 @@ endif()
 
 set(wxWidgets_USE_STATIC ON)
 if(WIN32)
-    # Usar wxWidgets estático
     set(wxWidgets_USE_STATIC ON)
 
-    # Paths de MSYS2
     set(wxRoot "C:/msys64/mingw64")
     set(wxIncludeDir "${wxRoot}/include/wx-3.2")
     set(wxLibDir "${wxRoot}/lib")
+    set(wxConfigIncludeDir "${wxLibDir}/wx/include/msw-unicode-static-3.2")  # << importante
 
-    include_directories(${wxIncludeDir})
+    include_directories(${wxIncludeDir} ${wxConfigIncludeDir})
 
     set(wxWidgets_LIBRARIES
         ${wxLibDir}/libwx_baseu-3.2.a
@@ -65,7 +64,7 @@ if(WIN32)
     )
 
     target_link_libraries(DeskUp PRIVATE ${wxWidgets_LIBRARIES})
-else()
+else()z`
     find_package(wxWidgets REQUIRED COMPONENTS net core base)
     if (wxWidgets_USE_FILE)
         include(${wxWidgets_USE_FILE})
