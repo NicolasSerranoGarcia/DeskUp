@@ -97,10 +97,17 @@ jobs:
         & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static
 
 
-    - name: Configure CMake
-      run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
-
-
+    - name: Configure CMake (Windows)
+      shell: pwsh
+      run: >
+        cmake -B build
+        -DCMAKE_CXX_COMPILER=cl
+        -DCMAKE_BUILD_TYPE=Release
+        -DBUILD_TESTS=ON
+        -DBUILD_BENCHMARK=ON
+        -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        -DwxWidgets_CONFIGURATION=mswud
+        -S ${{ github.workspace }}
 
     - name: Build project
       run: cmake --build build --config Release

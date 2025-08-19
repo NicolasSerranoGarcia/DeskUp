@@ -95,7 +95,20 @@ jobs:
       run: |
         & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static
 
-    - name: Configure CMake
+    - name: Configure CMake (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DBUILD_TESTS=ON
+        -DBUILD_BENCHMARK=ON
+        -S ${{ github.workspace }}
+      shell: bash
+
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -105,7 +118,7 @@ jobs:
         -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
         -DwxWidgets_CONFIGURATION=mswud
         -S ${{ github.workspace }}
-      shell: pwsh
+
       
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).

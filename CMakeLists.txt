@@ -36,17 +36,13 @@ elseif(UNIX AND NOT APPLE)
 endif()
     
 # --- wxWidgets static ---
-if (WIN32)
-    find_package(wxWidgets CONFIG REQUIRED)
-    set(WX_LIBS wx::base wx::core wx::net)
-else()
-    set(wxWidgets_USE_STATIC ON)
-    find_package(wxWidgets REQUIRED COMPONENTS net core base)
-    if (wxWidgets_USE_FILE)
-        include(${wxWidgets_USE_FILE})
-    endif()
-    set(WX_LIBS ${wxWidgets_LIBRARIES})
+
+set(wxWidgets_USE_STATIC ON)
+find_package(wxWidgets REQUIRED COMPONENTS net core base)
+if (wxWidgets_USE_FILE)
+    include(${wxWidgets_USE_FILE})
 endif()
+
 
 #Add flags for tests, benchmarks and other tools
 
