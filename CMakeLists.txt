@@ -38,9 +38,14 @@ endif()
 # --- wxWidgets static ---
 
 set(wxWidgets_USE_STATIC ON)
-find_package(wxWidgets REQUIRED COMPONENTS net core base)
-if (wxWidgets_USE_FILE)
-    include(${wxWidgets_USE_FILE})
+if(WIN32)
+    find_package(wxWidgets CONFIG REQUIRED)
+    target_link_libraries(DeskUp PRIVATE wx::core wx::base wx::net)
+else()
+    find_package(wxWidgets REQUIRED COMPONENTS net core base)
+    if (wxWidgets_USE_FILE)
+        include(${wxWidgets_USE_FILE})
+    endif()
 endif()
 
 

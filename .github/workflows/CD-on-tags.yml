@@ -105,7 +105,9 @@ jobs:
         -DCMAKE_BUILD_TYPE=Release
         -DBUILD_TESTS=ON
         -DBUILD_BENCHMARK=ON
+        -Dwxwidgets_use_static=ON
         -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        -DwxWidgets_DIR="$env:USERPROFILE/vcpkg/installed/x64-windows-static/share/wxwidgets"
         -DwxWidgets_CONFIGURATION=mswud
         -S ${{ github.workspace }}
 
