@@ -106,7 +106,7 @@ jobs:
 
     - name: Build wxWidgets (Windows)
       if: matrix.os == 'windows-latest'
-      shell: bash
+      shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
         wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
@@ -127,7 +127,7 @@ jobs:
       
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
-      shell: bash
+      shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
