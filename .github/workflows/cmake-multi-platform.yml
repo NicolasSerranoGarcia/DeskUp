@@ -115,6 +115,7 @@ jobs:
         mkdir build-static && cd build-static
 
         cmake .. \
+          -G "MinGW Makefiles" \
           -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DwxBUILD_SHARED=OFF \
           -DwxBUILD_TOOLKIT=msw \
@@ -131,6 +132,7 @@ jobs:
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
         cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+          -G "MinGW Makefiles" \
           -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_TESTS=ON \
