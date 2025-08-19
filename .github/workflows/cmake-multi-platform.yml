@@ -93,9 +93,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static
-        & $env:USERPROFILE\vcpkg\vcpkg install nanosvg:x64-windows-static
-
+        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static[svg-off]
 
     - name: Configure CMake (Linux)
       if: matrix.os == 'ubuntu-latest'
