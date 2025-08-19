@@ -115,7 +115,7 @@ jobs:
         mkdir build-static && cd build-static
 
         cmake .. \
-          -G "MSYS Makefiles" \
+          -G "Unix Makefiles" \
           -DwxBUILD_SHARED=OFF \
           -DwxBUILD_TOOLKIT=msw \
           -DwxBUILD_SAMPLES=OFF \
