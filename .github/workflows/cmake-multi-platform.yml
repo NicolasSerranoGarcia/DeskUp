@@ -131,14 +131,13 @@ jobs:
       shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
-        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+        cmake -B build -S "$(cygpath -u "$GITHUB_WORKSPACE")" \
           -G "MinGW Makefiles" \
           -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_TESTS=ON \
           -DBUILD_BENCHMARK=ON \
           -DCMAKE_PREFIX_PATH=$HOME/wx-static \
-          -S ${{ github.workspace }}
 
     - name: Build Project
       if: matrix.os == 'ubuntu-latest'
