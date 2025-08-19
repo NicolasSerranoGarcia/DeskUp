@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
+cmake_policy(SET CMP0135 NEW)
+
 # --- Project ---
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
 project(DeskUp VERSION ${PROJECT_VERSION_STRING})
