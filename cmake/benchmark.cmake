@@ -20,6 +20,8 @@ if(BUILD_BENCHMARK)
 
     add_subdirectory(${CMAKE_SOURCE_DIR}/benchmark)
 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
+
 else()
     message(STATUS "Building benchmark is DISABLED")
 endif()
