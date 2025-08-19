@@ -85,31 +85,52 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup MSYS2 (Windows only)
-      shell: pwsh
+
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          base-devel
+          mingw-w64-x86_64-toolchain
+          wget
+          make
+          mingw-w64-x86_64-cmake
+
+    - name: Build wxWidgets (Windows)
+      shell: msys2 {0}
       run: |
-        choco install msys2 --no-progress -y
-        refreshenv
+        export PATH="/c/msys64/mingw64/bin:$PATH"
+        wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
+        tar xf wxWidgets-3.2.5.tar.bz2
+        cd wxWidgets-3.2.5
+        mkdir build-static && cd build-static
 
-        # Update packages and install wxWidgets and toolchain
-        C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-wxwidgets3.2-msw mingw-w64-x86_64-toolchain"
+        cmake .. \
+          -G "MinGW Makefiles" \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+          -DwxBUILD_SHARED=OFF \
+          -DwxBUILD_TOOLKIT=msw \
+          -DwxBUILD_SAMPLES=OFF \
+          -DwxBUILD_TESTS=OFF \
+          -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
 
+        make -j$(nproc || echo 2)
+        make install
+      
     - name: Configure CMake (Windows)
-      shell: pwsh
-      run: >
-        cmake -B build
-        -DCMAKE_BUILD_TYPE=Release
-        -DBUILD_TESTS=ON
-        -DBUILD_BENCHMARK=ON
-        -DwxBUILD_SHARED=OFF
-        -G "MSYS Makefiles"
-        -DCMAKE_PREFIX_PATH="C:/msys64/mingw64"
-        -S ${{ github.workspace }}
+      shell: msys2 {0}
+      run: |
+        export PATH="/c/msys64/mingw64/bin:$PATH"
+        cmake -B build -S "$(cygpath -u "$GITHUB_WORKSPACE")" \
+          -G "MinGW Makefiles" \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DBUILD_TESTS=ON \
+          -DBUILD_BENCHMARK=ON \
+          -DCMAKE_PREFIX_PATH=$HOME/wx-static \
 
-
-    - name: Build project
+    - name: Build Project
       run: cmake --build build --config Release
 
     - name: Package with CPack
