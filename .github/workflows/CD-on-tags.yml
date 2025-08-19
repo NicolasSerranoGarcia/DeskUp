@@ -100,7 +100,6 @@ jobs:
       shell: pwsh
       run: >
         cmake -B build
-        -DCMAKE_CXX_COMPILER=cl
         -DCMAKE_BUILD_TYPE=Release
         -DBUILD_TESTS=ON
         -DBUILD_BENCHMARK=ON
