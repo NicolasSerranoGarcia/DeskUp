@@ -103,26 +103,54 @@ jobs:
         # Update packages and install wxWidgets and toolchain
         C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
         C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-wxwidgets3.2 mingw-w64-x86_64-toolchain"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
 
     - name: Add MinGW to PATH
       run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
-    - name: Configure & Build CMake (Windows)
+    - name: Setup MSYS2 (Windows only)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        choco install msys2 --no-progress -y
+        refreshenv
+        C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
+        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain wget make cmake"
+
+    - name: Build wxWidgets (Windows)
       if: matrix.os == 'windows-latest'
       shell: bash
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
-        mkdir -p build
-        cd build
+        wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
+        tar xf wxWidgets-3.2.5.tar.bz2
+        cd wxWidgets-3.2.5
+        mkdir build-static && cd build-static
+
         cmake .. \
           -G "MSYS Makefiles" \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DwxBUILD_SHARED=OFF \
-          -DCMAKE_PREFIX_PATH="/c/msys64/mingw64" \
-          -DCMAKE_INCLUDE_PATH="/c/msys64/mingw64/include/wx-3.2" \
-          -DCMAKE_LIBRARY_PATH="/c/msys64/mingw64/lib"
+          -DwxBUILD_TOOLKIT=msw \
+          -DwxBUILD_SAMPLES=OFF \
+          -DwxBUILD_TESTS=OFF \
+          -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
+
         make -j$(nproc)
+        make install
+
+    - name: Configure CMake (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: bash
+      run: |
+        export PATH="/c/msys64/mingw64/bin:$PATH"
+        cmake -B ${{ steps.strings.outputs.build-output-dir }} \
+          -G "MSYS Makefiles" \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DBUILD_TESTS=ON \
+          -DBUILD_BENCHMARK=ON \
+          -DCMAKE_PREFIX_PATH=$HOME/wx-static \
+          -S ${{ github.workspace }}
       
     - name: Build
       if: matrix.os == 'ubuntu-latest'
