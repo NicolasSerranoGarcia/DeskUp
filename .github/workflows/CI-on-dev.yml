@@ -82,36 +82,18 @@ jobs:
         cmake --build . --parallel
         cmake --install .
 
-    - name: Download and build wxWidgets on Windows
+    - name: Setup vcpkg (Windows only)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: |
-        Invoke-WebRequest -Uri "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.zip" -OutFile "$env:USERPROFILE\wxWidgets-3.2.5.zip"
-        Expand-Archive -Path "$env:USERPROFILE\wxWidgets-3.2.5.zip" -DestinationPath "$env:USERPROFILE\wxWidgets-3.2.5"
+        git clone https://github.com/microsoft/vcpkg $env:USERPROFILE\vcpkg
+        & $env:USERPROFILE\vcpkg\bootstrap-vcpkg.bat
 
-        Push-Location "$env:USERPROFILE\wxWidgets-3.2.5"
-        Remove-Item -Recurse -Force build-static -ErrorAction SilentlyContinue
-        mkdir build-static
-        Push-Location build-static
-
-        cmake .. `
-          -DwxBUILD_SHARED=OFF `
-          -DwxBUILD_TOOLKIT=msw `
-          -DwxBUILD_SAMPLES=OFF `
-          -DwxBUILD_TESTS=OFF `
-          -DCMAKE_INSTALL_PREFIX="$env:USERPROFILE\wx-static"
-
-        cmake --build . --parallel
-
-        Remove-Item -Recurse -Force "$env:USERPROFILE\wx-static" -ErrorAction SilentlyContinue
-        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\include"
-        New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\wx-static\lib"
-
-        Copy-Item -Recurse -Force "..\include\*" "$env:USERPROFILE\wx-static\include\"
-        Copy-Item -Recurse -Force "lib\vc_x64_lib\*" "$env:USERPROFILE\wx-static\lib\"
-
-        Pop-Location
-        Pop-Location
+    - name: Install wxWidgets with vcpkg (Windows only)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        & $env:USERPROFILE\vcpkg\vcpkg install wxwidgets:x64-windows-static
 
     - name: Configure CMake
       run: >
@@ -120,10 +102,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DBUILD_TESTS=ON
         -DBUILD_BENCHMARK=ON
-        -DwxWidgets_ROOT_DIR="$env:USERPROFILE\wx-static"
-        -DwxWidgets_LIB_DIR="$env:USERPROFILE\wx-static\lib\vc_x64_lib"
-        -DwxWidgets_INCLUDE_DIRS="$env:USERPROFILE\wx-static\include;$env:USERPROFILE\wx-static\lib\vc_x64_lib\mswud"
-        -DwxWidgets_CONFIGURATION=mswud
+        -DCMAKE_TOOLCHAIN_FILE="$env:USERPROFILE/vcpkg/scripts/buildsystems/vcpkg.cmake"
         -S ${{ github.workspace }}
       shell: pwsh
 
