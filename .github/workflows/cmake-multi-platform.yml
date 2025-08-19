@@ -99,21 +99,6 @@ jobs:
       run: |
         choco install msys2 --no-progress -y
         refreshenv
-
-        # Update packages and install wxWidgets and toolchain
-        C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
-        C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain"
-
-    - name: Add MinGW to PATH
-      run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
-
-    - name: Setup MSYS2 (Windows only)
-      if: matrix.os == 'windows-latest'
-      shell: pwsh
-      run: |
-        choco install msys2 --no-progress -y
-        refreshenv
         C:\msys64\usr\bin\bash.exe -lc "pacman -Syu --noconfirm"
         C:\msys64\usr\bin\bash.exe -lc "pacman -Su --noconfirm"
         C:\msys64\usr\bin\bash.exe -lc "pacman -S --noconfirm mingw-w64-x86_64-toolchain wget make cmake wget"
@@ -138,6 +123,9 @@ jobs:
 
         make -j$(nproc)
         make install
+
+    - name: Add MinGW to PATH
+      run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
