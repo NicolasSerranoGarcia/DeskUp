@@ -69,6 +69,10 @@ else()
     add_executable(DeskUp source/main.cc)
 endif()
 
+if(WIN32)
+    target_include_directories(DeskUp PRIVATE "$ENV{USERPROFILE}/vcpkg/installed/x64-windows-static/include")
+endif()
+
 # --- Compile definitions ---
 target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
 target_link_libraries(DeskUp PRIVATE DeskUp-compiler-flags)
