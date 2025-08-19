@@ -35,6 +35,15 @@ elseif(UNIX AND NOT APPLE)
     set(wxWidgets_CONFIG_EXECUTABLE "$ENV{HOME}/wx-static/bin/wx-config")
 endif()
     
+# --- Executable ---
+if (WIN32)
+    add_executable(DeskUp WIN32 source/main.cc)
+    enable_language(RC)
+    target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
+else()
+    add_executable(DeskUp source/main.cc)
+endif()
+
 # --- wxWidgets static ---
 
 set(wxWidgets_USE_STATIC ON)
@@ -59,19 +68,6 @@ include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
 # --- Sub-libraries (without linking wxWidgets) ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
-
-# --- Executable ---
-if (WIN32)
-    add_executable(DeskUp WIN32 source/main.cc)
-    enable_language(RC)
-    target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
-else()
-    add_executable(DeskUp source/main.cc)
-endif()
-
-if(WIN32)
-    target_include_directories(DeskUp PRIVATE "$ENV{USERPROFILE}/vcpkg/installed/x64-windows-static/include")
-endif()
 
 # --- Compile definitions ---
 target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
