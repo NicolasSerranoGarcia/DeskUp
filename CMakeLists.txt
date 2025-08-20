@@ -89,8 +89,6 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
 
 if(WIN32)
-    target_link_libraries(desk_up_library PRIVATE wxWidgetsDeps)
-    target_link_libraries(desk_up_frame_library PRIVATE wxWidgetsDeps)
     target_link_libraries(DeskUp PRIVATE wxWidgetsDeps)
 endif()
 
