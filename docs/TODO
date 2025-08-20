@@ -1,9 +1,13 @@
-# Start
+# Start - Setup tools
 
 [] Add previous documentation of Cmake-test for information about flags
 
 [X] Add support for tests using the CMake-test ones.  
 
-[] Adapt workflows from CMake-test to work: needs to download wxWidgets
+[X] Adapt workflows from CMake-test to work: needs to download wxWidgets
 
 [X] Add support for benchmark using the CMake-test ones
+
+[X] Fix workflows to make them compatible when they run, When run on linux to develop and when run on windows to develop
+
+[] Pack Linux as an AppImage
