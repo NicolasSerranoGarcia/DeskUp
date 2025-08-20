@@ -141,6 +141,7 @@ include(FetchContent)
 FetchContent_Declare(
     doxygen-awesome-css
     URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/heads/main.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(doxygen-awesome-css)
 
