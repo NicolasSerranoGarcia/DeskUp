@@ -127,11 +127,31 @@ jobs:
         make -j$(nproc || echo 2)
         make install
       
+    - name: Debug wxWidgets installation
+      if: matrix.os == 'windows-latest'
+      shell: msys2 {0}
+      run: |
+        export WX_INSTALL_DIR="$HOME/wx-static"
+        echo "=== wxWidgets installation contents ==="
+        find "$WX_INSTALL_DIR" -name "*wx*" | head -20
+        echo "=== Include directory ==="
+        ls -la "$WX_INSTALL_DIR/include/" || echo "No include directory"
+        echo "=== Lib directory ==="
+        ls -la "$WX_INSTALL_DIR/lib/" | grep -i wx || echo "No lib directory"
+        echo "=== Bin directory ==="
+        ls -la "$WX_INSTALL_DIR/bin/" | grep -i wx || echo "No bin directory"
+
     - name: Configure CMake (Windows)
       if: matrix.os == 'windows-latest'
       shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
+        export WX_INSTALL_DIR="$HOME/wx-static"
+        
+        # Set environment variables that FindwxWidgets.cmake looks for
+        export wxWidgets_ROOT_DIR="$WX_INSTALL_DIR"
+        export wxWidgets_CONFIG_EXECUTABLE="$WX_INSTALL_DIR/bin/wx-config"
+
         cmake -B build -S "$(cygpath -u "$GITHUB_WORKSPACE")" \
           -G "MinGW Makefiles" \
           -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
@@ -150,7 +170,7 @@ jobs:
       shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
-        cmake --build build --parallel
+        cmake --build build
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
