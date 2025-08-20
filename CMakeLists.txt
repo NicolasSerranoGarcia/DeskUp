@@ -50,19 +50,76 @@ endif()
 
 set(wxWidgets_USE_STATIC ON)
 if(WIN32)
-    set(wxRoot "$ENV{HOME}/wx-static")
-    set(wxIncludeDir "${wxRoot}/include/wx-3.2")
-    set(wxLibDir "${wxRoot}/lib")
-    set(wxConfigIncludeDir "${wxLibDir}/wx/include/msw-unicode-static-3.2")
+    # Try to find wxWidgets using standard CMake methods first
+    find_package(wxWidgets QUIET COMPONENTS core base)
+    
+    if(wxWidgets_FOUND)
+        message(STATUS "Found wxWidgets using find_package: ${wxWidgets_LIBRARIES}")
+        if(wxWidgets_USE_FILE)
+            include(${wxWidgets_USE_FILE})
+        endif()
+    else()
+        # Fallback: Manual configuration for CI environment
+        message(STATUS "wxWidgets not found via find_package, using manual configuration")
+        
+        # Check multiple possible locations
+        if(EXISTS "$ENV{HOME}/wx-static")
+            set(wxRoot "$ENV{HOME}/wx-static")
+        elseif(EXISTS "/mingw64")
+            set(wxRoot "/mingw64")
+        else()
+            message(FATAL_ERROR "wxWidgets not found in any known location")
+        endif()
+        
+        set(wxIncludeDir "${wxRoot}/include")
+        set(wxLibDir "${wxRoot}/lib")
+        
+        # Check for different include directory structures
+        if(EXISTS "${wxRoot}/include/wx-3.2")
+            set(wxIncludeDir "${wxRoot}/include/wx-3.2")
+        endif()
+        
+        # Find the config include directory
+        file(GLOB wxConfigDirs RELATIVE "${wxLibDir}" "${wxLibDir}/wx/include/*")
+        if(wxConfigDirs)
+            list(GET wxConfigDirs 0 wxConfigDir)
+            set(wxConfigIncludeDir "${wxLibDir}/${wxConfigDir}")
+        else()
+            set(wxConfigIncludeDir "${wxLibDir}/wx/include")
+        endif()
 
-    include_directories(${wxIncludeDir} ${wxConfigIncludeDir})
-    link_directories(${wxLibDir})
+        include_directories(${wxIncludeDir} ${wxConfigIncludeDir})
+        link_directories(${wxLibDir})
 
-    set(wxWidgets_LIBRARIES
-        ${wxLibDir}/libwx_baseu-3.2.a
-        ${wxLibDir}/libwx_mswu_core-3.2.a
-        ${wxLibDir}/libwx_mswu_net-3.2.a
-    )
+        # Find wxWidgets libraries dynamically
+        file(GLOB wx_libs ${wxLibDir}/libwx_*.a)
+        if(wx_libs)
+            set(wxWidgets_LIBRARIES ${wx_libs})
+            message(STATUS "Found wxWidgets libraries: ${wx_libs}")
+        else()
+            # Fallback to specific library names
+            set(wxWidgets_LIBRARIES
+                ${wxLibDir}/libwx_baseu-3.2.a
+                ${wxLibDir}/libwx_mswu_core-3.2.a
+                ${wxLibDir}/libwx_baseu_net-3.2.a
+                ${wxLibDir}/libwx_mswu_adv-3.2.a
+                ${wxLibDir}/libwx_mswu_html-3.2.a
+                ${wxLibDir}/libwx_mswu_aui-3.2.a
+                ${wxLibDir}/libwx_mswu_ribbon-3.2.a
+                ${wxLibDir}/libwx_mswu_propgrid-3.2.a
+                ${wxLibDir}/libwx_mswu_richtext-3.2.a
+                ${wxLibDir}/libwx_mswu_xrc-3.2.a
+                ${wxLibDir}/libwx_mswu_qa-3.2.a
+                ${wxLibDir}/libwx_mswu_gl-3.2.a
+                ${wxLibDir}/libwxexpat.a
+                ${wxLibDir}/libwxjpeg.a
+                ${wxLibDir}/libwxscintilla.a
+                ${wxLibDir}/libwxtiff.a
+                ${wxLibDir}/libwxzlib.a
+                ${wxLibDir}/libwxregexu.a
+            )
+        endif()
+    endif()
 else()
     find_package(wxWidgets REQUIRED COMPONENTS core base)
     if (wxWidgets_USE_FILE)
