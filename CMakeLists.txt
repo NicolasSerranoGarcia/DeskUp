@@ -50,19 +50,11 @@ endif()
 
 set(wxWidgets_USE_STATIC ON)
 if(WIN32)
-    set(wxRoot "$ENV{HOME}/wx-static")
-    set(wxIncludeDir "${wxRoot}/include/wx-3.2")
-    set(wxLibDir "${wxRoot}/lib")
-    set(wxConfigIncludeDir "${wxLibDir}/wx/include/msw-unicode-static-3.2")
-
-    include_directories(${wxIncludeDir} ${wxConfigIncludeDir})
-    link_directories(${wxLibDir})
-
-    set(wxWidgets_LIBRARIES
-        ${wxLibDir}/libwx_baseu-3.2.a
-        ${wxLibDir}/libwx_mswu_core-3.2.a
-        ${wxLibDir}/libwx_mswu_net-3.2.a
-    )
+    set(wxWidgets_CONFIG_EXECUTABLE "$ENV{HOME}/wx-static/bin/wx-config")
+    find_package(wxWidgets REQUIRED core base net)
+    if (wxWidgets_USE_FILE)
+        include(${wxWidgets_USE_FILE})
+    endif()
 else()
     find_package(wxWidgets REQUIRED COMPONENTS core base)
     if (wxWidgets_USE_FILE)
