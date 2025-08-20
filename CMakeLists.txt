@@ -50,7 +50,7 @@ endif()
 
 set(wxWidgets_USE_STATIC ON)
 if(WIN32)
- set(wxRoot "$ENV{HOME}/wx-static")
+    set(wxRoot "$ENV{HOME}/wx-static")  # MSYS2 interpreta $HOME
     set(wxIncludeDir "${wxRoot}/include/wx-3.2")
     set(wxConfigIncludeDir "${wxRoot}/lib/wx/include/msw-unicode-static-3.2")
     set(wxLibDir "${wxRoot}/lib")
@@ -93,6 +93,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
 if(WIN32)
     target_link_libraries(desk_up_library PRIVATE wxWidgetsDeps)
     target_link_libraries(desk_up_frame_library PRIVATE wxWidgetsDeps)
+    target_link_libraries(DeskUp PRIVATE wxWidgetsDeps)
 endif()
 
 # --- Compile definitions ---
@@ -105,10 +106,6 @@ target_link_libraries(DeskUp PRIVATE
     desk_up_frame_library
     ${wxWidgets_LIBRARIES}
 )
-
-if(WIN32)
-    target_link_libraries(DeskUp PRIVATE wxWidgetsDeps)
-endif()
 
 # --- Build type ---
 if(NOT CMAKE_BUILD_TYPE)
