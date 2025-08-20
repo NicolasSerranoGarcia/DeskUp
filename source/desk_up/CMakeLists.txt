@@ -5,7 +5,7 @@ add_library(desk_up_library STATIC
 )
 
 if(WIN32)
-    target_link_libraries(desk_up_library PRIVATE wxWidgetsDeps)
+    target_link_libraries(desk_up_library PUBLIC wxWidgetsDeps)
 endif()
 
 target_compile_definitions(desk_up_library PUBLIC wxWidgets_STATIC)
