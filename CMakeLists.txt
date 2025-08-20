@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
 cmake_policy(SET CMP0135 NEW)
+if(WIN32)
+    cmake_policy(SET CMP0077 NEW)
+endif()
 
 # --- Project ---
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
@@ -62,9 +65,34 @@ include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
 
+if(WIN32)
+    add_library(wxWidgetsDeps INTERFACE)
+    target_compile_definitions(wxWidgetsDeps INTERFACE wxWidgets_STATIC)
+    target_include_directories(wxWidgetsDeps INTERFACE ${wxWidgets_INCLUDE_DIRS})
+    target_link_libraries(wxWidgetsDeps INTERFACE ${wxWidgets_LIBRARIES})
+    target_link_libraries(wxWidgetsDeps INTERFACE
+    ${wxWidgets_LIBRARIES}
+    shlwapi
+    version
+    ole32
+    oleaut32
+    uuid
+    comctl32
+    winmm
+    ws2_32
+    gdi32
+    user32
+    kernel32
+    )
+endif()
+
 # --- Sub-libraries (without linking wxWidgets) ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+
+if(WIN32)
+    target_link_libraries(DeskUp PUBLIC wxWidgetsDeps)
+endif()
 
 # --- Compile definitions ---
 target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
