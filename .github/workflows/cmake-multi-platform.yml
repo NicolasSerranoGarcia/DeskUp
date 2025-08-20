@@ -122,7 +122,6 @@ jobs:
         ../configure \
           --prefix="$WX_INSTALL_DIR" \
           --disable-shared \
-          --enable-static \
           --with-msw \
           --enable-unicode \
           --disable-debug \
