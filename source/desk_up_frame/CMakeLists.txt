@@ -4,10 +4,6 @@ add_library(desk_up_frame_library STATIC
     desk_up_frame.h
 )
 
-if(WIN32)
-    target_link_libraries(desk_up_frame_library PUBLIC wxWidgetsDeps)
-endif()
-
 target_compile_definitions(desk_up_frame_library PUBLIC wxWidgets_STATIC)
 
 target_include_directories(desk_up_frame_library PUBLIC
