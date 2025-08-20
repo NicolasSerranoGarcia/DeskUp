@@ -105,60 +105,75 @@ jobs:
           make
           mingw-w64-x86_64-cmake
 
-    - name: Build wxWidgets (Windows)
+    - name: Build wxWidgets Static (Windows)
       if: matrix.os == 'windows-latest'
       shell: msys2 {0}
       run: |
-        export PATH="/c/msys64/mingw64/bin:$PATH"
+        export PATH="/mingw64/bin:$PATH"
+        export WX_INSTALL_DIR="/mingw64"
+        
+        # Download and extract wxWidgets
         wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
         tar xf wxWidgets-3.2.5.tar.bz2
         cd wxWidgets-3.2.5
-        mkdir build-static && cd build-static
-
-        cmake .. \
-          -G "MinGW Makefiles" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-          -DwxBUILD_SHARED=OFF \
-          -DwxBUILD_TOOLKIT=msw \
-          -DwxBUILD_SAMPLES=OFF \
-          -DwxBUILD_TESTS=OFF \
-          -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
-
-        make -j$(nproc || echo 2)
-        make install
-      
-    - name: Debug wxWidgets installation
-      if: matrix.os == 'windows-latest'
-      shell: msys2 {0}
-      run: |
-        export WX_INSTALL_DIR="$HOME/wx-static"
-        echo "=== wxWidgets installation contents ==="
-        find "$WX_INSTALL_DIR" -name "*wx*" | head -20
-        echo "=== Include directory ==="
-        ls -la "$WX_INSTALL_DIR/include/" || echo "No include directory"
-        echo "=== Lib directory ==="
-        ls -la "$WX_INSTALL_DIR/lib/" | grep -i wx || echo "No lib directory"
-        echo "=== Bin directory ==="
-        ls -la "$WX_INSTALL_DIR/bin/" | grep -i wx || echo "No bin directory"
-
-    - name: Configure CMake (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: msys2 {0}
-      run: |
-        export PATH="/c/msys64/mingw64/bin:$PATH"
-        export WX_INSTALL_DIR="$HOME/wx-static"
         
-        # Set environment variables that FindwxWidgets.cmake looks for
-        export wxWidgets_ROOT_DIR="$WX_INSTALL_DIR"
-        export wxWidgets_CONFIG_EXECUTABLE="$WX_INSTALL_DIR/bin/wx-config"
-
-        cmake -B build -S "$(cygpath -u "$GITHUB_WORKSPACE")" \
-          -G "MinGW Makefiles" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+        # Create build directory and configure
+        mkdir build-msw-static && cd build-msw-static
+        ../configure \
+          --prefix="$WX_INSTALL_DIR" \
+          --disable-shared \
+          --enable-static \
+          --with-msw \
+          --enable-unicode \
+          --disable-debug \
+          --disable-precomp-headers \
+          --enable-monolithic \
+          CXXFLAGS="-std=c++17" \
+          CFLAGS="-std=c99"
+        
+        # Build and install
+        make -j$(nproc)
+        make install
+        
+        # Verify the installation
+        echo "=== wxWidgets static installation verification ==="
+        ls -la "$WX_INSTALL_DIR/include/wx/"
+        ls -la "$WX_INSTALL_DIR/lib/" | grep -i wx
+        find "$WX_INSTALL_DIR/lib" -name "*.a" | grep -i wx | head -5
+      
+    - name: Configure CMake with Static wxWidgets (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: msys2 {0}
+      run: |
+        export PATH="/mingw64/bin:$PATH"
+        export WX_INSTALL_DIR="/mingw64"
+        
+        # Force CMake to find the static wxWidgets
+        cmake -B build \
+          -G "MSYS Makefiles" \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DwxWidgets_ROOT_DIR="$WX_INSTALL_DIR" \
+          -DwxWidgets_CONFIG_EXECUTABLE="$WX_INSTALL_DIR/bin/wx-config" \
+          -DwxWidgets_USE_STATIC=ON \
           -DBUILD_TESTS=ON \
           -DBUILD_BENCHMARK=ON \
-          -DCMAKE_PREFIX_PATH=$HOME/wx-static
+          -DCMAKE_FIND_DEBUG_MODE=ON
+        
+        # Debug output to verify wxWidgets was found
+        echo "=== CMake wxWidgets detection ==="
+        cmake -B build -L | grep -i wx
+        
+    - name: Build Project (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: msys2 {0}
+      run: |
+        export PATH="/mingw64/bin:$PATH"
+        cd build
+        make -j$(nproc) VERBOSE=1
+        
+        # List built executables to verify linking
+        echo "=== Built executables ==="
+        find . -name "*.exe" -o -name "*.a"
 
     - name: Build Project (Linux)
       if: matrix.os == 'ubuntu-latest'
