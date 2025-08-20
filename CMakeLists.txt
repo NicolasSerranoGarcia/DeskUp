@@ -54,11 +54,15 @@ if(WIN32)
     set(wxIncludeDir "${wxRoot}/include/wx-3.2")
     set(wxConfigIncludeDir "${wxRoot}/lib/wx/include/msw-unicode-static-3.2")
     set(wxLibDir "${wxRoot}/lib")
-
-    target_include_directories(DeskUp PRIVATE
-        ${wxIncludeDir}
-        ${wxConfigIncludeDir}
-    )
+  
+    foreach(tgt DeskUp desk_up_library desk_up_frame_library)
+        if(TARGET ${tgt})
+            target_include_directories(${tgt} PRIVATE
+                ${wxIncludeDir}
+                ${wxConfigIncludeDir}
+            )
+        endif()
+    endforeach()
 
     set(wxWidgets_LIBRARIES
         ${wxLibDir}/libwx_baseu-3.2.a
