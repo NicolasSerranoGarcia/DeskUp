@@ -190,5 +190,25 @@ jobs:
         asset_name: DeskUp-${{ github.ref_name }}-Linux.tgz
         asset_content_type: application/gzip
 
-    #- name: Find Windows package file
-        #Here will go downloading from another repo the prebuilt pak=ck for windows
+    - name: Checkout Windows package repo
+      uses: actions/checkout@v4
+      with:
+        repository: NicolasSerranoGarcia/DeskUp-win-package
+        token: ${{ secrets.PAT_TOKEN }}
+        path: win-package
+
+    - name: Find Windows package file
+      id: find-windows-package
+      run: |
+        FILE=$(ls win-package/*.zip | head -n 1)
+        echo "package_path=$FILE" >> $GITHUB_OUTPUT
+
+    - name: Upload Windows asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find-windows-package.outputs.package_path }}
+        asset_name: DeskUp-${{ github.ref_name }}-Windows.zip
+        asset_content_type: application/zip
