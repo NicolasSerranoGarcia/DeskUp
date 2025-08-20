@@ -14,7 +14,7 @@ if(BUILD_BENCHMARK)
     CPMAddPackage(
         NAME benchmark
         GITHUB_REPOSITORY google/benchmark
-        GIT_TAG v1.7.1
+        GIT_TAG v1.9.4
         OPTIONS "BENCHMARK_ENABLE_TESTING OFF"
     )
 

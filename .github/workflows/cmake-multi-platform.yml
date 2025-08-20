@@ -150,7 +150,7 @@ jobs:
       shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
-        cmake --build build --parallel
+        cmake --build build
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
