@@ -1,10 +1,11 @@
-name: Trigger tests and benchmark on development branches (linux only)
+# Workflow for building, testing, and benchmarking on Linux
+name: run tests and benchmark when deploying to main
 
 on:
   push:
-    branches: [ "develop/*", "feature/*", "fix/*" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "develop/*", "feature/*", "fix/*" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -13,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [Debug, Release]
+        build_type: [Release, Debug]
         cpp_compiler: [g++, clang++]
 
     steps:

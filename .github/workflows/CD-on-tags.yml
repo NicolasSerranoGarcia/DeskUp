@@ -3,7 +3,7 @@ permissions:
   issues: read
   pull-requests: read
 
-name: Release multi-platform with CPack packages
+name: Release linux with CPack packages
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
           libxinerama-dev \
           libxcursor-dev
 
-    - name: Download wxWidgets on Linux
+    - name: Download wxWidgets
       run: |
         wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
         tar xf wxWidgets-3.2.5.tar.bz2
@@ -78,82 +78,8 @@ jobs:
           build/*.tgz
           build/*.tar.gz
 
-  build-windows:
-    runs-on: windows-latest
-    outputs:
-      package-path: ${{ steps.set-path.outputs.package-path }}
-    steps:
-    - uses: actions/checkout@v4
-
-
-    - name: Setup MSYS2
-      uses: msys2/setup-msys2@v2
-      with:
-        update: true
-        install: >-
-          base-devel
-          mingw-w64-x86_64-toolchain
-          wget
-          make
-          mingw-w64-x86_64-cmake
-
-    - name: Build wxWidgets (Windows)
-      shell: msys2 {0}
-      run: |
-        export PATH="/c/msys64/mingw64/bin:$PATH"
-        wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
-        tar xf wxWidgets-3.2.5.tar.bz2
-        cd wxWidgets-3.2.5
-        mkdir build-static && cd build-static
-
-        cmake .. \
-          -G "MinGW Makefiles" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-          -DwxBUILD_SHARED=OFF \
-          -DwxBUILD_TOOLKIT=msw \
-          -DwxBUILD_SAMPLES=OFF \
-          -DwxBUILD_TESTS=OFF \
-          -DCMAKE_INSTALL_PREFIX=$HOME/wx-static
-
-        make -j$(nproc || echo 2)
-        make install
-      
-    - name: Configure CMake (Windows)
-      shell: msys2 {0}
-      run: |
-        export PATH="/c/msys64/mingw64/bin:$PATH"
-        cmake -B build -S "$(cygpath -u "$GITHUB_WORKSPACE")" \
-          -G "MinGW Makefiles" \
-          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DBUILD_TESTS=ON \
-          -DBUILD_BENCHMARK=ON \
-          -DCMAKE_PREFIX_PATH=$HOME/wx-static \
-
-    - name: Build Project (Windows)
-      shell: msys2 {0}
-      run: |
-        export PATH="/c/msys64/mingw64/bin:$PATH"
-        cmake --build build --parallel
-
-    - name: Package with CPack
-      working-directory: build
-      run: cpack
-
-    - name: Get package path
-      id: set-path
-      shell: powershell
-      run: |
-        $package = Get-ChildItem build/*.zip | Select-Object -First 1
-        echo "package-path=$($package.FullName)" >> $env:GITHUB_OUTPUT
-
-    - uses: actions/upload-artifact@v4
-      with:
-        name: windows-package
-        path: build/*.zip
-
   release:
-    needs: [build-linux, build-windows]
+    needs: [build-linux]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -264,18 +190,5 @@ jobs:
         asset_name: DeskUp-${{ github.ref_name }}-Linux.tgz
         asset_content_type: application/gzip
 
-    - name: Find Windows package file
-      id: find-windows-package
-      run: |
-        FILE=$(ls ./windows/*.zip | head -n 1)
-        echo "package_path=$FILE" >> $GITHUB_OUTPUT
-
-    - name: Upload Windows asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.find-windows-package.outputs.package_path }}
-        asset_name: DeskUp-${{ github.ref_name }}-Windows.zip
-        asset_content_type: application/zip
+    #- name: Find Windows package file
+        #Here will go downloading from another repo the prebuilt pak=ck for windows
