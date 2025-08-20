@@ -93,11 +93,6 @@ jobs:
         -S ${{ github.workspace }}
       shell: bash
 
-    - name: Build Project (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-
     - name: Setup MSYS2 (Windows)
       if: matrix.os == 'windows-latest'
       uses: msys2/setup-msys2@v2
@@ -108,7 +103,6 @@ jobs:
           mingw-w64-x86_64-toolchain
           wget
           make
-          mingw-w64-x86_64-ninja
           mingw-w64-x86_64-cmake
 
     - name: Build wxWidgets (Windows)
@@ -116,7 +110,6 @@ jobs:
       shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
-        export WX_INSTALL_DIR="/mingw64"
         wget https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.5/wxWidgets-3.2.5.tar.bz2
         tar xf wxWidgets-3.2.5.tar.bz2
         cd wxWidgets-3.2.5
@@ -139,37 +132,25 @@ jobs:
       shell: msys2 {0}
       run: |
         export PATH="/c/msys64/mingw64/bin:$PATH"
-        export WX_INSTALL_DIR="/mingw64"
-
-        # Debug: Check if wxWidgets was installed correctly
-        echo "Checking wxWidgets installation..."
-        find /mingw64 -name "*wx*" -type f | head -20
-        ls -la /mingw64/lib/ | grep -i wx
-          
         cmake -B build -S "$(cygpath -u "$GITHUB_WORKSPACE")" \
           -G "MinGW Makefiles" \
           -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
           -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-          -DCMAKE_PREFIX_PATH="$(cygpath -u "$HOME/wx-static")" \
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
           -DBUILD_TESTS=ON \
           -DBUILD_BENCHMARK=ON \
-          -Wno-dev
+          -DCMAKE_PREFIX_PATH=$HOME/wx-static
 
-    - name: Debug wxWidgets
-      if: matrix.os == 'windows-latest'
-      shell: msys2 {0}
-      run: |
-        ls -R $HOME/wx-static
+    - name: Build Project (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Build Project (Windows)
       if: matrix.os == 'windows-latest'
       shell: msys2 {0}
       run: |
-        export PATH="/mingw64/bin:$PATH"
-        cd build
-        make -j$(nproc)
-        
+        export PATH="/c/msys64/mingw64/bin:$PATH"
+        cmake --build build --parallel
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
