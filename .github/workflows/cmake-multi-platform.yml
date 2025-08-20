@@ -93,6 +93,11 @@ jobs:
         -S ${{ github.workspace }}
       shell: bash
 
+    - name: Build Project (Linux)
+      if: matrix.os == 'ubuntu-latest'
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+
     - name: Setup MSYS2 (Windows)
       if: matrix.os == 'windows-latest'
       uses: msys2/setup-msys2@v2
@@ -139,11 +144,6 @@ jobs:
           -DBUILD_TESTS=ON \
           -DBUILD_BENCHMARK=ON \
           -DCMAKE_PREFIX_PATH=$HOME/wx-static
-
-    - name: Build Project (Linux)
-      if: matrix.os == 'ubuntu-latest'
-      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Build Project (Windows)
       if: matrix.os == 'windows-latest'
