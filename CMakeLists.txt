@@ -64,6 +64,7 @@ include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/appImage.cmake)
 
 if(WIN32)
     add_library(wxWidgetsDeps INTERFACE)

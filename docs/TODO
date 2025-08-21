@@ -11,3 +11,11 @@
 [X] Fix workflows to make them compatible when they run, When run on linux to develop and when run on windows to develop
 
 [] Pack Linux as an AppImage
+
+[] Create icon images with distinct sizes
+
+[X] AppImage does not open when double clicking it 
+
+[] Add metadata to Appimage
+
+[] add wxwidget libraries automatically to appimage when building
