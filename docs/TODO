@@ -16,7 +16,15 @@
 
 [X] AppImage does not open when double clicking it 
 
-[] Add metadata to Appimage
+[] (Later in project) Add metadata to Appimage:
+    [] The template for the file is already inside appImage.cmake -> sign the appImage, add screenshots...
+        https://docs.appimage.org/packaging-guide/optional/signatures.html
+        https://www.gnupg.org/gph/es/manual/x154.html
+    [] When you enter a stable version (1.x.x) replace the string inside appImage.cmake called PROJECT_VERSION_SHORT inside the xml metadata file
+
+[] (Later in project) Distribute files correctly insdie AppDir:
+    [] the structure inside the AppDir should mirror the one on the system, even though the app will go to the system files
+
 
 [X] add wxwidget libraries automatically to appimage when building
 
