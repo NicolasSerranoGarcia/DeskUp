@@ -19,3 +19,5 @@
 [] Add metadata to Appimage
 
 [] add wxwidget libraries automatically to appimage when building
+
+[] .desktop has lots of functionalities. Look at usr/share/applications/libreoffice-math.desktop
