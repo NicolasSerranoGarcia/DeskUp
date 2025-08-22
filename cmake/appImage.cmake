@@ -23,6 +23,33 @@ if(GENERATE_APPIMAGE)
         file(MAKE_DIRECTORY ${APPIMAGE_DIR}/usr/share/metainfo)
         file(MAKE_DIRECTORY ${APPIMAGE_DIR}/usr/lib)
 
+#         #utils
+#         string(TIMESTAMP BUILD_DATE "%Y-%m-%d")
+#         string(REGEX REPLACE "\\.[0-9]+$" "" VERSION_STRING_SHORT "${PROJECT_VERSION_STRING}")
+
+#         #Add metainfo
+#         file(WRITE "${APPIMAGE_DIR}/usr/share/metainfo/DeskUp.appdata.xml" "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+# <component type=\"desktop-application\">
+# 	<id>DeskUp</id>
+# 	<metadata_license>MIT</metadata_license>
+# 	<project_license>MIT</project_license>
+# 	<name>DeskUp</name>
+# 	<summary>Keep your workspace organized</summary>
+# 	<description>
+# 		<p>DeskUp is a desktop application that lets you save and load your regular workspaces on the go.</p>
+# 	</description>
+# 	<launchable type=\"desktop-id\">DeskUp.desktop</launchable>
+# 	<url type=\"homepage\">https://linktr.ee/NicolasSerrano</url>
+# 	<screenshots>
+# 		<screenshot type=\"default\">
+# 			<image></image>
+# 		</screenshot>
+# 	</screenshots>
+# 	<provides>
+# 		<id>DeskUp.desktop</id>
+# 	</provides>
+# </component>")
+
         #move DeskUp executable to bin
         add_custom_command(TARGET DeskUp POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:DeskUp> ${APP_BIN_DIR}/DeskUp
