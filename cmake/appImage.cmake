@@ -8,6 +8,13 @@ if(GENERATE_APPIMAGE)
     if(UNIX AND NOT APPLE)
         message(STATUS "GENERATE_APPIMAGE is ON")
 
+        #downlaod linuxdeploy
+
+         add_custom_target(download-linuxdeploy ALL
+            COMMAND wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage 
+            COMMAND chmod +x linuxdeploy-x86_64.AppImage
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
         #set paths
         set(APPIMAGE_DIR "${CMAKE_BINARY_DIR}/AppDir")
         set(APP_BIN_DIR "${APPIMAGE_DIR}/usr/bin")
@@ -55,7 +62,7 @@ Terminal=false
 Type=Application
 Name=DeskUp
 Exec=AppRun
-Icon=DeskUp
+Icon=DeskUp-128x128
 Categories=Utility
 StartupWMClass=DeskUp;"
         )
@@ -160,7 +167,7 @@ echo \"\$APP_NAME installed successfully!\"")
 
         add_custom_target(appimage ALL
             COMMAND ${CMAKE_COMMAND} -E echo "Generating appImage..."
-            COMMAND appimagetool ${APPIMAGE_DIR} ./DeskUp-x86_64.AppImage
+            COMMAND ./linuxdeploy-x86_64.AppImage --appdir AppDir --executable AppDir/usr/bin/DeskUp --exclude-library=libc.so.* --exclude-library=libm.so.* --output appimage
             DEPENDS DeskUp
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )

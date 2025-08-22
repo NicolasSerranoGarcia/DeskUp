@@ -12,12 +12,16 @@
 
 [] Pack Linux as an AppImage
 
-[] Create icon images with distinct sizes
+[X] Create icon images with distinct sizes
 
 [X] AppImage does not open when double clicking it 
 
 [] Add metadata to Appimage
 
-[] add wxwidget libraries automatically to appimage when building
+[X] add wxwidget libraries automatically to appimage when building
 
-[] .desktop has lots of functionalities. Look at usr/share/applications/libreoffice-math.desktop
+[/] .desktop has lots of functionalities. Look at usr/share/applications/libreoffice-math.desktop
+
+[] Add a dialog that shows up when pressing uninstall on linux. For it, uninstall.sh should call an executable that uses wxWidgets to show a dialogue that asks to uninstall
+
+[] Optional: Add more actions in the linux .desktop for things like Add Workspace or Load Workspace

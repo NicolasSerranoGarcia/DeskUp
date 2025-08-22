@@ -161,9 +161,26 @@ jobs:
 
           #### How to run the application on Linux (Ubuntu):
 
-          ##### A. Using .tgz/.tar.gz
 
-          0. First of all, download the dependencies required by the project:
+          ##### A. Using AppImage
+
+          1. Download the AppImage file (at the bottom!) and give it permissions:
+
+          ```bash
+          chmod +x DeskUp-${{ github.ref_name }}-x86_64.AppImage
+          ```
+
+          2. Run the AppImage once:
+
+          ```bash
+          ./DeskUp-${{ github.ref_name }}-x86_64.AppImage
+          ```
+
+          The application will integrate automatically. You can delete the downloaded .AppImage if you want
+
+          ##### B. Using .tgz/.tar.gz
+
+          0. Download the dependencies required by the project:
 
           ```bash
           sudo apt-get update
@@ -197,25 +214,6 @@ jobs:
           chmod +x DeskUp
           ./DeskUp
           ```
-          
-          ##### B. Using AppImage
-
-          1. Download the AppImage file (at the bottom!) and give it permissions:
-
-          ```bash
-          chmod +x DeskUp-${{ github.ref_name }}-x86_64.AppImage
-          ```
-
-          (Optional) 2. Integrate it into the desktop applications:
-
-          ```bash
-          ```
-
-          3. Run DeskUp:
-
-          ```bash
-          ./DeskUp-${{ github.ref_name }}-x86_64.AppImage
-          ```
 
           🚀 **Release notes**
 
@@ -223,6 +221,22 @@ jobs:
 
         draft: false
         prerelease: false
+
+    - name: Find Linux package file (.AppImage)
+      id: find-package-appimage
+      run: |
+        FILE=$(ls ./linux/*.AppImage 2>/dev/null | head -n 1)
+        echo "package_path_appimage=$FILE" >> $GITHUB_OUTPUT
+
+    - name: Upload Linux asset (.AppImage)
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ steps.find-package-appimage.outputs.package_path_appimage }}
+        asset_name: DeskUp-${{ github.ref_name }}-x86_64.AppImage
+        asset_content_type: application/octet-stream
 
     - name: Find Linux package file (TGZ)
       id: find-package-tgz
@@ -239,22 +253,6 @@ jobs:
         asset_path: ${{ steps.find-package-tgz.outputs.package_path_tgz }}
         asset_name: DeskUp-${{ github.ref_name }}-Linux.tgz
         asset_content_type: application/gzip
-
-    - name: Find Linux package file
-      id: find-package-appimage
-      run: |
-        FILE=$(ls ./linux/*.AppImage 2>/dev/null | head -n 1)
-        echo "package_path_appimage=$FILE" >> $GITHUB_OUTPUT
-
-    - name: Upload Linux asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.find-package-appimage.outputs.package_path_appimage }}
-        asset_name: DeskUp-${{ github.ref_name }}-x86_64.AppImage
-        asset_content_type: application/octet-stream
 
     - name: Checkout Windows package repo
       uses: actions/checkout@v4
