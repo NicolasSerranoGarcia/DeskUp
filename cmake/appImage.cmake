@@ -171,6 +171,11 @@ echo \"\$APP_NAME installed successfully!\"")
             DEPENDS DeskUp
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
+
+        add_custom_target(delete-linuxdeploy ALL
+            COMMAND rm -f linuxdeploy-x86_64.AppImage
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
     else()
         message(STATUS "You cannot generate an AppImage on Windows!")
     endif()
