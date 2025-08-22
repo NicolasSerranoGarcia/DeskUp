@@ -122,6 +122,13 @@ chmod +x \"\$TARGET_DIR/\$APP_NAME.AppImage\"
 
 mkdir -p \$LOCAL_SHARE/applications
 mkdir -p \$LOCAL_SHARE/icons
+mkdir -p \$LOCAL_SHARE/icons/hicolor/32x32/apps
+mkdir -p \$LOCAL_SHARE/icons/hicolor/64x64/apps
+mkdir -p \$LOCAL_SHARE/icons/hicolor/48x48/apps
+mkdir -p \$LOCAL_SHARE/icons/hicolor/96x96/apps
+mkdir -p \$LOCAL_SHARE/icons/hicolor/128x128/apps
+mkdir -p \$LOCAL_SHARE/icons/hicolor/256x256/apps
+mkdir -p \$LOCAL_SHARE/icons/hicolor/512x512/apps
 
 cat > \$LOCAL_SHARE/applications/$APP_NAME.desktop <<EOL
 [Desktop Entry]

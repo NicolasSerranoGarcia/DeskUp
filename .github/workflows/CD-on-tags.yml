@@ -164,7 +164,7 @@ jobs:
 
           ##### A. Using AppImage
 
-          1. Download the AppImage file (at the bottom!) and give it permissions:
+          1. Download the .AppImage file (at the bottom!) and give it permissions:
 
           ```bash
           chmod +x DeskUp-${{ github.ref_name }}-x86_64.AppImage
