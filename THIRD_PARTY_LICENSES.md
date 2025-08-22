@@ -108,3 +108,55 @@ EXCEPTION NOTICE
    status of such modified files, you must delete this exception notice from
    such code and/or adjust the licensing conditions notice accordingly.
 ```
+
+---
+
+## AppImageTool
+
+**License**: GNU General Public License v2 or later (GPLv2-or-later)
+**Source**: https://github.com/AppImage/AppImageKit
+
+```
+AppImageTool - Tool to generate AppImages from AppDirs
+
+Copyright (C) 2011-2025 AppImageKit contributors
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with AppImageTool.  If not, see <https://www.gnu.org/licenses/>.
+```
+
+---
+
+## LinuxDeploy
+
+**License:** GNU General Public License v3 (GPLv3)  
+**Source:** https://github.com/linuxdeploy/linuxdeploy
+
+```
+LinuxDeploy - Deployment tool for Linux applications
+
+Copyright (C) 2015-2025 LinuxDeploy contributors
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with LinuxDeploy.  If not, see <https://www.gnu.org/licenses/>.
+```
