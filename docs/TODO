@@ -10,7 +10,7 @@
 
 [X] Fix workflows to make them compatible when they run, When run on linux to develop and when run on windows to develop
 
-[] Pack Linux as an AppImage
+[X] Pack Linux as an AppImage
 
 [X] Create icon images with distinct sizes
 
@@ -25,3 +25,8 @@
 [] Add a dialog that shows up when pressing uninstall on linux. For it, uninstall.sh should call an executable that uses wxWidgets to show a dialogue that asks to uninstall
 
 [] Optional: Add more actions in the linux .desktop for things like Add Workspace or Load Workspace
+
+[] when user installs a copy again, resolve the conflicts with the previous install --IMPORTANT
+    - Problems associated with this: Version control for end users: What happens when a user downloads an AppImage that has a newer version than the old one? What happens on the opposite case? Solution may e to create a built-in package manager. Installing and uninstalling already works. The problem comes when user downloads multiple releases or old ones...
+
+    [] for this: create dialogs that pop up when trying to install a release that's already installed. When downloading differing versions: 
