@@ -45,7 +45,7 @@ fi
 
 case \"\$1\" in
     --uninstall)
-        echo \"Desinstalando DeskUp...\"
+        echo \"Uninstalling DeskUp...\"
         \"\$HERE/uninstall.sh\"
         exit 0
         ;;
