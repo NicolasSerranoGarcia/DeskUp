@@ -33,9 +33,16 @@ FLAG=\"\$HOME/.local/share/applications/.deskup_installed\"
 
 if [ ! -f \"\$FLAG\" ]; then
     \"\$HERE/integrate.sh\"
-    echo integrate
     touch \"\$FLAG\"
 fi
+
+case \"\$1\" in
+    --uninstall)
+        echo \"Desinstalando DeskUp...\"
+        \"\$HERE/uninstall.sh\"
+        exit 0
+        ;;
+esac
 
 exec \"\$HERE/usr/bin/DeskUp\" \"\$@\"
 ")
@@ -53,8 +60,39 @@ Categories=Utility
 StartupWMClass=DeskUp;"
         )
 
-        #move the icon
-        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp.png DESTINATION ${APPIMAGE_DIR})
+          #create and write uninstall.sh
+        file(WRITE ${APPIMAGE_DIR}/uninstall.sh "#!/bin/bash
+TARGET_DIR=\"\$HOME/Applications\"
+APP_NAME=\"DeskUp\"
+LOCAL_SHARE=\"\$HOME/.local/share\"
+
+rm -f \$TARGET_DIR/\$APP_NAME.AppImage
+
+rm -f \$LOCAL_SHARE/icons/hicolor/32x32/apps/\$APP_NAME.png
+rm -f \$LOCAL_SHARE/icons/hicolor/64x64/apps/\$APP_NAME.png
+rm -f \$LOCAL_SHARE/icons/hicolor/48x48/apps/\$APP_NAME.png
+rm -f \$LOCAL_SHARE/icons/hicolor/96x96/apps/\$APP_NAME.png
+rm -f \$LOCAL_SHARE/icons/hicolor/128x128/apps/\$APP_NAME.png
+rm -f \$LOCAL_SHARE/icons/hicolor/256x256/apps/\$APP_NAME.png
+rm -f \$LOCAL_SHARE/icons/hicolor/512x512/apps/\$APP_NAME.png
+
+rm -f \$LOCAL_SHARE/applications/$APP_NAME.desktop
+
+rm -f \"\$LOCAL_SHARE/applications/.deskup_installed\"
+
+update-desktop-database ~/.local/share/applications >/dev/null 2>&1 || true")
+
+        execute_process(COMMAND chmod +x "${APPIMAGE_DIR}/uninstall.sh")
+
+        #move all the icons
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-16x16.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-32x32.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-48x48.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-64x64.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-96x96.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-128x128.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-256x256.png DESTINATION ${APPIMAGE_DIR})
+        file(COPY ${CMAKE_SOURCE_DIR}/assets/DeskUp-512x512.png DESTINATION ${APPIMAGE_DIR})
 
         #create and write integrate.sh
 
@@ -68,36 +106,55 @@ TARGET_DIR=\"\$HOME/Applications\"
 
 APPIMAGE_PATH=\"\${APPIMAGE:-\$\(readlink -f \"\$0\"\)}\"
 
+LOCAL_SHARE=\"\$HOME/.local/share\"
+
 mkdir -p \"\$TARGET_DIR\"
 
 cp \"\$APPIMAGE_PATH\" \"\$TARGET_DIR/\$APP_NAME.AppImage\"
 chmod +x \"\$TARGET_DIR/\$APP_NAME.AppImage\"
 
-mkdir -p ~/.local/share/applications
-mkdir -p ~/.local/share/icons
+mkdir -p \$LOCAL_SHARE/applications
+mkdir -p \$LOCAL_SHARE/icons
 
-cat > ~/.local/share/applications/$APP_NAME.desktop <<EOL
+cat > \$LOCAL_SHARE/applications/$APP_NAME.desktop <<EOL
 [Desktop Entry]
 Name=\$APP_NAME
-Comment=Keep your workspace organized
+GenericName=Window Manager
+GenericName[en]=Window Manager
+GenericName[es]=Gestor de Ventanas
 Exec=\$TARGET_DIR/\$APP_NAME.AppImage
-Icon=DeskUp
+Icon=\$APP_NAME
 Terminal=false
 Type=Application
+Keywords=Desktop;Window;Organize;Manager;
 Categories=Utility;
+Comment[en]=Keep your workspace organized
+Comment[es]=Organiza tu espacio de trabajo
+StartupNotify=true
+StartupWMClass=DeskUp
+
+Actions=Uninstall;
+[Desktop Action Uninstall]
+Name=Uninstall
+Name[en]=Uninstall
+Name[es]=Desinstalar
+Exec=\$TARGET_DIR/\$APP_NAME.AppImage --uninstall
 EOL
 
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/32x32/apps/\$APP_NAME.png
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/64x64/apps/\$APP_NAME.png
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/48x48/apps/\$APP_NAME.png
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/96x96/apps/\$APP_NAME.png
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/128x128/apps/\$APP_NAME.png
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/256x256/apps/\$APP_NAME.png
-cp \"\$APPDIR/DeskUp.png\" ~/.local/share/icons/hicolor/512x512/apps/\$APP_NAME.png
+chmod +x \$LOCAL_SHARE/applications/$APP_NAME.desktop
 
-update-desktop-database ~/.local/share/applications >/dev/null 2>&1 || true
 
-echo \"DeskUp installed successfully!\"")
+cp \"\$APPDIR/\$APP_NAME-32x32.png\" \$LOCAL_SHARE/icons/hicolor/32x32/apps/\$APP_NAME.png
+cp \"\$APPDIR/\$APP_NAME-64x64.png\" \$LOCAL_SHARE/icons/hicolor/64x64/apps/\$APP_NAME.png
+cp \"\$APPDIR/\$APP_NAME-48x48.png\" \$LOCAL_SHARE/icons/hicolor/48x48/apps/\$APP_NAME.png
+cp \"\$APPDIR/\$APP_NAME-96x96.png\" \$LOCAL_SHARE/icons/hicolor/96x96/apps/\$APP_NAME.png
+cp \"\$APPDIR/\$APP_NAME-128x128.png\" \$LOCAL_SHARE/icons/hicolor/128x128/apps/\$APP_NAME.png
+cp \"\$APPDIR/\$APP_NAME-256x256.png\" \$LOCAL_SHARE/icons/hicolor/256x256/apps/\$APP_NAME.png
+cp \"\$APPDIR/\$APP_NAME-512x512.png\" \$LOCAL_SHARE/icons/hicolor/512x512/apps/\$APP_NAME.png
+
+update-desktop-database \$LOCAL_SHARE/applications >/dev/null 2>&1 || true
+
+echo \"\$APP_NAME installed successfully!\"")
 
         execute_process(COMMAND chmod +x "${APPIMAGE_DIR}/integrate.sh")
 
