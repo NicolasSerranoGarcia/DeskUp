@@ -135,7 +135,7 @@ jobs:
         body: |
           ### 🔒 Windows Security Notice
 
-          ⚠️ When running the \`.exe\` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
+          ⚠️ When running the `.exe` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
 
           This application is safe to use and does **not** contain any malware. The warning appears simply because the executable is new and unsigned.
 
@@ -143,7 +143,7 @@ jobs:
 
           First, download the zip file and decompress it
 
-          1. After launching the \`.exe\`, if you see the blue "Windows protected your PC" screen:
+          1. After launching the `.exe`, if you see the blue "Windows protected your PC" screen:
             - Click on **"More info"**
             - Then click on **"Run anyway"**
 
@@ -151,9 +151,9 @@ jobs:
           <img width="367" height="323" alt="image" src="./assets/windows-security-screen.png" />
           </p>
 
-          2. Make sure all \`.dll\` files remain in the same folder as the \`.exe\`.
+          2. Make sure all `.dll` files remain in the same folder as the `.exe`.
 
-          3. Search for DeskUp.exe and run it!
+          3. Search for `DeskUp.exe` and run it!
           
           > Note: You do **not** need to install anything else — all dependencies are included.
 
