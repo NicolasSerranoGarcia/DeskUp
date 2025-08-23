@@ -102,6 +102,7 @@ LOCAL_SHARE=\"\$HOME/.local/share\"
 
 rm -f \$TARGET_DIR/\$APP_NAME.AppImage
 
+rm -f \$LOCAL_SHARE/icons/hicolor/16x16/apps/\$APP_NAME.png
 rm -f \$LOCAL_SHARE/icons/hicolor/32x32/apps/\$APP_NAME.png
 rm -f \$LOCAL_SHARE/icons/hicolor/64x64/apps/\$APP_NAME.png
 rm -f \$LOCAL_SHARE/icons/hicolor/48x48/apps/\$APP_NAME.png
@@ -148,7 +149,7 @@ cp \"\$APPIMAGE_PATH\" \"\$TARGET_DIR/\$APP_NAME.AppImage\"
 chmod +x \"\$TARGET_DIR/\$APP_NAME.AppImage\"
 
 mkdir -p \$LOCAL_SHARE/applications
-mkdir -p \$LOCAL_SHARE/icons
+mkdir -p \$LOCAL_SHARE/icons/hicolor/16x16/apps
 mkdir -p \$LOCAL_SHARE/icons/hicolor/32x32/apps
 mkdir -p \$LOCAL_SHARE/icons/hicolor/64x64/apps
 mkdir -p \$LOCAL_SHARE/icons/hicolor/48x48/apps
@@ -185,6 +186,7 @@ EOL
 chmod +x \$LOCAL_SHARE/applications/$APP_NAME.desktop
 
 
+cp \"\$APPDIR/\$APP_NAME-32x32.png\" \$LOCAL_SHARE/icons/hicolor/16x16/apps/\$APP_NAME.png
 cp \"\$APPDIR/\$APP_NAME-32x32.png\" \$LOCAL_SHARE/icons/hicolor/32x32/apps/\$APP_NAME.png
 cp \"\$APPDIR/\$APP_NAME-64x64.png\" \$LOCAL_SHARE/icons/hicolor/64x64/apps/\$APP_NAME.png
 cp \"\$APPDIR/\$APP_NAME-48x48.png\" \$LOCAL_SHARE/icons/hicolor/48x48/apps/\$APP_NAME.png
