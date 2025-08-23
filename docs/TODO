@@ -38,3 +38,5 @@
     - Problems associated with this: Version control for end users: What happens when a user downloads an AppImage that has a newer version than the old one? What happens on the opposite case? Solution may e to create a built-in package manager. Installing and uninstalling already works. The problem comes when user downloads multiple releases or old ones...
 
     [] for this: create dialogs that pop up when trying to install a release that's already installed. When downloading differing versions: 
+
+[] maybe take out .tgz from the releases
