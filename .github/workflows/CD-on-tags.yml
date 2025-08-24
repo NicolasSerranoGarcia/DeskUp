@@ -14,7 +14,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     outputs:
-      package-path-tgz: ${{ steps.set-path-tgz.outputs.package-path-tgz }}
+      # package-path-tgz: ${{ steps.set-path-tgz.outputs.package-path-tgz }}
       package-path-appimage: ${{ steps.set-path-appimage.outputs.package-path-appimage }}
     steps:
     - uses: actions/checkout@v4
@@ -66,18 +66,18 @@ jobs:
       working-directory: build
       run: cpack
 
-    - name: Get package path (TGZ)
-      id: set-path-tgz
-      run: |
-        PACKAGE_FILE_TGZ=$(ls build/*.tgz build/*.tar.gz 2>/dev/null || echo "")
-        echo "package-path-tgz=$PACKAGE_FILE_TGZ" >> $GITHUB_OUTPUT
+    # - name: Get package path (TGZ)
+    #   id: set-path-tgz
+    #   run: |
+    #     PACKAGE_FILE_TGZ=$(ls build/*.tgz build/*.tar.gz 2>/dev/null || echo "")
+    #     echo "package-path-tgz=$PACKAGE_FILE_TGZ" >> $GITHUB_OUTPUT
 
-    - uses: actions/upload-artifact@v4
-      with:
-        name: linux-package-tgz
-        path: |
-          build/*.tgz
-          build/*.tar.gz
+    # - uses: actions/upload-artifact@v4
+    #   with:
+    #     name: linux-package-tgz
+    #     path: |
+    #       build/*.tgz
+    #       build/*.tar.gz
 
     - name: Get package path (AppImage)
       id: set-path-appimage
@@ -100,11 +100,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Download Linux package (TGZ)
-      uses: actions/download-artifact@v5
-      with:
-        name: linux-package-tgz
-        path: ./linux
+    # - name: Download Linux package (TGZ)
+    #   uses: actions/download-artifact@v5
+    #   with:
+    #     name: linux-package-tgz
+    #     path: ./linux
 
     - name: Download Linux package (AppImage)
       uses: actions/download-artifact@v5
@@ -133,6 +133,9 @@ jobs:
         tag_name: ${{ github.ref_name }}
         release_name: Release ${{ github.ref_name }}
         body: |
+          # 🛑 Featureless release
+          Please note that this release is used to test for integration and compatibility. If you are reading this, I highly encourage you to download the release for you OS and try to open the app. Any feedback is highly appreciated
+
           ### 🔒 Windows Security Notice
 
           ⚠️ When running the `.exe` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
@@ -159,10 +162,7 @@ jobs:
 
           ---
 
-          #### How to run the application on Linux (Ubuntu):
-
-
-          ##### A. Using AppImage
+          #### How to run the application on Linux:
 
           1. Download the .AppImage file (at the bottom!) and give it permissions:
 
@@ -178,7 +178,7 @@ jobs:
 
           The application will integrate automatically. You can delete the downloaded .AppImage if you want
 
-          ##### B. Using .tgz/.tar.gz
+          <!--  ##### B. Using .tgz/.tar.gz
 
           0. Download the dependencies required by the project:
 
@@ -213,7 +213,7 @@ jobs:
           cd DeskUp-${{ github.ref_name }}-Linux/bin
           chmod +x DeskUp
           ./DeskUp
-          ```
+          ``` -->
 
           🚀 **Release notes**
 
@@ -238,21 +238,21 @@ jobs:
         asset_name: DeskUp-${{ github.ref_name }}-x86_64.AppImage
         asset_content_type: application/octet-stream
 
-    - name: Find Linux package file (TGZ)
-      id: find-package-tgz
-      run: |
-        FILE=$(ls ./linux/*.tgz ./linux/*.tar.gz 2>/dev/null | head -n 1)
-        echo "package_path_tgz=$FILE" >> $GITHUB_OUTPUT
+    # - name: Find Linux package file (TGZ)
+    #   id: find-package-tgz
+    #   run: |
+    #     FILE=$(ls ./linux/*.tgz ./linux/*.tar.gz 2>/dev/null | head -n 1)
+    #     echo "package_path_tgz=$FILE" >> $GITHUB_OUTPUT
 
-    - name: Upload Linux asset (TGZ)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.find-package-tgz.outputs.package_path_tgz }}
-        asset_name: DeskUp-${{ github.ref_name }}-Linux.tgz
-        asset_content_type: application/gzip
+    # - name: Upload Linux asset (TGZ)
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ${{ steps.find-package-tgz.outputs.package_path_tgz }}
+    #     asset_name: DeskUp-${{ github.ref_name }}-Linux.tgz
+    #     asset_content_type: application/gzip
 
     - name: Checkout Windows package repo
       uses: actions/checkout@v4
