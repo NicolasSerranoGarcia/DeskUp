@@ -134,7 +134,7 @@ jobs:
         release_name: Release ${{ github.ref_name }}
         body: |
           # 🛑 Featureless release
-          Please note that this release is used to test for integration and compatibility. If you are reading this, I highly encourage you to download the release for you OS and try to open the app. Any feedback is highly appreciated
+          Please note that this release is used to test for integration and compatibility. If you are reading this, I highly encourage you to download the release for your OS and try to open the app. Any feedback is highly appreciated!
 
           ### 🔒 Windows Security Notice
 
