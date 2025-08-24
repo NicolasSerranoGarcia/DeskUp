@@ -18,7 +18,7 @@
 - [Getting Started](#getting-started)
   - [Windows](#windows)
   - [Linux](#linux)
-- [Roadmap & Future Features](#future-features)
+- [Future Features](#future-features)
 - [Support This Project](#support)
 ---
 
