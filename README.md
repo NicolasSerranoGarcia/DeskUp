@@ -39,6 +39,8 @@ Whether you work with multiple terminals, editors, or applications, DeskUp helps
 - **Packaging & Distribution:** [AppImage](https://appimage.org/) + [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy)  
 - **CI/CD:** [GitHub Actions](https://github.com/features/actions)  
 - **Documentation:** [Doxygen](https://www.doxygen.nl/)  
+- **Testing:** [Google Test](https://github.com/google/googletest)  
+- **Benchmarking:** [Google Benchmark](https://github.com/google/benchmark)
 
 ### Key Features <a name="key-features"></a>
 
