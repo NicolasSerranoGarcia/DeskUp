@@ -71,7 +71,7 @@ Follow the instructions below to run **DeskUp** locally depending on your operat
 ### 🐧 Linux <a name="linux"></a>
 
 #### Prerequisites
-- x86_64 architecture  
+- `x86_64` architecture  
 - Tested on Ubuntu 20.04+, but should work on most distributions released after ~2018
 
 #### Setup
