@@ -43,15 +43,19 @@
 [] when user installs a copy again, resolve the conflicts with the previous install --IMPORTANT
     - Problems associated with this: Version control for end users: What happens when a user downloads an AppImage that has a newer version than the old one? What happens on the opposite case? Solution may e to create a built-in package manager. Installing and uninstalling already works. The problem comes when user downloads multiple releases or old ones...
 
-    [] for this: create dialogs that pop up when trying to install a release that's already installed. When downloading differing versions: 
+    [] for this: create dialogs that pop up when trying to install a release that's already installed. When downloading differing versions, ask the user what to do
 
 [X] maybe take out .tgz from the releases
 
 # MVP
 
 ## 1. Windowing backend structure:
-   [] X11 and WIN32 API need to be used inside the project. 
-   [] File/Folder structure for support of the backend needs to be added, for CMake and for the code itself. here will go an explanation of how to implement the backend
+
+   [X] X11 and WIN32 API need to be used inside the project. 
+   
+   [X] File/Folder structure for support of the backend needs to be added, for CMake and for the code itself.
+   
+   [] create a simple diagram that explains the backend workflow using all the structs
 
 
 ## <1> 2. Use backend inside the project: files and connecting the backend with them
@@ -62,6 +66,4 @@
 
    [] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
 
-   [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good to connect the backend with this information.
-
-   
+   [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
