@@ -43,3 +43,7 @@ unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
     return height;
 }
 
+std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this){
+
+}
+
