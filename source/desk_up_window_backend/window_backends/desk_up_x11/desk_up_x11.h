@@ -22,7 +22,7 @@ DU_WindowBootStrap x11WindowDevice = {
 
 
 DU_WindowDevice * X11_CreateDevice(void);
-int X11_isAvailable(void);
+bool X11_isAvailable(DU_WindowDevice * device);
 
 unsigned int X11_getWindowHeight(DU_WindowDevice * _this);
 

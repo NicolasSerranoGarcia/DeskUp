@@ -1,10 +1,10 @@
 #include "desk_up_x11.h"
 
-int X11_isAvailable(void){
+bool X11_isAvailable(DU_WindowDevice * device){
     //X11 returns nullptr when it cannot stablish a connection with the user display
-    Display * display = XOpenDisplay(NULL);
+    Display * display = ((windowData *) device->internalData)->display;
 
-    return (display == nullptr) ? 0 : 1; 
+    return display != nullptr;
 }
 
 DU_WindowDevice * X11_CreateDevice(void){
