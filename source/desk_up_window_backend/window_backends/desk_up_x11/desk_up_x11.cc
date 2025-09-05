@@ -61,6 +61,66 @@ unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
     return height;
 }
 
+unsigned int X11_getWindowWidth(DU_WindowDevice * _this){
+
+    windowData * data = (windowData *) _this->internalData;
+
+    if(data->display == nullptr || !data->w){
+        throw std::invalid_argument("Invalid arguments!");
+    }
+
+    XWindowAttributes * returnAttributes;
+
+    //loads returnAttributes with width
+    if(!XGetWindowAttributes(data->display, data->w, returnAttributes)){
+        throw std::runtime_error("X11 could not return the window width!");
+    }
+
+    const unsigned int width = returnAttributes->width;
+
+    return width;
+}
+
+unsigned int X11_getWindowXPos(DU_WindowDevice * _this){
+
+    windowData * data = (windowData *) _this->internalData;
+
+    if(data->display == nullptr || !data->w){
+        throw std::invalid_argument("Invalid arguments!");
+    }
+
+    XWindowAttributes * returnAttributes;
+
+    //loads returnAttributes with x
+    if(!XGetWindowAttributes(data->display, data->w, returnAttributes)){
+        throw std::runtime_error("X11 could not return the window x position!");
+    }
+
+    const unsigned int x = returnAttributes->x;
+
+    return x;
+}
+
+unsigned int X11_getWindowYPos(DU_WindowDevice * _this){
+
+    windowData * data = (windowData *) _this->internalData;
+
+    if(data->display == nullptr || !data->w){
+        throw std::invalid_argument("Invalid arguments!");
+    }
+
+    XWindowAttributes * returnAttributes;
+
+    //loads returnAttributes with y
+    if(!XGetWindowAttributes(data->display, data->w, returnAttributes)){
+        throw std::runtime_error("X11 could not return the window y position!");
+    }
+
+    const unsigned int y = returnAttributes->y;
+
+    return y;
+}
+
 std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this){
 
 }

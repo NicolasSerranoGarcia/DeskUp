@@ -30,6 +30,10 @@ bool X11_isAvailable(DU_WindowDevice * device);
 int X11_errorHandlerNonFatal(Display * display, XErrorEvent * event);
 
 unsigned int X11_getWindowHeight(DU_WindowDevice * _this);
+unsigned int X11_getWindowWidth(DU_WindowDevice * _this);
+unsigned int X11_getWindowXPos(DU_WindowDevice * _this);
+unsigned int X11_getWindowYPos(DU_WindowDevice * _this);
+
 std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this);
 
 
