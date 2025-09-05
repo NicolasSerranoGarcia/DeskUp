@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string>
 
-const char * getSystemErrorMessageWindows(DWORD error, const char contextMessage[] = "Error: "){
+const char * getSystemErrorMessageWindows(DWORD error, const char contextMessage[]){
     
     if(!error){
         return "unknown error passed as parameter!";
