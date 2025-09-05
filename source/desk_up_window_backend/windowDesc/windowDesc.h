@@ -7,6 +7,10 @@
 typedef struct windowDesc{
     int x,y,w,h;
     std::string pathToExec;
+
+    bool operator!() const {
+        return !x && !y && !w && !h;
+    }
 };
 
 #endif
