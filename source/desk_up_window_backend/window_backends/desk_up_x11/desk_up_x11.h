@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 #include "window_global.h"
 #include "windowDesc.h"
@@ -25,6 +26,8 @@ DU_WindowBootStrap x11WindowDevice = {
 
 DU_WindowDevice * X11_CreateDevice(void);
 bool X11_isAvailable(DU_WindowDevice * device);
+
+int X11_errorHandlerNonFatal(Display * display, XErrorEvent * event);
 
 unsigned int X11_getWindowHeight(DU_WindowDevice * _this);
 std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this);

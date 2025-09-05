@@ -7,8 +7,25 @@ bool X11_isAvailable(DU_WindowDevice * device){
     return display != nullptr;
 }
 
+//this is a callback
+int X11_errorHandlerNonFatal(Display * display, XErrorEvent * error){
+
+    char * message;
+    int messageLength = 500;
+
+    XGetErrorText(error->display, error->error_code, message, messageLength);
+
+    std::cout << "An error occurred in the display: " << error->display << "."
+    << "Error: "<< message << "The involved resource: " << error->resourceid
+    << std::endl;
+
+    return 0;
+}
+
 DU_WindowDevice * X11_CreateDevice(void){
-    //set all the functions of a DU_windowDevice variable to the functions of x11. Also set internalData to 
+
+    //set the error handler
+    XSetErrorHandler(X11_errorHandlerNonFatal);
 
     DU_WindowDevice * device = nullptr;
 
@@ -22,6 +39,7 @@ DU_WindowDevice * X11_CreateDevice(void){
     
     return device;
 }
+
 
 unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
 
