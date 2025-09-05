@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <vector>
 #include <filesystem>
+#include <stdlib.h>
 
 #include "window_global.h"
 #include "windowDesc.h"
@@ -30,7 +31,7 @@ unsigned int WIN_getWindowWidth(DU_WindowDevice * _this);
 unsigned int WIN_getWindowXPos(DU_WindowDevice * _this);
 unsigned int WIN_getWindowYPos(DU_WindowDevice * _this);
 
-std::filesystem::path WIN_GetPathFromWindow(DU_WindowDevice * _this);
+char * WIN_GetPathFromWindow(DU_WindowDevice * _this);
 
 std::vector<windowDesc> WIN_getAllWindows(DU_WindowDevice * _this);
 
