@@ -22,21 +22,30 @@ int X11_errorHandlerNonFatal(Display * display, XErrorEvent * error){
     return 0;
 }
 
+//this is the callback for fatal errors
+void X11_DisplayFatalMessage(Display *, void *){
+
+    std::cout << "Connection with the server lost!" << std::endl;
+
+    std::exit(1);
+    return;
+}
+
 DU_WindowDevice * X11_CreateDevice(void){
 
-    //set the error handler
-    XSetErrorHandler(X11_errorHandlerNonFatal);
-
     DU_WindowDevice * device = nullptr;
-
+    
     device->getWindowHeight = X11_getWindowHeight;
     device->isAvailable = X11_isAvailable;
-
+    
     windowData * data;
     data->display = XOpenDisplay(NULL);
-
+    
     device->internalData = data;
     
+    //set the error handler
+    XSetErrorHandler(X11_errorHandlerNonFatal);
+    XSetIOErrorExitHandler(data->display, X11_DisplayFatalMessage, (void *) 0);
     return device;
 }
 
@@ -122,6 +131,10 @@ unsigned int X11_getWindowYPos(DU_WindowDevice * _this){
 }
 
 std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this){
+
+    std::vector<windowDesc> windows;
+
+    Xwindows
 
 }
 
