@@ -15,7 +15,7 @@
 typedef struct windowData{
     Display * display;
     Window w;
-    Screen screen;
+    Screen * screen;
 };
 
 DU_WindowBootStrap x11WindowDevice = {
