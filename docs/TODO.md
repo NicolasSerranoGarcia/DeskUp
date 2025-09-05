@@ -67,3 +67,6 @@
    [] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
 
    [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
+
+[] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
+    underscores (X11_) only for external API's or libraries
