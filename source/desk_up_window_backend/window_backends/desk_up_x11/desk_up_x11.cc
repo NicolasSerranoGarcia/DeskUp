@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string>
 
-bool X11_isAvailable(DU_WindowDevice * device){
+bool X11_isAvailable(DU_windowDevice * device){
     
     if(!device) return false;
     
@@ -38,9 +38,9 @@ void X11_DisplayFatalMessage(Display *, void *){
     return;
 }
 
-DU_WindowDevice * X11_CreateDevice(void){
+DU_windowDevice * X11_createDevice(void){
 
-    DU_WindowDevice * device = nullptr;
+    DU_windowDevice * device = nullptr;
     
     device->getWindowHeight = X11_getWindowHeight;
     device->isAvailable = X11_isAvailable;
@@ -73,7 +73,7 @@ DU_WindowDevice * X11_CreateDevice(void){
 }
 
 
-unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
+unsigned int X11_getWindowHeight(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -93,7 +93,7 @@ unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
     return height;
 }
 
-unsigned int X11_getWindowWidth(DU_WindowDevice * _this){
+unsigned int X11_getWindowWidth(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -113,7 +113,7 @@ unsigned int X11_getWindowWidth(DU_WindowDevice * _this){
     return width;
 }
 
-unsigned int X11_getWindowXPos(DU_WindowDevice * _this){
+unsigned int X11_getWindowXPos(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -133,7 +133,7 @@ unsigned int X11_getWindowXPos(DU_WindowDevice * _this){
     return x;
 }
 
-unsigned int X11_getWindowYPos(DU_WindowDevice * _this){
+unsigned int X11_getWindowYPos(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -153,7 +153,7 @@ unsigned int X11_getWindowYPos(DU_WindowDevice * _this){
     return y;
 }
 
-char * X11_getPathFromWindow(DU_WindowDevice * _this){
+char * X11_getPathFromWindow(DU_windowDevice * _this){
     
     windowData * data = (windowData *)_this->internalData;
 
@@ -210,7 +210,7 @@ char * X11_getPathFromWindow(DU_WindowDevice * _this){
     return buff;
 }
 
-windowDesc X11_getWindowDescFromWindow(DU_WindowDevice * _this){
+windowDesc X11_getWindowDescFromWindow(DU_windowDevice * _this){
     windowDesc newWindow;
 
     try{
@@ -230,7 +230,7 @@ windowDesc X11_getWindowDescFromWindow(DU_WindowDevice * _this){
     return newWindow;
 }
 
-std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this){
+std::vector<windowDesc> X11_getAllWindows(DU_windowDevice * _this){
 
     windowData * data = ((windowData *)_this->internalData);
 

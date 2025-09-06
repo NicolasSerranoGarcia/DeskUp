@@ -2,7 +2,7 @@
 
 #include "backend_utils.h"
 
-bool WIN_isAvailable(DU_WindowDevice *){
+bool WIN_isAvailable(DU_windowDevice *){
     #ifdef _WIN32
         return true;
     #endif
@@ -10,10 +10,10 @@ bool WIN_isAvailable(DU_WindowDevice *){
     return false;
 }
 
-DU_WindowDevice * WIN_CreateDevice(void){
+DU_windowDevice * WIN_CreateDevice(void){
     //set all the functions of a DU_windowDevice variable to the functions of x11. Also set internalData to 
 
-    DU_WindowDevice * device = nullptr;
+    DU_windowDevice * device = nullptr;
 
     device->getWindowHeight = WIN_getWindowHeight;
     device->isAvailable = WIN_isAvailable;
@@ -25,7 +25,7 @@ DU_WindowDevice * WIN_CreateDevice(void){
     return device;
 }
 
-unsigned int WIN_getWindowHeight(DU_WindowDevice * _this){
+unsigned int WIN_getWindowHeight(DU_windowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -50,7 +50,7 @@ unsigned int WIN_getWindowHeight(DU_WindowDevice * _this){
     return height;
 }
 
-unsigned int WIN_getWindowWidth(DU_WindowDevice * _this){
+unsigned int WIN_getWindowWidth(DU_windowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -75,7 +75,7 @@ unsigned int WIN_getWindowWidth(DU_WindowDevice * _this){
     return width;
 }
 
-unsigned int WIN_getWindowXPos(DU_WindowDevice * _this){
+unsigned int WIN_getWindowXPos(DU_windowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -99,7 +99,7 @@ unsigned int WIN_getWindowXPos(DU_WindowDevice * _this){
     return x;
 }
 
-unsigned int WIN_getWindowYPos(DU_WindowDevice * _this){
+unsigned int WIN_getWindowYPos(DU_windowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -124,7 +124,7 @@ unsigned int WIN_getWindowYPos(DU_WindowDevice * _this){
 }
 
 //every os works with different types for interpreting paths, so work with std 
-char * WIN_GetPathFromWindow(DU_WindowDevice * _this){
+char * WIN_GetPathFromWindow(DU_windowDevice * _this){
 
     const windowData * data = (windowData *) _this->internalData;
     
@@ -180,11 +180,11 @@ char * WIN_GetPathFromWindow(DU_WindowDevice * _this){
 
 BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
 
-    //recover the parameters once we are inside. We can now use both DU_WindowDevice and fill the vector with windows
-    std::pair<std::vector<windowDesc> *, DU_WindowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DU_WindowDevice *> *) reinterpret_cast<void *>(lparam);
+    //recover the parameters once we are inside. We can now use both DU_windowDevice and fill the vector with windows
+    std::pair<std::vector<windowDesc> *, DU_windowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DU_windowDevice *> *) reinterpret_cast<void *>(lparam);
 
     std::vector<windowDesc> * windows = parameters->first;
-    DU_WindowDevice * dev = parameters->second;
+    DU_windowDevice * dev = parameters->second;
 
     if(windows == nullptr){
         std::cout << "The vector of windows could not be passed to the callback!" << std::endl;
@@ -229,18 +229,18 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
     return TRUE;
 }
 
-std::vector<windowDesc> WIN_getAllWindows(DU_WindowDevice * _this){
+std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this){
     
     std::vector<windowDesc> windows;
 
-    std::pair<std::vector<windowDesc> *, DU_WindowDevice *> * callbackParameters;
+    std::pair<std::vector<windowDesc> *, DU_windowDevice *> * callbackParameters;
 
     callbackParameters->first = &windows;
     callbackParameters->second = _this;
     
     HDESK desktop = NULL;
 
-    //we need to "fit" both the vector of the windows and the own DU_WindowDevice inside the callback inside LPARAM
+    //we need to "fit" both the vector of the windows and the own DU_windowDevice inside the callback inside LPARAM
     if(!EnumDesktopWindows(desktop, /*callback*/ WIN_createAndSaveWindow, reinterpret_cast<LPARAM>((void *) &callbackParameters))){
         DWORD error = GetLastError();
         const char * errorMessage = getSystemErrorMessageWindows(error);

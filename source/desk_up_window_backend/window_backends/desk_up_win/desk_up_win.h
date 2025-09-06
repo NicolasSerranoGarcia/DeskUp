@@ -23,16 +23,16 @@ DU_WindowBootStrap winWindowDevice = {
 };
 
 
-DU_WindowDevice * WIN_CreateDevice(void);
-bool WIN_isAvailable(DU_WindowDevice *);
+DU_windowDevice * WIN_CreateDevice(void);
+bool WIN_isAvailable(DU_windowDevice *);
 
-unsigned int WIN_getWindowHeight(DU_WindowDevice * _this);
-unsigned int WIN_getWindowWidth(DU_WindowDevice * _this);
-unsigned int WIN_getWindowXPos(DU_WindowDevice * _this);
-unsigned int WIN_getWindowYPos(DU_WindowDevice * _this);
+unsigned int WIN_getWindowHeight(DU_windowDevice * _this);
+unsigned int WIN_getWindowWidth(DU_windowDevice * _this);
+unsigned int WIN_getWindowXPos(DU_windowDevice * _this);
+unsigned int WIN_getWindowYPos(DU_windowDevice * _this);
 
-char * WIN_GetPathFromWindow(DU_WindowDevice * _this);
+char * WIN_GetPathFromWindow(DU_windowDevice * _this);
 
-std::vector<windowDesc> WIN_getAllWindows(DU_WindowDevice * _this);
+std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this);
 
 #endif
