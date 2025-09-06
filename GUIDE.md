@@ -1,5 +1,5 @@
 > [!TIP]
-> If you are planning to get involved with the source code, here is a list of utils and instructions you can take a lot at
+> If you are planning to get involved with the source code, here is a list of utils and instructions you can take a look at
 
 
 # 🛠️ Project Build & Workflow Guide
