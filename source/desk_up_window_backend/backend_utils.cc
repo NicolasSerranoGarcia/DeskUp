@@ -1,7 +1,10 @@
 #include "backend_utils.h"
 
+#ifdef _WIN32
+
 #include <stdlib.h>
 #include <string>
+
 
 const char * getSystemErrorMessageWindows(DWORD error, const char contextMessage[]){
     
@@ -28,3 +31,5 @@ const char * getSystemErrorMessageWindows(DWORD error, const char contextMessage
 
     return errMessage.c_str();
 }
+
+#endif
