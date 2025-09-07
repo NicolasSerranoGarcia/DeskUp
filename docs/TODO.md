@@ -70,3 +70,7 @@
 
 [] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
     underscores (X11_) only for external API's or libraries
+
+[] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
+
+[] in x11 and win backends, getAllWindows functions need to set the name of the window
