@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 #include "windowDesc.h"
+#include "desk_up_win.h"
+
+const char * DESKUPDIR = "";
 
 typedef struct DU_windowDevice{
     //here goes all the generic functions that all the backends have
@@ -12,11 +15,28 @@ typedef struct DU_windowDevice{
     unsigned int (*getWindowXPos)(DU_windowDevice * _this);
     unsigned int (*getWindowYPos)(DU_windowDevice * _this);
     
-    std::vector<windowDesc> (*getAllWindows)(void);
-
-    bool (*isAvailable)(DU_windowDevice * _this);
+    std::vector<windowDesc> (*getAllWindows)(DU_windowDevice * _this);
 
     void * internalData;
+};
+
+typedef struct DU_isAvailable{
+    const char * name;
+    bool (*isAvailable)(void);
+};
+
+bool WIN_isAvailable(){
+    #ifdef _WIN32
+        return true;
+    #endif
+    
+    return false;
+}
+
+
+DU_isAvailable win = {
+    "win",
+    WIN_isAvailable
 };
 
 typedef struct DU_WindowBootStrap{
@@ -26,35 +46,23 @@ typedef struct DU_WindowBootStrap{
 
 DU_windowDevice * current_window_backend;
 
-extern DU_WindowBootStrap x11WindowDevice;
 extern DU_WindowBootStrap winWindowDevice;
 
-DU_WindowBootStrap allWindowBootStraps[] = {
-    x11WindowDevice,
-    winWindowDevice
-};
-
-const unsigned int allWindowBootStrapsLength = 2; 
-
-//function to initialize the backend and choose the correct device
+//function to initialize the backend and choose the correct device. Previously used x11 and Windows, but now only connects windows
 int DU_Init(){
-    for(unsigned int i = 0; i < allWindowBootStrapsLength; i++){
-        DU_windowDevice * dev = allWindowBootStraps[i].createDevice();
-        const char * devName = allWindowBootStraps[i].name;
-
-        if(!dev || !dev->isAvailable(dev)){
-            std::cout << devName << "is not an available backend on this system: skipping..." << std::endl;
-            continue;
-        }
-
-        current_window_backend = dev;
-        std::cout << devName << "successfully connected as a backend!" << std::endl;
         
-        return 1;
+    const char * devName = win.name;
+    if(!win.isAvailable()){
+        std::cout << devName << "is not an available backend on this system: Exiting" << std::endl;
+        return 0;
     }
+    
+    DU_windowDevice * dev = winWindowDevice.createDevice();
 
-    std::cout << "No backends available!" << std::endl;
-    return 0;
+    current_window_backend = dev;
+    std::cout << devName << "successfully connected as a backend!" << std::endl;
+    
+    return 1;
 }
 
 

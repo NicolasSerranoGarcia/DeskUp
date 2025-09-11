@@ -1,21 +1,26 @@
 #include "desk_up_win.h"
 
-#include "backend_utils.h"
+#include <string>
+#include <cstdlib>
 
-bool WIN_isAvailable(DU_windowDevice *){
-    #ifdef _WIN32
-        return true;
-    #endif
-    
-    return false;
-}
+#include "backend_utils.h"
 
 DU_windowDevice * WIN_CreateDevice(void){
     //set all the functions of a DU_windowDevice variable to the functions of x11. Also set internalData to 
 
+    std::string workspacePath = std::getenv("APPDATA");
+
+    workspacePath += "DeskUp";
+
+    DESKUPDIR = workspacePath.c_str();
+
     DU_windowDevice * device = nullptr;
 
     device->getWindowHeight = WIN_getWindowHeight;
+    device->getWindowWidth = WIN_getWindowWidth;
+    device->getWindowXPos = WIN_getWindowXPos;
+    device->getWindowYPos = WIN_getWindowYPos;
+    device->getAllWindows = WIN_getAllWindows;
     device->isAvailable = WIN_isAvailable;
 
     windowData * data;

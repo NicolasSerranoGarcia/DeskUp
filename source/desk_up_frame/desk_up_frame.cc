@@ -1,11 +1,18 @@
 #include "desk_up_frame.h"
 
+#include "desk_up_window.h"
+
 DeskUpFrame::DeskUpFrame()
         : wxFrame(nullptr, wxID_ANY, "DeskUp")
 {
     #ifdef WIN32
         SetIcon(wxICON(IDI_APPLICATION));
     #endif
+
+    if(!DU_init()){
+        wxMessageBox("There was an error when initializing DeskUp. Try closing and opening the app again", "DeskUp error", wxSTAY_ON_TOP | )
+    }
+
     wxMenu *menuFile = new wxMenu;
     menuFile->Append(wxID_ADD, "Add workspace \tctrl+N");
     menuFile->AppendSeparator();
@@ -41,5 +48,25 @@ void DeskUpFrame::OnAbout(wxCommandEvent& event)
 
 void DeskUpFrame::OnAdd(wxCommandEvent& event)
 {
-    wxLogMessage("You will add a workspace here :)! Be patient");
+    const wxString workspaceName;
+
+    while(1){
+
+        wxTextEntryDialog createWorkspace(this, "Enter the workspace name", "Add workspace");
+        
+        if(createWorkspace.ShowModal() == wxID_OK){
+            workspaceName = createWorkspace.GetValue();
+
+            if(!workspaceName.empty()){
+                break;
+            } else{
+                wxMessageBox("Your workspace name cannot be empty!", "Workspace name", wxOK | wxICON_INFORMATION, createWorkspace);
+            }
+        } else{
+            break;
+        }
+    }
+
+    DeskUpWindow::saveAllWindowsLocal(workspaceName.c_str());
+
 }

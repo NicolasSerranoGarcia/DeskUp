@@ -2,6 +2,7 @@
 #define DESKUPX11_H
 
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <vector>
 #include <stdexcept>
 #include <iostream>
@@ -25,7 +26,6 @@ DU_WindowBootStrap x11WindowDevice = {
 
 
 DU_windowDevice * X11_createDevice(void);
-bool X11_isAvailable(DU_windowDevice * device);
 
 int X11_errorHandlerNonFatal(Display * display, XErrorEvent * event);
 

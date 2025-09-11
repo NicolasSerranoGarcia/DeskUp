@@ -24,7 +24,6 @@ DU_WindowBootStrap winWindowDevice = {
 
 
 DU_windowDevice * WIN_CreateDevice(void);
-bool WIN_isAvailable(DU_windowDevice *);
 
 unsigned int WIN_getWindowHeight(DU_windowDevice * _this);
 unsigned int WIN_getWindowWidth(DU_windowDevice * _this);
@@ -34,5 +33,7 @@ unsigned int WIN_getWindowYPos(DU_windowDevice * _this);
 char * WIN_GetPathFromWindow(DU_windowDevice * _this);
 
 std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this);
+
+
 
 #endif

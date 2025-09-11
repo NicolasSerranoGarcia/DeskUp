@@ -1,17 +1,14 @@
 #include "desk_up_x11.h"
 
-#include <X11/Xatom.h>
 #include <unistd.h>
+#include <cstdlib>
 #include <string>
 
-bool X11_isAvailable(DU_windowDevice * device){
+bool X11_isAvailable(){
     
-    if(!device) return false;
-    
-    //X11 returns nullptr when it cannot stablish a connection with the user display
-    Display * display = ((windowData *) device->internalData)->display;
-
-    return display != nullptr;
+    #ifndef X11COMPATIBLE
+        return false;
+    #endif
 }
 
 //this is a callback
@@ -40,10 +37,19 @@ void X11_DisplayFatalMessage(Display *, void *){
 
 DU_windowDevice * X11_createDevice(void){
 
+    std::string workspacePath = std::getenv("HOME");
+
+    workspacePath += "/.local/DeskUp";
+
+    DESKUPDIR = workspacePath.c_str();
+
     DU_windowDevice * device = nullptr;
     
     device->getWindowHeight = X11_getWindowHeight;
-    device->isAvailable = X11_isAvailable;
+    device->getWindowWidth = X11_getWindowWidth;
+    device->getWindowXPos = X11_getWindowXPos;
+    device->getWindowYPos = X11_getWindowYPos;
+    device->getAllWindows = X11_getAllWindows;
     
     windowData * data;
     data->display = XOpenDisplay(NULL);
@@ -55,8 +61,7 @@ DU_windowDevice * X11_createDevice(void){
     // in terms of functioning, it won't matter, because this function is only called once and 
     // right before calling X11_isAvailable(), so even though we would
     if(!data->display){
-        device->internalData = data;
-        return device;
+        return nullptr;
     }
 
     //if we didn't return early this would give an error. It wont affect the overall functioning, but we avoid
