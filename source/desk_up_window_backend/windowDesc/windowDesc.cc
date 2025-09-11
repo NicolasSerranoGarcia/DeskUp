@@ -1,0 +1,30 @@
+#include "windowDesc.h"
+
+#include <fstream>
+
+
+int windowDesc::saveTo(std::string path){
+    
+    if(path.empty()){
+        return 0;
+    }
+    
+    std::ofstream windowFile;
+
+    windowFile.open(path, std::ios::out);
+
+    if(!windowFile.is_open()){
+        return 0;
+    }
+
+
+    windowFile << this->pathToExec 
+    << std::endl << this->x 
+    << std::endl << this->y 
+    << std::endl << this->w 
+    << std::endl << this->h;
+
+    windowFile.close();
+
+    return 1;
+}
