@@ -32,21 +32,23 @@ if(WIN32)
         -static-libstdc++
     )
 elseif(UNIX AND NOT APPLE)
-    target_link_options(DeskUp-compiler-flags INTERFACE
-        -static-libgcc
-        -static-libstdc++
-    )
+target_link_options(DeskUp-compiler-flags INTERFACE
+-static-libgcc
+-static-libstdc++
+)
 
-    set(wxWidgets_CONFIG_EXECUTABLE "$ENV{HOME}/wx-static/bin/wx-config")
+set(wxWidgets_CONFIG_EXECUTABLE "$ENV{HOME}/wx-static/bin/wx-config")
 endif()
-    
+
 # --- Executable ---
 if (WIN32)
-    add_executable(DeskUp WIN32 source/main.cc)
-    enable_language(RC)
-    target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
+add_executable(DeskUp WIN32 source/main.cc)
+enable_language(RC)
+target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
 else()
     add_executable(DeskUp source/main.cc)
+    set(X11COMPATIBLE ON)
+    target_compile_definitions(DeskUp PUBLIC X11COMPATIBLE)
 endif()
 
 # --- wxWidgets static ---
@@ -90,6 +92,7 @@ endif()
 # --- Sub-libraries (without linking wxWidgets) ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
 
 if(WIN32)
     target_link_libraries(DeskUp PUBLIC wxWidgetsDeps)
@@ -103,6 +106,7 @@ target_link_libraries(DeskUp PRIVATE DeskUp-compiler-flags)
 target_link_libraries(DeskUp PRIVATE
     desk_up_library
     desk_up_frame_library
+    desk_up_window_library
     ${wxWidgets_LIBRARIES}
 )
 
