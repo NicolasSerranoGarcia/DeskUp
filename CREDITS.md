@@ -20,14 +20,6 @@ This project was made possible thanks to the following resources:
 
 ---
 
-## Licenses
-
-Please check third-party component licenses before redistribution.  
-Project license: [MIT](LICENSE)
-[Third party Licenses](THIRD_PARTY_LICENSES.md)
-
----
-
 > Note: This file is kept updated with the credits of all people, libraries, and resources that contributed to the project.
 
 ---
