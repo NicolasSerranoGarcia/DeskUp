@@ -74,3 +74,5 @@
 [] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
 
 [] in x11 and win backends, getAllWindows functions need to set the name of the window
+
+[] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
