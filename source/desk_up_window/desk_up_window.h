@@ -5,6 +5,6 @@
 
 typedef struct DeskUpWindow{
     static int saveAllWindowsLocal(std::string workspaceName);
-};
+} DeskUpWindow;
 
 #endif

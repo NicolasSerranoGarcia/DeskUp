@@ -1,11 +1,12 @@
 #include "windowDesc.h"
 
 #include <fstream>
-
+#include <iostream>
 
 int windowDesc::saveTo(std::string path){
     
     if(path.empty()){
+        std::cout << "file path empty" << std::endl;
         return 0;
     }
     

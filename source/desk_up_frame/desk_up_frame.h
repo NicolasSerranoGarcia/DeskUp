@@ -1,3 +1,6 @@
+#ifndef DESKUPFRAME_H
+#define DESKUPFRAME_H
+
 #include <wx/wx.h>
 
 class DeskUpFrame : public wxFrame{
@@ -9,3 +12,5 @@ class DeskUpFrame : public wxFrame{
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
 };
+
+#endif

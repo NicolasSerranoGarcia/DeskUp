@@ -60,6 +60,9 @@ if(wxWidgets_USE_FILE)
     include(${wxWidgets_USE_FILE})
 endif()
 
+message(STATUS "wx include dirs: ${wxWidgets_INCLUDE_DIRS}")
+message(STATUS "wx libraries: ${wxWidgets_LIBRARIES}")
+
 #Add flags for tests, benchmarks and other tools
 
 include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
@@ -119,8 +122,10 @@ message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(DeskUp PRIVATE DEBUG_MODE)
+    target_link_options(DeskUp PRIVATE -mconsole)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(DeskUp PRIVATE NDEBUG)
+    target_link_options(DeskUp PRIVATE -mwindows)
 endif()
 
 # --- Installation ---

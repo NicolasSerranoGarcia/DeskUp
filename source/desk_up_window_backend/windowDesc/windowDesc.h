@@ -5,7 +5,7 @@
 
 // this is an abstract struct that saves all the info needed to restore a window to its original state  
 typedef struct windowDesc{
-    char * name;
+    std::string name;
     int x,y,w,h;
     std::string pathToExec;
 
@@ -14,6 +14,6 @@ typedef struct windowDesc{
     bool operator!() const {
         return !x && !y && !w && !h;
     }
-};
+} windowDesc;
 
 #endif
