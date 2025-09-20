@@ -197,23 +197,20 @@ std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
     return result;
 }
 
-std::string WIN_GetNameFromPath(std::string path){
-
-    if(path.empty()){
+std::string WIN_GetNameFromPath(const std::string& path) {
+    if (path.empty()) {
+        std::cerr << "path is empty\n";
         return "";
     }
 
-    std::string name = "";
-
-    for(int i = path.length() - 1; i >= 0; i--){
-        if(path[i] != '\\'){
-            name += path[i];
-        } else{
-            return name;
-        }
+    std::string name;
+    for (int i = (int)path.length() - 1; i >= 0; --i) {
+        if (path[i] == '\\' || path[i] == '/')
+            break;
+        name.insert(name.begin(), path[i]);
     }
 
-    return name;
+    return name.substr(0, name.size() - 4);
 }
 
 BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
@@ -260,9 +257,9 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
 
         window.pathToExec = WIN_GetPathFromWindow(dev);
         
-        window.name = WIN_GetNameFromPath(window.name);
+        std::cout << window.pathToExec << std::endl;
+        window.name = WIN_GetNameFromPath(window.pathToExec);
 
-        std::cout << window.pathToExec;
         //after that erase it so that we dont use a previous hwnd by accident
         reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
 
