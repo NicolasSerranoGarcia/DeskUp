@@ -19,7 +19,7 @@ struct DU_windowDevice;
 
 struct windowData;
 
-DU_windowDevice * WIN_CreateDevice(void);
+DU_windowDevice * WIN_CreateDevice(HWND deskUpHWND);
 
 extern DU_WindowBootStrap winWindowDevice;
 

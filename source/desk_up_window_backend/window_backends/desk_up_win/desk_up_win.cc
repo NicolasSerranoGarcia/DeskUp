@@ -8,9 +8,11 @@
 
 #include "backend_utils.h"
 
+std::unique_ptr<HWND> desk_up_hwnd = nullptr;
+
 struct windowData{
     HWND hwnd;
-};
+};  
 
 DU_WindowBootStrap winWindowDevice = {
     "win",
@@ -240,6 +242,11 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
         return FALSE;
     }
 
+    //skip deskUp
+    if(*desk_up_hwnd.get() == hwnd){
+        return TRUE;
+    }
+
     //fill a new windowDesc and push it to 'windows'
 
     windowDesc window;
@@ -303,8 +310,12 @@ std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this){
 }
 
 
-DU_windowDevice * WIN_CreateDevice(void){
+DU_windowDevice * WIN_CreateDevice(HWND deskUpHWND){
     //set all the functions of a DU_windowDevice variable to the functions of x11. Also set internalData to 
+
+    if(deskUpHWND){
+        desk_up_hwnd = std::make_unique<HWND>(deskUpHWND);
+    }
 
     DU_windowDevice * device;
 
@@ -322,7 +333,9 @@ DU_windowDevice * WIN_CreateDevice(void){
     device->getAllWindows = WIN_getAllWindows;
     device->getDeskUpPath = WIN_getDeskUpPath;
 
-    device->internalData = (void *) new windowData;
+    device->internalData = (void *) new windowData();
+
+    
     
     return device;
 }

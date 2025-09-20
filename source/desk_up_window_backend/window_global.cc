@@ -23,14 +23,9 @@ DU_isAvailable win = {
 
 DU_windowDevice * current_window_backend = nullptr;
 
-HWND desk_up_hwnd = nullptr;
 
 //function to initialize the backend and choose the correct device. Previously used x11 and Windows, but now only connects windows
 int DU_Init(HWND thisHwnd){
-
-    if(thisHwnd){
-        desk_up_hwnd = thisHwnd;
-    }
 
     const char * devName = win.name;
     if(!win.isAvailable()){
@@ -38,7 +33,11 @@ int DU_Init(HWND thisHwnd){
         return 0;
     }
     
-    DU_windowDevice * dev = winWindowDevice.createDevice();
+    HWND h = nullptr;
+    if(thisHwnd){
+        h = thisHwnd;
+    }
+    DU_windowDevice * dev = winWindowDevice.createDevice(h);
 
     if(dev == nullptr){
         return 0;
