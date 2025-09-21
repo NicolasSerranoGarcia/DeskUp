@@ -1,17 +1,14 @@
 #include "desk_up_x11.h"
 
-#include <X11/Xatom.h>
 #include <unistd.h>
+#include <cstdlib>
 #include <string>
 
-bool X11_isAvailable(DU_WindowDevice * device){
+bool X11_isAvailable(){
     
-    if(!device) return false;
-    
-    //X11 returns nullptr when it cannot stablish a connection with the user display
-    Display * display = ((windowData *) device->internalData)->display;
-
-    return display != nullptr;
+    #ifndef X11COMPATIBLE
+        return false;
+    #endif
 }
 
 //this is a callback
@@ -38,12 +35,21 @@ void X11_DisplayFatalMessage(Display *, void *){
     return;
 }
 
-DU_WindowDevice * X11_CreateDevice(void){
+DU_windowDevice * X11_createDevice(void){
 
-    DU_WindowDevice * device = nullptr;
+    std::string workspacePath = std::getenv("HOME");
+
+    workspacePath += "/.local/DeskUp";
+
+    DESKUPDIR = workspacePath.c_str();
+
+    DU_windowDevice * device = nullptr;
     
     device->getWindowHeight = X11_getWindowHeight;
-    device->isAvailable = X11_isAvailable;
+    device->getWindowWidth = X11_getWindowWidth;
+    device->getWindowXPos = X11_getWindowXPos;
+    device->getWindowYPos = X11_getWindowYPos;
+    device->getAllWindows = X11_getAllWindows;
     
     windowData * data;
     data->display = XOpenDisplay(NULL);
@@ -55,8 +61,7 @@ DU_WindowDevice * X11_CreateDevice(void){
     // in terms of functioning, it won't matter, because this function is only called once and 
     // right before calling X11_isAvailable(), so even though we would
     if(!data->display){
-        device->internalData = data;
-        return device;
+        return nullptr;
     }
 
     //if we didn't return early this would give an error. It wont affect the overall functioning, but we avoid
@@ -73,7 +78,7 @@ DU_WindowDevice * X11_CreateDevice(void){
 }
 
 
-unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
+unsigned int X11_getWindowHeight(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -93,7 +98,7 @@ unsigned int X11_getWindowHeight(DU_WindowDevice * _this){
     return height;
 }
 
-unsigned int X11_getWindowWidth(DU_WindowDevice * _this){
+unsigned int X11_getWindowWidth(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -113,7 +118,7 @@ unsigned int X11_getWindowWidth(DU_WindowDevice * _this){
     return width;
 }
 
-unsigned int X11_getWindowXPos(DU_WindowDevice * _this){
+unsigned int X11_getWindowXPos(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -133,7 +138,7 @@ unsigned int X11_getWindowXPos(DU_WindowDevice * _this){
     return x;
 }
 
-unsigned int X11_getWindowYPos(DU_WindowDevice * _this){
+unsigned int X11_getWindowYPos(DU_windowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -153,7 +158,7 @@ unsigned int X11_getWindowYPos(DU_WindowDevice * _this){
     return y;
 }
 
-char * X11_getPathFromWindow(DU_WindowDevice * _this){
+char * X11_getPathFromWindow(DU_windowDevice * _this){
     
     windowData * data = (windowData *)_this->internalData;
 
@@ -210,7 +215,7 @@ char * X11_getPathFromWindow(DU_WindowDevice * _this){
     return buff;
 }
 
-windowDesc X11_getWindowDescFromWindow(DU_WindowDevice * _this){
+windowDesc X11_getWindowDescFromWindow(DU_windowDevice * _this){
     windowDesc newWindow;
 
     try{
@@ -230,7 +235,7 @@ windowDesc X11_getWindowDescFromWindow(DU_WindowDevice * _this){
     return newWindow;
 }
 
-std::vector<windowDesc> X11_getAllWindows(DU_WindowDevice * _this){
+std::vector<windowDesc> X11_getAllWindows(DU_windowDevice * _this){
 
     windowData * data = ((windowData *)_this->internalData);
 

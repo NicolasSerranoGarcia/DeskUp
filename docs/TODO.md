@@ -67,3 +67,12 @@
    [] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
 
    [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
+
+[] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
+    underscores (X11_) only for external API's or libraries
+
+[] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
+
+[] in x11 and win backends, getAllWindows functions need to set the name of the window
+
+[] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_

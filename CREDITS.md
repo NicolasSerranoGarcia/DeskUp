@@ -12,7 +12,6 @@ This project was made possible thanks to the following resources:
 - [Google Tests](https://github.com/google/googletest) – Testing library.
 - [wxWidgets](https://github.com/wxWidgets/wxWidgets) – Cross-platform C++ GUI library.
 
-
 ---
 
 ## Additional Resources
@@ -21,12 +20,8 @@ This project was made possible thanks to the following resources:
 
 ---
 
-## Licenses
-
-Please check third-party component licenses before redistribution.  
-Project license: [MIT](LICENSE)
-[Third party Licenses](THIRD_PARTY_LICENSES.md)
+> Note: This file is kept updated with the credits of all people, libraries, and resources that contributed to the project.
 
 ---
 
-> Note: This file is kept updated with the credits of all people, libraries, and resources that contributed to the project.
+Special thanks to [SDL](https://github.com/libsdl-org/SDL) for giving me inspiration on building this project!
