@@ -62,17 +62,28 @@
 
    [] The program needs to save information about the workspace. To do this, DeskUp must save folders and files with the necessary information. Decide where this files and folders go. The way to go should be to leave them visible. the user can do whatever it wants with them. advice to not touch them if the user is not familiar with them. this way people have freedom over the use of the software
 
-   [] For the workspaces, a file for each window should be used. Each workspace will be a folder containing all the files of the window.
+   [X] For the workspaces, a file for each window should be used. Each workspace will be a folder containing all the files of the window.
 
-   [] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
+   [X] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
 
    [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
 
 [] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
     underscores (X11_) only for external API's or libraries
 
-[] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
+[X] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
 
-[] in x11 and win backends, getAllWindows functions need to set the name of the window
+[X] in x11 and win backends, getAllWindows functions need to set the name of the window
 
 [] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
+
+## Reset - Linux dropped
+
+## Clean up save-workspace PR
+
+[] if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier lik a number
+
+[] Clean up backend functions, document them and maybe change structure if something is not clear
+
+[] you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
+
