@@ -19,6 +19,19 @@ DeskUpWindowBootStrap winWindowDevice = {
     WIN_CreateDevice
 };
 
+DeskUpisAvailable winIsAvailable = {
+    "win",
+    WIN_isAvailable
+};
+
+bool WIN_isAvailable(){
+    #ifdef _WIN32
+        return true;
+    #endif
+    
+    return false;
+}
+
 std::string WIN_getDeskUpPath(){
     PWSTR wpath = nullptr;
     std::string base;
