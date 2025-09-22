@@ -171,7 +171,7 @@ cpack
 |--------------------------|--------------------------------------|---------|
 | `-DGENERATE_APPIMAGE=ON\|OFF` | Enables/disables the creation of an appImage | OFF |
 
-> Note: enabling `-DGENERATE_APPIMAGE` will have no effect
+> Note: enabling `-DGENERATE_APPIMAGE` will have no effect on windows
 
 ## 📚 Documentation with Doxygen
 
