@@ -1,8 +1,8 @@
-#include "window_global.h"
+#include "window_core.h"
 
 std::string DESKUPDIR;
 
-struct DU_isAvailable{
+struct DeskUpisAvailable{
     const char * name;
     bool (*isAvailable)(void);
 };
@@ -15,8 +15,8 @@ bool WIN_isAvailable(){
     return false;
 }
 
-
-DU_isAvailable win = {
+//add this in a separate file and create the instance inside desk_up_win
+DeskUpisAvailable win = {
     "win",
     WIN_isAvailable
 };

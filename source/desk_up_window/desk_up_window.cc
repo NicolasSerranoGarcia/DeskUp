@@ -4,7 +4,7 @@
 #include <string>
 #include <filesystem>
 
-#include "window_global.h"
+#include "window_core.h"
 
 int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     

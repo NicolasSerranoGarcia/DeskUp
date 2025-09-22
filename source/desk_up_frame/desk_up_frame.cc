@@ -1,7 +1,7 @@
 #include "desk_up_frame.h"
 
 #include "desk_up_window.h"
-#include "window_global.h"
+#include "window_core.h"
 
 DeskUpFrame::DeskUpFrame()
         : wxFrame(nullptr, wxID_ANY, "DeskUp")

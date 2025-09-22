@@ -10,11 +10,11 @@
 
 extern std::string DESKUPDIR;
 
-struct DU_isAvailable;
+struct DeskUpisAvailable;
 
 bool WIN_isAvailable();
 
-extern DU_isAvailable win;
+extern DeskUpisAvailable win;
 
 extern DeskUpWindowDevice * current_window_backend;
 
