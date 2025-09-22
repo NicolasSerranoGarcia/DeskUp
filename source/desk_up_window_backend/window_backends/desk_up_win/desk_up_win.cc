@@ -12,9 +12,9 @@ std::unique_ptr<HWND> desk_up_hwnd = nullptr;
 
 struct windowData{
     HWND hwnd;
-};  
+};
 
-DU_WindowBootStrap winWindowDevice = {
+DeskUpWindowBootStrap winWindowDevice = {
     "win",
     WIN_CreateDevice
 };
@@ -50,7 +50,7 @@ std::string WIN_getDeskUpPath(){
     return p.string();
 }
 
-unsigned int WIN_getWindowHeight(DU_windowDevice * _this){
+unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -75,7 +75,7 @@ unsigned int WIN_getWindowHeight(DU_windowDevice * _this){
     return height;
 }
 
-unsigned int WIN_getWindowWidth(DU_windowDevice * _this){
+unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -100,7 +100,7 @@ unsigned int WIN_getWindowWidth(DU_windowDevice * _this){
     return width;
 }
 
-unsigned int WIN_getWindowXPos(DU_windowDevice * _this){
+unsigned int WIN_getWindowXPos(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -124,7 +124,7 @@ unsigned int WIN_getWindowXPos(DU_windowDevice * _this){
     return x;
 }
 
-unsigned int WIN_getWindowYPos(DU_windowDevice * _this){
+unsigned int WIN_getWindowYPos(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -149,7 +149,7 @@ unsigned int WIN_getWindowYPos(DU_windowDevice * _this){
 }
 
 //every os works with different types for interpreting paths, so work with std 
-std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
+std::string WIN_GetPathFromWindow(DeskUpWindowDevice* _this) {
     const auto* data = static_cast<const windowData*>(_this->internalData);
     if (!data || !data->hwnd || !IsWindow(data->hwnd)) {
         throw std::invalid_argument("Invalid HWND in WIN_GetPathFromWindow");
@@ -222,10 +222,10 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
     if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0) return TRUE;
 
     //recover the parameters once we are inside. We can now use both DU_windowDevice and fill the vector with windows
-    std::pair<std::vector<windowDesc> *, DU_windowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DU_windowDevice *> *) reinterpret_cast<void *>(lparam);
+    std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> *) reinterpret_cast<void *>(lparam);
 
     std::vector<windowDesc> * windows = parameters->first;
-    DU_windowDevice * dev = parameters->second;
+    DeskUpWindowDevice * dev = parameters->second;
 
     if(windows == nullptr){
         std::cout << "The vector of windows could not be passed to the callback!" << std::endl;
@@ -290,15 +290,15 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
     return TRUE;
 }
 
-std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this){
+std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
     
     std::vector<windowDesc> windows;
 
-    std::pair<std::vector<windowDesc> *, DU_windowDevice *> callbackParameters{&windows, _this};
+    std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> callbackParameters{&windows, _this};
     
     HDESK desktop = NULL;
 
-    //we need to "fit" both the vector of the windows and the own DU_windowDevice inside the callback inside LPARAM
+    //we need to "fit" both the vector of the windows and the own DeskUpWindowDevice inside the callback inside LPARAM
     if(!EnumDesktopWindows(desktop, /*callback*/ WIN_createAndSaveWindow, reinterpret_cast<LPARAM>((void *) &callbackParameters))){
         DWORD error = GetLastError();
         std::string errorMessage = getSystemErrorMessageWindows(error);
@@ -310,17 +310,17 @@ std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this){
 }
 
 
-DU_windowDevice * WIN_CreateDevice(HWND deskUpHWND){
-    //set all the functions of a DU_windowDevice variable to the functions of x11. Also set internalData to 
+DeskUpWindowDevice * WIN_CreateDevice(HWND deskUpHWND){
+    //set all the functions of a DeskUpWindowDevice variable to the functions of x11. Also set internalData to 
 
     if(deskUpHWND){
         desk_up_hwnd = std::make_unique<HWND>(deskUpHWND);
     }
 
-    DU_windowDevice * device;
+    DeskUpWindowDevice * device;
 
     try{
-        device = new DU_windowDevice;
+        device = new DeskUpWindowDevice;
     } catch(std::bad_alloc &a){
         std::cerr << a.what();
         return nullptr;

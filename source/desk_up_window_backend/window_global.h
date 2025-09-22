@@ -16,7 +16,7 @@ bool WIN_isAvailable();
 
 extern DU_isAvailable win;
 
-extern DU_windowDevice * current_window_backend;
+extern DeskUpWindowDevice * current_window_backend;
 
 extern HWND desk_up_hwnd;
 

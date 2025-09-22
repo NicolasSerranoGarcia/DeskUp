@@ -4,9 +4,9 @@
 #include "desk_up_window_device.h"
 #include <Windows.h>
 
-struct DU_WindowBootStrap{
+struct DeskUpWindowBootStrap{
     const char * name;
-    DU_windowDevice * (*createDevice)(HWND);
+    DeskUpWindowDevice * (*createDevice)(HWND);
 };
 
 #endif

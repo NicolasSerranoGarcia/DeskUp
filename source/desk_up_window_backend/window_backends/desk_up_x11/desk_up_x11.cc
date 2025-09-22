@@ -35,7 +35,7 @@ void X11_DisplayFatalMessage(Display *, void *){
     return;
 }
 
-DU_windowDevice * X11_createDevice(void){
+DeskUpWindowDevice * X11_createDevice(void){
 
     std::string workspacePath = std::getenv("HOME");
 
@@ -43,7 +43,7 @@ DU_windowDevice * X11_createDevice(void){
 
     DESKUPDIR = workspacePath.c_str();
 
-    DU_windowDevice * device = nullptr;
+    DeskUpWindowDevice * device = nullptr;
     
     device->getWindowHeight = X11_getWindowHeight;
     device->getWindowWidth = X11_getWindowWidth;
@@ -78,7 +78,7 @@ DU_windowDevice * X11_createDevice(void){
 }
 
 
-unsigned int X11_getWindowHeight(DU_windowDevice * _this){
+unsigned int X11_getWindowHeight(DeskUpWindowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -98,7 +98,7 @@ unsigned int X11_getWindowHeight(DU_windowDevice * _this){
     return height;
 }
 
-unsigned int X11_getWindowWidth(DU_windowDevice * _this){
+unsigned int X11_getWindowWidth(DeskUpWindowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -118,7 +118,7 @@ unsigned int X11_getWindowWidth(DU_windowDevice * _this){
     return width;
 }
 
-unsigned int X11_getWindowXPos(DU_windowDevice * _this){
+unsigned int X11_getWindowXPos(DeskUpWindowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -138,7 +138,7 @@ unsigned int X11_getWindowXPos(DU_windowDevice * _this){
     return x;
 }
 
-unsigned int X11_getWindowYPos(DU_windowDevice * _this){
+unsigned int X11_getWindowYPos(DeskUpWindowDevice * _this){
 
     windowData * data = (windowData *) _this->internalData;
 
@@ -158,7 +158,7 @@ unsigned int X11_getWindowYPos(DU_windowDevice * _this){
     return y;
 }
 
-char * X11_getPathFromWindow(DU_windowDevice * _this){
+char * X11_getPathFromWindow(DeskUpWindowDevice * _this){
     
     windowData * data = (windowData *)_this->internalData;
 
@@ -215,7 +215,7 @@ char * X11_getPathFromWindow(DU_windowDevice * _this){
     return buff;
 }
 
-windowDesc X11_getWindowDescFromWindow(DU_windowDevice * _this){
+windowDesc X11_getWindowDescFromWindow(DeskUpWindowDevice * _this){
     windowDesc newWindow;
 
     try{
@@ -235,7 +235,7 @@ windowDesc X11_getWindowDescFromWindow(DU_windowDevice * _this){
     return newWindow;
 }
 
-std::vector<windowDesc> X11_getAllWindows(DU_windowDevice * _this){
+std::vector<windowDesc> X11_getAllWindows(DeskUpWindowDevice * _this){
 
     windowData * data = ((windowData *)_this->internalData);
 

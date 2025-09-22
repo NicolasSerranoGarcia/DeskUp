@@ -19,22 +19,22 @@ typedef struct windowData{
     Screen * screen;
 };
 
-DU_WindowBootStrap x11WindowDevice = {
+DeskUpWindowBootStrap x11WindowDevice = {
     "x11",
     X11_createDevice
 };
 
 
-DU_windowDevice * X11_createDevice(void);
+DeskUpWindowDevice * X11_createDevice(void);
 
 int X11_errorHandlerNonFatal(Display * display, XErrorEvent * event);
 
-unsigned int X11_getWindowHeight(DU_windowDevice * _this);
-unsigned int X11_getWindowWidth(DU_windowDevice * _this);
-unsigned int X11_getWindowXPos(DU_windowDevice * _this);
-unsigned int X11_getWindowYPos(DU_windowDevice * _this);
+unsigned int X11_getWindowHeight(DeskUpWindowDevice * _this);
+unsigned int X11_getWindowWidth(DeskUpWindowDevice * _this);
+unsigned int X11_getWindowXPos(DeskUpWindowDevice * _this);
+unsigned int X11_getWindowYPos(DeskUpWindowDevice * _this);
 
-std::vector<windowDesc> X11_getAllWindows(DU_windowDevice * _this);
+std::vector<windowDesc> X11_getAllWindows(DeskUpWindowDevice * _this);
 
 
 #endif

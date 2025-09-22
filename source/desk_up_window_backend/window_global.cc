@@ -21,7 +21,7 @@ DU_isAvailable win = {
     WIN_isAvailable
 };
 
-DU_windowDevice * current_window_backend = nullptr;
+DeskUpWindowDevice * current_window_backend = nullptr;
 
 
 //function to initialize the backend and choose the correct device. Previously used x11 and Windows, but now only connects windows
@@ -37,7 +37,7 @@ int DU_Init(HWND thisHwnd){
     if(thisHwnd){
         h = thisHwnd;
     }
-    DU_windowDevice * dev = winWindowDevice.createDevice(h);
+    DeskUpWindowDevice * dev = winWindowDevice.createDevice(h);
 
     if(dev == nullptr){
         return 0;

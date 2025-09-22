@@ -6,7 +6,7 @@
 std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[]) {
     if (!error) return "unknown error passed as parameter!";
 
-    LPWSTR messageBuffer = nullptr; // FormatMessage will allocate
+    LPWSTR messageBuffer = nullptr;
     DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
     
     DWORD charsWritten = FormatMessageW(

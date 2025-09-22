@@ -5,15 +5,15 @@
 #include <string>
 #include "windowDesc.h"
 
-struct DU_windowDevice{
+struct DeskUpWindowDevice{
     //here goes all the generic functions that all the backends have
-    unsigned int (*getWindowHeight)(DU_windowDevice * _this);
-    unsigned int (*getWindowWidth)(DU_windowDevice * _this);
-    unsigned int (*getWindowXPos)(DU_windowDevice * _this);
-    unsigned int (*getWindowYPos)(DU_windowDevice * _this);
+    unsigned int (*getWindowHeight)(DeskUpWindowDevice * _this);
+    unsigned int (*getWindowWidth)(DeskUpWindowDevice * _this);
+    unsigned int (*getWindowXPos)(DeskUpWindowDevice * _this);
+    unsigned int (*getWindowYPos)(DeskUpWindowDevice * _this);
     std::string (*getDeskUpPath)(void);
     
-    std::vector<windowDesc> (*getAllWindows)(DU_windowDevice * _this);
+    std::vector<windowDesc> (*getAllWindows)(DeskUpWindowDevice * _this);
 
     void * internalData;
 };
