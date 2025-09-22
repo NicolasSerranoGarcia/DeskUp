@@ -7,7 +7,7 @@ target_include_directories(desk_up_win_library PUBLIC ${CMAKE_CURRENT_LIST_DIR})
 
 target_include_directories(desk_up_win_library PUBLIC ${CMAKE_SOURCE_DIR}/include)
 
-target_include_directories(desk_up_win_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/windowDesc)
+target_include_directories(desk_up_win_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc)
 target_link_libraries(desk_up_win_library PUBLIC window_desc_library)
 
 target_sources(desk_up_win_library PUBLIC ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.cc ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.h)

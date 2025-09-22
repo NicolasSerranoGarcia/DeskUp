@@ -1,4 +1,4 @@
-#include "windowDesc.h"
+#include "window_desc.h"
 
 #include <fstream>
 #include <iostream>
