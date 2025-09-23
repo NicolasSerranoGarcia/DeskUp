@@ -30,17 +30,26 @@
 
 /**
  * @struct DeskUpIsAvailable
- * @brief This struct is a wrapper for a call to a window backend.
- * @details This call checks if the device it comes from is available on this system. Each backend will have an instance of this struct, generally called <backendName>IsAvailable, that window_core file will use inside
+ * @brief This struct is a wrapper for a call to a window backend function that checks whether if that backend is available in this system.
+ * 
+ * @details This call checks if the backend device it comes from is available on this system.
+ * 
+ * Each backend will have an instance of this struct, called \c <backendName>IsAvailable, that window_core.h file will use inside
  * DU_Init()
  * 
+ * 
+ * @see DeskUpWindowDevice
  * @author Nicolas Serrano Garcia <serranogarcianicolas@gmail.com>
  * @version 0.1.0
  * @date 2025
  */
 struct DeskUpisAvailable{
     /**
-     * The name of the backend associated with the device call.
+     * @brief The name of the backend associated with the device call.
+     * 
+     * @warning This is a raw C-string pointer. The referenced literal
+     *          becomes invalid once the struct goes out of scope.
+     * 
      * @version 0.1.0
      * @date 2025 
      */
@@ -49,7 +58,7 @@ struct DeskUpisAvailable{
     /**
      * A pointer to function that is used to check whether if a given backend is available in the current device. 
      * 
-     * @return true if the backend is available in this device, false otherwise
+     * @return \c true if the backend is available in this device, \c false otherwise
      * @version 0.1.0
      * @date 2025
      */
