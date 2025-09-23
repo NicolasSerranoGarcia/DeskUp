@@ -38,11 +38,10 @@
  * @brief This abstract struct represents all the common calls that any backend must have.
  * 
  * @details  There are multiple pointers to functions inside this struct. Each one of them gets connected to a backend function whenever
- *           the backend gets created. When invoking the pointer, it implicitly calls the correct backend function, thus giving us the
+ *           the backend gets created. When invoking the pointer, it implicitly calls the correct backend function, thus giving the
  *           expected result for that specific backend.
  *           This struct also carries specific backend information needed to get information from a backend successfully. 
- * 
- * 
+ *           
  * 
  * @see windowData
  * @author Nicolas Serrano Garcia <serranogarcianicolas@gmail.com>
@@ -115,7 +114,13 @@ struct DeskUpWindowDevice{
     std::vector<windowDesc> (*getAllWindows)(DeskUpWindowDevice * _this);
 
     /**
-     * @brief A pointer that points to the specific information needed by each backend. Each backend has a 
+     * @brief A pointer that points to the specific information needed by each backend
+     * 
+     * @details each backend defines WindowData, which is the template to seek the values of this pointer. Whenever a device call wants to access
+     *          backend-specific info, this pointer gets casted to \c windowData* by \c std::reinterpret_cast. Then the backend accesses whatever
+     *          information it needs. Finally, the same call casts back this pointer to \void* , leaving everything as it was. 
+     *          One can interpret this pointer as a "black box", or a "pouch", where the info gets thrown inside, and then reinterpreted back whenever
+     *          it is needed
      * 
      * @version 0.1.0
      * @date 2025
