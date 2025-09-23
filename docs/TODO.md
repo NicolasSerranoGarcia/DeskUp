@@ -87,3 +87,5 @@
 
 [] you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
 
+[] the create Device function takes HWND. Instead, create a method to take a HWND and set the internal desk_up_hwnd to be the passed
+
