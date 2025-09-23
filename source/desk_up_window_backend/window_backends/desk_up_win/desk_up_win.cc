@@ -113,7 +113,7 @@ unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
     return width;
 }
 
-unsigned int WIN_getWindowXPos(DeskUpWindowDevice * _this){
+int WIN_getWindowXPos(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
@@ -137,7 +137,7 @@ unsigned int WIN_getWindowXPos(DeskUpWindowDevice * _this){
     return x;
 }
 
-unsigned int WIN_getWindowYPos(DeskUpWindowDevice * _this){
+int WIN_getWindowYPos(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){

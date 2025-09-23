@@ -32,8 +32,8 @@ std::string WIN_getDeskUpPath();
 
 unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this);
 unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
-unsigned int WIN_getWindowXPos(DeskUpWindowDevice * _this);
-unsigned int WIN_getWindowYPos(DeskUpWindowDevice * _this);
+int WIN_getWindowXPos(DeskUpWindowDevice * _this);
+int WIN_getWindowYPos(DeskUpWindowDevice * _this);
 
 std::string WIN_GetPathFromWindow(DeskUpWindowDevice * _this);
 
