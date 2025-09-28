@@ -162,10 +162,10 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this){
 }
 
 //every os works with different types for interpreting paths, so work with std 
-std::string WIN_GetPathFromWindow(DeskUpWindowDevice* _this) {
+std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
     const auto* data = static_cast<const windowData*>(_this->internalData);
     if (!data || !data->hwnd || !IsWindow(data->hwnd)) {
-        throw std::invalid_argument("Invalid HWND in WIN_GetPathFromWindow");
+        throw std::invalid_argument("Invalid HWND in WIN_getPathFromWindow");
     }
 
     DWORD pid = 0;
@@ -212,7 +212,7 @@ std::string WIN_GetPathFromWindow(DeskUpWindowDevice* _this) {
     return result;
 }
 
-std::string WIN_GetNameFromPath(const std::string& path) {
+std::string WIN_getNameFromPath(const std::string& path) {
     if (path.empty()) {
         std::cerr << "path is empty\n";
         return "";
@@ -275,10 +275,10 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
         
         std::cout << ": " << window.x << ", " << window.y;
 
-        window.pathToExec = WIN_GetPathFromWindow(dev);
+        window.pathToExec = WIN_getPathFromWindow(dev);
         
         std::cout << window.pathToExec << std::endl;
-        window.name = WIN_GetNameFromPath(window.pathToExec);
+        window.name = WIN_getNameFromPath(window.pathToExec);
 
         //after that erase it so that we dont use a previous hwnd by accident
         reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
@@ -322,13 +322,36 @@ std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
     return windows;
 }
 
+//for now, the app only considers the first window of desk up to appear. Probably in the future it should consider a set of all the windows
+//if there are multiple, and for any operation involving these handles, check against all of them
+BOOL CALLBACK WIN_isDeskUp(HWND hwnd, LPARAM lparam){
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd, &pid);
 
-DeskUpWindowDevice * WIN_CreateDevice(HWND deskUpHWND){
+    DWORD myPid = GetCurrentProcessId();
+    if (pid == myPid) {
+        HWND * h = reinterpret_cast<HWND*>(lparam);
+        *h = hwnd;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+HWND WIN_getDeskUpHWND(){
+
+    HWND myWindows;
+
+    //use the default for now
+    HDESK desk = NULL;
+    EnumDesktopWindows(desk, WIN_isDeskUp, reinterpret_cast<LPARAM>(&myWindows));
+
+    return myWindows;
+}
+
+DeskUpWindowDevice * WIN_CreateDevice(){
     //set all the functions of a DeskUpWindowDevice variable to the functions of x11. Also set internalData to 
 
-    if(deskUpHWND){
-        desk_up_hwnd = std::make_unique<HWND>(deskUpHWND);
-    }
+    desk_up_hwnd = std::make_unique<HWND>(WIN_getDeskUpHWND());
 
     DeskUpWindowDevice * device;
 
@@ -347,8 +370,6 @@ DeskUpWindowDevice * WIN_CreateDevice(HWND deskUpHWND){
     device->getDeskUpPath = WIN_getDeskUpPath;
 
     device->internalData = (void *) new windowData();
-
-    
     
     return device;
 }

@@ -20,7 +20,7 @@ struct windowData;
 
 extern std::unique_ptr<HWND> desk_up_hwnd;
 
-DeskUpWindowDevice * WIN_CreateDevice(HWND deskUpHWND);
+DeskUpWindowDevice * WIN_CreateDevice();
 
 extern DeskUpWindowBootStrap winWindowDevice;
 
@@ -35,7 +35,7 @@ unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
 int WIN_getWindowXPos(DeskUpWindowDevice * _this);
 int WIN_getWindowYPos(DeskUpWindowDevice * _this);
 
-std::string WIN_GetPathFromWindow(DeskUpWindowDevice * _this);
+std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
 
 std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this);
 

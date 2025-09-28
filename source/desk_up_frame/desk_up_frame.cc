@@ -10,7 +10,7 @@ DeskUpFrame::DeskUpFrame()
         SetIcon(wxICON(IDI_APPLICATION));
     #endif
 
-    if(!DU_Init((HWND) this->GetHandle())){
+    if(!DU_Init()){
         wxMessageBox("There was an error when initializing DeskUp. Try closing and opening the app again", "DeskUp error", wxSTAY_ON_TOP);
     }
 

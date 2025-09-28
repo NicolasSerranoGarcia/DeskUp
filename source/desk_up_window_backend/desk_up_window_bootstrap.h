@@ -65,7 +65,7 @@ struct DeskUpWindowBootStrap{
      * @version 0.1.0
      * @date 2025
      */
-    DeskUpWindowDevice * (*createDevice)(HWND);
+    DeskUpWindowDevice * (*createDevice)();
 };
 
 #endif
