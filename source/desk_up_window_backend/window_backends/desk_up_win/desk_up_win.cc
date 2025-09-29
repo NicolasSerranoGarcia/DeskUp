@@ -80,6 +80,7 @@ unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
 
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
 
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
         
     }
@@ -105,6 +106,7 @@ unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
 
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
 
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
         
     }
@@ -130,6 +132,7 @@ int WIN_getWindowXPos(DeskUpWindowDevice * _this){
 
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
 
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
     
@@ -154,6 +157,7 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this){
 
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
 
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
     
@@ -171,6 +175,7 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
     DWORD pid = 0;
     if (!GetWindowThreadProcessId(data->hwnd, &pid) || pid == 0) {
         const DWORD err = GetLastError();
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(getSystemErrorMessageWindows(err, "GetWindowThreadProcessId: "));
     }
 
@@ -180,6 +185,7 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
         if(err == ERROR_ACCESS_DENIED){
             return "";
         }
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(getSystemErrorMessageWindows(err, "OpenProcess: "));
     }
 
@@ -189,7 +195,7 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
         DWORD dwSize = 512;
         std::vector<wchar_t> wbuf(dwSize);
 
-        for (;;) {
+        while(1){
             DWORD size = dwSize;
             if (QueryFullProcessImageNameW(processHandle, 0, wbuf.data(), &size)) {
                 result = WideStringToUTF8(wbuf.data());
@@ -204,6 +210,7 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
             throw std::runtime_error(getSystemErrorMessageWindows(err, "QueryFullProcessImageNameW: "));
         }
     } catch (...) {
+        delete (windowData *) _this->internalData;
         CloseHandle(processHandle);
         throw;
     }
@@ -315,7 +322,7 @@ std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
     if(!EnumDesktopWindows(desktop, /*callback*/ WIN_createAndSaveWindow, reinterpret_cast<LPARAM>((void *) &callbackParameters))){
         DWORD error = GetLastError();
         std::string errorMessage = getSystemErrorMessageWindows(error);
-        
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
 
