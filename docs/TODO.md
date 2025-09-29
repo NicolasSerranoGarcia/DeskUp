@@ -92,3 +92,5 @@
 [X] Make the current device be a smart pointer
 
 [] finish documenting the backend. Add a readme inside the own backend to explain how the backend works
+
+[] notify in the documentation about the possible throws and errors of a backend function
