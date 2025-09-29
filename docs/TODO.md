@@ -89,6 +89,6 @@
 
 [X] the create Device function takes HWND. Instead, create a method to take a HWND and set the internal desk_up_hwnd to be the passed
 
-[] Make the current device be a smart pointer
+[X] Make the current device be a smart pointer
 
 [] finish documenting the backend. Add a readme inside the own backend to explain how the backend works
