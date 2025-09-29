@@ -348,28 +348,21 @@ HWND WIN_getDeskUpHWND(){
     return myWindows;
 }
 
-DeskUpWindowDevice * WIN_CreateDevice(){
+DeskUpWindowDevice WIN_CreateDevice(){
     //set all the functions of a DeskUpWindowDevice variable to the functions of x11. Also set internalData to 
 
     desk_up_hwnd = std::make_unique<HWND>(WIN_getDeskUpHWND());
 
-    DeskUpWindowDevice * device;
+    DeskUpWindowDevice device;
 
-    try{
-        device = new DeskUpWindowDevice;
-    } catch(std::bad_alloc &a){
-        std::cerr << a.what();
-        return nullptr;
-    }
+    device.getWindowHeight = WIN_getWindowHeight;
+    device.getWindowWidth = WIN_getWindowWidth;
+    device.getWindowXPos = WIN_getWindowXPos;
+    device.getWindowYPos = WIN_getWindowYPos;
+    device.getAllWindows = WIN_getAllWindows;
+    device.getDeskUpPath = WIN_getDeskUpPath;
 
-    device->getWindowHeight = WIN_getWindowHeight;
-    device->getWindowWidth = WIN_getWindowWidth;
-    device->getWindowXPos = WIN_getWindowXPos;
-    device->getWindowYPos = WIN_getWindowYPos;
-    device->getAllWindows = WIN_getAllWindows;
-    device->getDeskUpPath = WIN_getDeskUpPath;
-
-    device->internalData = (void *) new windowData();
+    device.internalData = (void *) new windowData();
     
     return device;
 }

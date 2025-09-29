@@ -20,7 +20,7 @@ struct windowData;
 
 extern std::unique_ptr<HWND> desk_up_hwnd;
 
-DeskUpWindowDevice * WIN_CreateDevice();
+DeskUpWindowDevice WIN_CreateDevice();
 
 extern DeskUpWindowBootStrap winWindowDevice;
 

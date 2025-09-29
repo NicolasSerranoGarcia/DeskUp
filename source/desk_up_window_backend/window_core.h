@@ -10,7 +10,7 @@
 
 extern std::string DESKUPDIR;
 
-extern DeskUpWindowDevice * current_window_backend;
+extern std::unique_ptr<DeskUpWindowDevice> current_window_backend;
 
 //function to initialize the backend and choose the correct device. Previously used x11 and Windows, but now only connects windows
 int DU_Init();
