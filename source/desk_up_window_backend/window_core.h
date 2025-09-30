@@ -50,7 +50,7 @@
 extern std::string DESKUPDIR;
 
 /**
- * @brief A unique pointer pointing to the select backend device for the program. It must be visible to the client code in order to call 
+ * @brief A unique pointer pointing to the selected backend device for the program. It must be visible to the client code in order to call 
  * the backend functions.
  * 
  * @details This global pointer gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
@@ -65,9 +65,8 @@ extern std::unique_ptr<DeskUpWindowDevice> current_window_backend;
 /**
  * @brief A function to initialize DeskUp. It must be called every time you want to use DeskUp's backend.
  * 
- * Calls:
  * 
- * @details . To access backend functions, 
+ * @details To access backend functions, 
  * see current_window_backend. This function also sets DESKUPDIR to the correct path. 
  * 
  * @see DeskUpWindowDevice

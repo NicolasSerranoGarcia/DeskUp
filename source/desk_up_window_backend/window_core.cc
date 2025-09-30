@@ -4,7 +4,6 @@ std::string DESKUPDIR;
 
 std::unique_ptr<DeskUpWindowDevice> current_window_backend = nullptr;
 
-//function to initialize the backend and choose the correct device. Previously used x11 and Windows, but now only connects windows
 int DU_Init(){
 
     const char * devName = winIsAvailable.name;
