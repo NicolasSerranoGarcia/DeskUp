@@ -77,15 +77,15 @@
 
 [] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
 
-## Reset - Linux dropped
+# RESET - Linux dropped
 
-## Clean up save-workspace PR
+## 1. Clean up save-workspace PR
 
-[] if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier lik a number
+(optional for this task) [] if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
 
 [] Clean up backend functions, document them and maybe change structure if something is not clear
 
-[] you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
+(optional for this task) [] you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
 
 [X] the create Device function takes HWND. Instead, create a method to take a HWND and set the internal desk_up_hwnd to be the passed
 
@@ -96,3 +96,8 @@
 [] notify in the documentation about the possible throws and errors of a backend function
 
 [] Say in documentation of a function, which calls does it make to other functions
+
+## <1> 2. Migrate to Qt - refactor/migrate-qt PR
+
+## <2> <1> 3. Implement CI/CD for windows again
+
