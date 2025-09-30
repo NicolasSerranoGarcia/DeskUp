@@ -6,12 +6,14 @@
 
 #include "window_core.h"
 
+namespace fs = std::filesystem;
+
 int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     
     std::string workspacePath = DESKUPDIR;
     workspacePath += "\\";
     workspacePath += workspaceName;
-    std::filesystem::create_directory((std::filesystem::path) workspacePath);
+    fs::create_directory((fs::path) workspacePath);
 
     std::vector<windowDesc> windows;
     try{
@@ -20,7 +22,7 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         std::cout << e.what();
         return 0;
     } catch(...){
-        std::cout << "Unexpected something";
+        std::cout << "Something unexpected happened when saving all windows!" << std::endl;
         return 0;
     }
 
@@ -35,10 +37,11 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         std::cout << filePath << std::endl;
         
         if(!windows[i].saveTo(filePath)){
-            std::cout << windows[i].name << " could not be saved to local";
+            //TODO: show error message in GUI. Ask user if he wants to continue or not
+            std::cout << windows[i].name << " could not be saved to local!" << std::endl;
             continue;
         }
     }
 
     return 1;
-}   
+}
