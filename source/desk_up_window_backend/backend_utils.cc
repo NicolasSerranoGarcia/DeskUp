@@ -1,19 +1,49 @@
 #include "backend_utils.h"
 
-#include <stdlib.h>
+#include <string>
+#include <windows.h>
 
+static inline void TrimCRLF(std::wstring& s) {
+    while (!s.empty() && (s.back() == L'\r' || s.back() == L'\n')) {
+        s.pop_back();
+    }
+}
+
+std::string WideStringToUTF8(LPCWCH wideString) {
+    if (!wideString) return {};
+
+    // First call: ask Windows how many bytes are needed for UTF-8 conversion (including null terminator).
+    int needed = WideCharToMultiByte(CP_UTF8, 0, wideString, -1, nullptr, 0, nullptr, nullptr);
+    if (needed <= 0) return {};
+
+    // Allocate std::string with enough space for UTF-8 result.
+    std::string utf8(needed, '\0');
+
+    // Second call: actually convert the UTF-16 wide string to UTF-8.
+    int written = WideCharToMultiByte(CP_UTF8, 0, wideString, -1, utf8.data(), needed, nullptr, nullptr);
+    if (written <= 0) return {};
+
+    // Remove the null terminator because std::string manages its own.
+    if (!utf8.empty() && utf8.back() == '\0') utf8.pop_back();
+    return utf8;
+}
 
 std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[]) {
     if (!error) return "unknown error passed as parameter!";
 
     LPWSTR messageBuffer = nullptr;
-    DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-    
+    DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER
+                | FORMAT_MESSAGE_FROM_SYSTEM
+                | FORMAT_MESSAGE_IGNORE_INSERTS;
+
+    // Call Windows API to translate an error code into a human-readable wide string.
+    // Input: error code (DWORD), flags, system language.
+    // Output: messageBuffer points to allocated wide string, charsWritten = number of wide chars.
     DWORD charsWritten = FormatMessageW(
         flags,
         nullptr,
         error,
-        0,                  // Language ID
+        0,
         reinterpret_cast<LPWSTR>(&messageBuffer),
         0,
         nullptr
@@ -21,70 +51,27 @@ std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[
 
     std::string finalMessage;
 
-    if (charsWritten) {
-        // Convert from wide-char to UTF-8
-        std::string utf8Buffer = WideStringToUTF8(messageBuffer);
-        if (!utf8Buffer.empty()) {
-            finalMessage = contextMessage;
-            finalMessage += utf8Buffer;
-        }
+    if (charsWritten && messageBuffer) {
+        // Copy the wide string into std::wstring and trim trailing CR/LF.
+        std::wstring wmsg(messageBuffer, charsWritten);
+        TrimCRLF(wmsg);
+
+        // Convert the system wide string to UTF-8 std::string.
+        std::string utf8 = WideStringToUTF8(wmsg.c_str());
+
+        // Free the buffer allocated by FormatMessageW.
         LocalFree(messageBuffer);
+
+        // Build the final message string: context text + translated system error.
+        if (contextMessage && *contextMessage) {
+            finalMessage = contextMessage;
+        }
+        finalMessage += utf8.empty() ? "Unknown Windows error." : utf8;
     } else {
-        finalMessage = contextMessage;
+        // If FormatMessageW failed, fall back to a generic message.
+        finalMessage = contextMessage ? contextMessage : "";
         finalMessage += "Unknown Windows error.";
     }
 
     return finalMessage;
-}
-
-
-std::string WideStringToUTF8(LPWSTR wideString) {
-    if (!wideString) return "";
-
-    // Input for size calculation
-    UINT codePage = CP_UTF8;                 // Convert to UTF-8
-    DWORD conversionFlags = 0;               // No special flags
-    LPCWCH sourceWideString = wideString;   // Input UTF-16 string
-    int inputCharacterCount = -1;            // Null-terminated
-    LPSTR destinationBuffer = nullptr;       // No buffer yet, we only calculate size
-    int destinationBufferSize = 0;           // Buffer size = 0
-    LPCCH defaultChar = nullptr;             // Not used
-    LPBOOL usedDefaultChar = nullptr;        // Not used
-
-    // Get required buffer size for UTF-8 string (including null terminator)
-    int utf8ByteCount = WideCharToMultiByte(
-        codePage,
-        conversionFlags,
-        sourceWideString,
-        inputCharacterCount,
-        destinationBuffer,
-        destinationBufferSize,
-        defaultChar,
-        usedDefaultChar
-    );
-
-    if (utf8ByteCount <= 0) return "";
-
-    // Allocate string to hold the UTF-8 result
-    std::string utf8String(utf8ByteCount - 1, 0); // exclude null terminator
-
-    // Set up the parameters again for the actual conversion
-    destinationBuffer = utf8String.data();
-    destinationBufferSize = utf8ByteCount;
-
-    // Perform the conversion
-    int convertedBytes = WideCharToMultiByte(
-        codePage,
-        conversionFlags,
-        sourceWideString,
-        inputCharacterCount,
-        destinationBuffer,
-        destinationBufferSize,
-        defaultChar,
-        usedDefaultChar
-    );
-
-    if (convertedBytes <= 0) return "";
-
-    return utf8String;
 }
