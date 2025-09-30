@@ -4,15 +4,33 @@ std::string DESKUPDIR;
 
 std::unique_ptr<DeskUpWindowDevice> current_window_backend = nullptr;
 
+DeskUpWindowBootStrap devices[] = { winWindowDevice };
+
+int numDevices = 1;
+
 int DU_Init(){
 
-    const char * devName = winIsAvailable.name;
-    if(!winIsAvailable.isAvailable()){
-        std::cout << devName << " is not an available backend on this system: Exiting" << std::endl;
+    DeskUpWindowDevice dev;
+    
+    std::string devName;
+
+    bool assigned = false;
+    for(int i = 0; i < numDevices; i++){
+        
+        if(!devices[i].isAvailable()){
+            std::cout << devices[i].name << " is not an available backend on this system: Exiting" << std::endl;
+            continue;
+        }
+
+        devName = devices[i].name;
+        dev = devices[i].createDevice();
+        assigned = true;
+        break;
+    }
+
+    if(!assigned){
         return 0;
     }
-    
-    DeskUpWindowDevice dev = winWindowDevice.createDevice();
 
     DESKUPDIR = dev.getDeskUpPath();
 

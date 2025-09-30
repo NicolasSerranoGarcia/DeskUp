@@ -8,7 +8,9 @@
 
 #include "backend_utils.h"
 
+
 std::unique_ptr<HWND> desk_up_hwnd = nullptr;
+
 
 struct windowData{
     HWND hwnd;
@@ -16,11 +18,7 @@ struct windowData{
 
 DeskUpWindowBootStrap winWindowDevice = {
     "win",
-    WIN_CreateDevice
-};
-
-DeskUpisAvailable winIsAvailable = {
-    "win",
+    WIN_CreateDevice,
     WIN_isAvailable
 };
 
@@ -61,58 +59,6 @@ std::string WIN_getDeskUpPath(){
     std::error_code ec; 
     std::filesystem::create_directories(p, ec);
     return p.string();
-}
-
-unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowHeight!");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    //fills pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN32 could not return the window height! Cause:";
-
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(errorMessage);
-        
-    }
-    
-    const unsigned int height = pwi.rcWindow.bottom - pwi.rcWindow.top;
-    return height;
-}
-
-unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowWidth!");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    //fills pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN32 could not return the window height! Cause:";
-
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(errorMessage);
-        
-    }
-    
-    const unsigned int width  = pwi.rcWindow.right  - pwi.rcWindow.left;
-    return width;
 }
 
 int WIN_getWindowXPos(DeskUpWindowDevice * _this){
@@ -163,6 +109,58 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this){
     
     const unsigned int y = pwi.rcWindow.top;
     return y;
+}
+
+unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
+    const windowData * data = (windowData *) _this->internalData;
+    
+    if(!data->hwnd){
+        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowWidth!");
+    }
+
+    WINDOWINFO pwi;
+    pwi.cbSize = sizeof(WINDOWINFO);
+    
+    //fills pwi with information about the given window
+    if(!GetWindowInfo(data->hwnd, &pwi)){
+        DWORD windowsError = GetLastError();
+        const char * contextMessage = "WIN32 could not return the window height! Cause:";
+
+        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
+
+        delete (windowData *) _this->internalData;
+        throw std::runtime_error(errorMessage);
+        
+    }
+    
+    const unsigned int width  = pwi.rcWindow.right  - pwi.rcWindow.left;
+    return width;
+}
+
+unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
+    const windowData * data = (windowData *) _this->internalData;
+    
+    if(!data->hwnd){
+        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowHeight!");
+    }
+
+    WINDOWINFO pwi;
+    pwi.cbSize = sizeof(WINDOWINFO);
+    
+    //fills pwi with information about the given window
+    if(!GetWindowInfo(data->hwnd, &pwi)){
+        DWORD windowsError = GetLastError();
+        const char * contextMessage = "WIN32 could not return the window height! Cause:";
+
+        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
+
+        delete (windowData *) _this->internalData;
+        throw std::runtime_error(errorMessage);
+        
+    }
+    
+    const unsigned int height = pwi.rcWindow.bottom - pwi.rcWindow.top;
+    return height;
 }
 
 //every os works with different types for interpreting paths, so work with std 
@@ -344,7 +342,7 @@ BOOL CALLBACK WIN_isDeskUp(HWND hwnd, LPARAM lparam){
     return TRUE;
 }
 
-HWND WIN_getDeskUpHWND(){
+static HWND WIN_getDeskUpHWND(){
 
     HWND myWindows;
 

@@ -66,6 +66,15 @@ struct DeskUpWindowBootStrap{
      * @date 2025
      */
     DeskUpWindowDevice (*createDevice)();
+
+    /**
+     * A pointer to function that is used to check whether if a given backend is available in the current device. 
+     * 
+     * @return \c true if the backend is available in this device, \c false otherwise
+     * @version 0.1.0
+     * @date 2025
+     */
+    bool (*isAvailable)(void);
 };
 
 #endif

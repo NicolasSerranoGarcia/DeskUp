@@ -19,4 +19,3 @@ target_sources(desk_up_window_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_
 target_sources(desk_up_window_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_core.cc)
 target_sources(desk_up_window_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/desk_up_window_device.h)
 target_sources(desk_up_window_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/desk_up_window_bootstrap.h)
-target_sources(desk_up_window_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/desk_up_is_available.h)
