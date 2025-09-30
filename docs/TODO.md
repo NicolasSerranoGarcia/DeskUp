@@ -94,3 +94,5 @@
 [] finish documenting the backend. Add a readme inside the own backend to explain how the backend works
 
 [] notify in the documentation about the possible throws and errors of a backend function
+
+[] Say in documentation of a function, which calls does it make to other functions
