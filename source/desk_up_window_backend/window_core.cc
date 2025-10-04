@@ -4,7 +4,6 @@ static DeskUpWindowBootStrap devices[] = { winWindowDevice };
 
 static int numDevices = 1;
 
-
 std::string DESKUPDIR;
 
 std::unique_ptr<DeskUpWindowDevice> current_window_backend = nullptr;

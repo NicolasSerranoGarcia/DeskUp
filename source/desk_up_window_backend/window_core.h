@@ -36,6 +36,8 @@
 #include "desk_up_window_bootstrap.h"
 
 /**
+ * @var std::string DESKUPDIR
+ * \anchor DESKUPDIR_anchor
  * @brief The path to the DeskUp saved workspace.
  * 
  * @details This global variable gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
@@ -50,6 +52,8 @@
 extern std::string DESKUPDIR;
 
 /**
+ * @var std::unique_ptr<DeskUpWindowDevice> current_window_backend
+ * \anchor current_window_backend_anchor
  * @brief A unique pointer to the selected backend device for DeskUp.
  * 
  * @details This global pointer gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
@@ -72,8 +76,8 @@ extern std::unique_ptr<DeskUpWindowDevice> current_window_backend;
  *  - Calls `getDeskUpPath()` through the device to determine the workspace base directory.
  *
  * Once initialization completes successfully:
- *  - The global variable @ref DESKUPDIR contains the DeskUp workspace path.
- *  - The global pointer @ref current_window_backend references the active backend device.
+ *  - The global variable \ref DESKUPDIR_anchor contains the DeskUp workspace path.
+ *  - The global pointer \ref current_window_backend_anchor references the active backend device.
  *
  * @note The function currently supports only the Windows backend, which internally maps to:
  *  - @ref WIN_isAvailable()

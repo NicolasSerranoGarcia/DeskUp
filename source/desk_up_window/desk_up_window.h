@@ -56,7 +56,7 @@
  * @version 0.1.1
  * @date 2025
  */
-typedef struct DeskUpWindow{
+struct DeskUpWindow{
     /**
      * @brief Saves all currently enumerated windows to a local workspace folder.
      *
@@ -84,6 +84,6 @@ typedef struct DeskUpWindow{
      *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
      */
     static int saveAllWindowsLocal(std::string workspaceName);
-} DeskUpWindow;
+};
 
 #endif
