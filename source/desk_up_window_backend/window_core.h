@@ -1,5 +1,5 @@
 /**
- * @file desk_up_window_bootstrap.h
+ * @file window_core.h
  * @brief A struct wrapper used in the DeskUp backend
  *
  * This file is part of DeskUp
