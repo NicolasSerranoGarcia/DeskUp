@@ -77,13 +77,14 @@
 
 [] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
 
+
 # RESET - Linux dropped
 
 ## 1. Clean up save-workspace PR
 
 (optional for this task) [] if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
 
-[X] Clean up backend functions, document them and maybe change structure if something is not clear
+[/] Clean up backend functions, document them and maybe change structure if something is not clear: missing desk_up_frame, desk_up and desk_up_window
 
 (optional for this task) [] you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
 
@@ -95,11 +96,16 @@
 
 [X] notify in the documentation about the possible throws and errors of a backend function
 
-[] Say in documentation of a function, which calls does it make to other functions
+[/] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
 
-[] Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
+[] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
+
+[] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
 
 ## <1> 2. Migrate to Qt - refactor/migrate-qt PR
 
 ## <2> <1> 3. Implement CI/CD for windows again
 
+##  4. Add testing for the backend and benchmarks for the app
+
+[] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
