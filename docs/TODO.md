@@ -97,6 +97,8 @@
 
 [] Say in documentation of a function, which calls does it make to other functions
 
+[] Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
+
 ## <1> 2. Migrate to Qt - refactor/migrate-qt PR
 
 ## <2> <1> 3. Implement CI/CD for windows again
