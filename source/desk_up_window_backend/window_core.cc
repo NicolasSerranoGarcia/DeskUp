@@ -1,12 +1,13 @@
 #include "window_core.h"
 
+static DeskUpWindowBootStrap devices[] = { winWindowDevice };
+
+static int numDevices = 1;
+
+
 std::string DESKUPDIR;
 
 std::unique_ptr<DeskUpWindowDevice> current_window_backend = nullptr;
-
-DeskUpWindowBootStrap devices[] = { winWindowDevice };
-
-int numDevices = 1;
 
 int DU_Init(){
 
