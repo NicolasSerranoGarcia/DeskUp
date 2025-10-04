@@ -3,12 +3,6 @@
 #include <string>
 #include <windows.h>
 
-static inline void TrimCRLF(std::wstring& s) {
-    while (!s.empty() && (s.back() == L'\r' || s.back() == L'\n')) {
-        s.pop_back();
-    }
-}
-
 std::string WideStringToUTF8(LPCWCH wideString) {
     if (!wideString) return {};
 
@@ -54,7 +48,6 @@ std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[
     if (charsWritten && messageBuffer) {
         // Copy the wide string into std::wstring and trim trailing CR/LF.
         std::wstring wmsg(messageBuffer, charsWritten);
-        TrimCRLF(wmsg);
 
         // Convert the system wide string to UTF-8 std::string.
         std::string utf8 = WideStringToUTF8(wmsg.c_str());
