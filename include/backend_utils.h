@@ -1,5 +1,5 @@
 /**
- * @file desk_up_is_available.h
+ * @file backend_utils.h
  * @brief A struct wrapper used in DeskUp backend
  *
  * This file is part of DeskUp
