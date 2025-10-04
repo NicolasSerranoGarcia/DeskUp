@@ -102,10 +102,12 @@
 
 [] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
 
-## <1> 2. Migrate to Qt - refactor/migrate-qt PR
+## 2. Implement loading workspaces - feature/load-workspace
 
-## <2> <1> 3. Implement CI/CD for windows again
+## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
-##  4. Add testing for the backend and benchmarks for the app
+## <3> <1> 4. Implement CI/CD for windows again
+
+##  5. Add testing for the backend and benchmarks for the app
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
