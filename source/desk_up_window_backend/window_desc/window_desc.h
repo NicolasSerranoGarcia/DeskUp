@@ -54,7 +54,7 @@
  * @see windowDesc::saveTo()
  * @see WIN_getAllWindows()
  */
-typedef struct windowDesc {
+struct windowDesc {
     /**
      * @brief The window name.
      * @details Usually derived from the executable name or window title.
@@ -116,6 +116,6 @@ typedef struct windowDesc {
         return !x && !y && !w && !h;
     }
 
-} windowDesc;
+};
 
 #endif

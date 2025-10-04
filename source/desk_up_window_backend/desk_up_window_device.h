@@ -118,7 +118,7 @@ struct DeskUpWindowDevice{
      * 
      * @details each backend defines WindowData, which is the template to seek the values of this pointer. Whenever a device call wants to access
      *          backend-specific info, this pointer gets casted to \c windowData* by \c std::reinterpret_cast. Then the backend accesses whatever
-     *          information it needs. Finally, the same call casts back this pointer to \void* , leaving everything as it was. 
+     *          information it needs. Finally, the same call casts back this pointer to \c void* , leaving everything as it was. 
      *          One can interpret this pointer as a "black box", or a "pouch", where the info gets thrown inside, and then reinterpreted back whenever
      *          it is needed
      * 
