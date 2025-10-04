@@ -22,6 +22,11 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         std::cout << e.what();
         return 0;
     } catch(...){
+        /*TODO: Show GUI error indicating what happened.
+        Here comes into play creating private exceptions 
+        to indicate what happened, because depending on 
+        the error, the action can be fatal, non-fatal or
+        user dependent*/
         std::cout << "Something unexpected happened when saving all windows!" << std::endl;
         return 0;
     }
