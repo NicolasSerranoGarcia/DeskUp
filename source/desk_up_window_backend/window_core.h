@@ -36,11 +36,11 @@
 #include "desk_up_window_bootstrap.h"
 
 /**
- * @brief The path to the desk Up saved workspace
+ * @brief The path to the DeskUp saved workspace.
  * 
  * @details This global variable gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
- * In the process, it calls the device getDeskUpPath() call,
- * which gets resolved to the specific backend function (like WIN_getDeskUpPath)
+ * In the process, it calls the device's getDeskUpPath() function,
+ * which is resolved to the specific backend implementation (e.g. WIN_getDeskUpPath on Windows).
  * 
  * @see DU_Init()
  * @see DeskUpWindowDevice::getDeskUpPath
@@ -50,10 +50,10 @@
 extern std::string DESKUPDIR;
 
 /**
- * @brief A unique pointer pointing to the selected backend device for the program. It must be visible to the client code in order to call 
- * the backend functions.
+ * @brief A unique pointer to the selected backend device for DeskUp.
  * 
  * @details This global pointer gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
+ * It provides access to backend-specific functions such as window enumeration, size, and position.
  * 
  * @see DU_Init()
  * @see DeskUpWindowBootStrap
@@ -63,15 +63,31 @@ extern std::string DESKUPDIR;
 extern std::unique_ptr<DeskUpWindowDevice> current_window_backend;
 
 /**
- * @brief A function to initialize DeskUp. It must be called every time you want to use DeskUp's backend.
+ * @brief Initializes the DeskUp backend system.
  * 
- * 
- * @details To access backend functions, 
- * see current_window_backend. This function also sets DESKUPDIR to the correct path. 
- * 
+ * @details This function must be called once before using any DeskUp backend feature.
+ * It iterates through the available backends (currently only the Windows backend) and:
+ *  - Calls the backend bootstrap function `isAvailable()` to check if it can be used.
+ *  - If available, calls `createDevice()` to create and configure the backend device.
+ *  - Calls `getDeskUpPath()` through the device to determine the workspace base directory.
+ *
+ * Once initialization completes successfully:
+ *  - The global variable @ref DESKUPDIR contains the DeskUp workspace path.
+ *  - The global pointer @ref current_window_backend references the active backend device.
+ *
+ * @note The function currently supports only the Windows backend, which internally maps to:
+ *  - @ref WIN_isAvailable()
+ *  - @ref WIN_CreateDevice()
+ *  - @ref WIN_getDeskUpPath()
+ *
+ * @return 1 if initialization succeeds, 0 otherwise.
+ *
  * @see DeskUpWindowDevice
  * @see DeskUpWindowBootStrap
- * @version 0.1.0
+ * @see WIN_isAvailable()
+ * @see WIN_CreateDevice()
+ * @see WIN_getDeskUpPath()
+ * @version 0.1.1
  * @date 2025
  */
 int DU_Init();
