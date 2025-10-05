@@ -100,9 +100,11 @@
 
 [] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
 
-[] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
+[X] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
 
 ## 2. Implement loading workspaces - feature/load-workspace
+
+[] Implement a function in the backend to open an executable
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
