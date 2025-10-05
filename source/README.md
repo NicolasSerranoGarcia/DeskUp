@@ -1,8 +1,8 @@
-# 🧩 DeskUp — Internal Architecture and Flow
+# DeskUp internal functioning
 
 DeskUp is organized into three main layers:
 
-- **Frontend**: high-level orchestration of window and workspace operations.
+- **Frontend**: GUI of window and workspace operations.
 - **Core**: backend initialization and management logic.
 - **Backend**: platform-specific implementations for Windows 
 
