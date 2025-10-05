@@ -17,7 +17,7 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
 
     std::vector<windowDesc> windows;
     try{
-        windows = current_window_backend.get()->getAllWindows(current_window_backend.get());
+        windows = current_window_backend.get()->getAllOpenWindows(current_window_backend.get());
     } catch(std::runtime_error &e){
         std::cout << e.what();
         return 0;

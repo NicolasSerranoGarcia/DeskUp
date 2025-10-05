@@ -64,7 +64,7 @@ DeskUpWindowDevice WIN_CreateDevice(){
     device.getWindowWidth  = WIN_getWindowWidth;
     device.getWindowXPos   = WIN_getWindowXPos;
     device.getWindowYPos   = WIN_getWindowYPos;
-    device.getAllWindows   = WIN_getAllWindows;
+    device.getAllOpenWindows   = WIN_getAllWindows;
     device.getDeskUpPath   = WIN_getDeskUpPath;
     device.loadProcessFromPath = WIN_loadProcessFromPath;
 

@@ -111,7 +111,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    std::vector<windowDesc> (*getAllWindows)(DeskUpWindowDevice * _this);
+    std::vector<windowDesc> (*getAllOpenWindows)(DeskUpWindowDevice * _this);
 
     /**
      * @brief A pointer to function that is used to open a window from a given path. If the path is empty, 
