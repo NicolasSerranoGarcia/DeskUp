@@ -8,6 +8,13 @@
 
 ---
 
+## Required installs
+
+```bash
+pacman -S --needed mingw-w64-x86_64-graphviz
+
+```
+
 ## 📁 Initial Setup
 
 1. If `build/` doesn't exist, create it:
@@ -25,7 +32,7 @@
 3. Run CMake to generate the build system:
 
    ```bash
-   cmake ..
+   cmake ../
    ```
 
    Optionally, you can add flags to enable tools or configure the build (see below).
@@ -164,13 +171,14 @@ cpack
 |--------------------------|--------------------------------------|---------|
 | `-DGENERATE_APPIMAGE=ON\|OFF` | Enables/disables the creation of an appImage | OFF |
 
-> Note: enabling `-DGENERATE_APPIMAGE` will have no effect
+> Note: enabling `-DGENERATE_APPIMAGE` will have no effect on windows
 
 ## 📚 Documentation with Doxygen
 
 ### 📝 Generate Documentation
 
 ```bash
+doxygen -u Doxyfile
 doxygen Doxyfile
 ```
 
@@ -180,11 +188,15 @@ doxygen Doxyfile
 /**
  * @brief Adds two integers.
  * 
- * This function takes two integers as input and returns their sum.
+ * @details This function takes two integers as input and returns their sum.
  * 
  * @param a First integer.
  * @param b Second integer.
  * @return The result of a + b.
+ * 
+ * @author your name <your gmail>
+ * @date 2025
+ * @version x.y
  */
 int add(int a, int b);
 ```

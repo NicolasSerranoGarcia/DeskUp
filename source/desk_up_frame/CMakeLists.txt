@@ -10,10 +10,10 @@ endif()
 
 target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window)
 target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend)
-target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/windowDesc)
+target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc)
 target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_backends/desk_up_win)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/windowDesc ${CMAKE_SOURCE_DIR}/build/source/desk_up_window_backend/windowDesc)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc ${CMAKE_SOURCE_DIR}/build/source/desk_up_window_backend/window_desc)
 
 target_link_libraries(desk_up_frame_library PUBLIC window_desc_library)
 

@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 cmake_policy(SET CMP0135 NEW)
-if(WIN32)
-    cmake_policy(SET CMP0077 NEW)
-endif()
+cmake_policy(SET CMP0077 NEW)
 
 # --- Project ---
 file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
@@ -25,31 +23,16 @@ target_compile_options(DeskUp-compiler-flags INTERFACE
 )
 
 # Link flags
-if(WIN32)
-    target_link_options(DeskUp-compiler-flags INTERFACE
-        -static
-        -static-libgcc
-        -static-libstdc++
-    )
-elseif(UNIX AND NOT APPLE)
 target_link_options(DeskUp-compiler-flags INTERFACE
--static-libgcc
--static-libstdc++
+    -static
+    -static-libgcc
+    -static-libstdc++
 )
 
-set(wxWidgets_CONFIG_EXECUTABLE "$ENV{HOME}/wx-static/bin/wx-config")
-endif()
-
 # --- Executable ---
-if (WIN32)
 add_executable(DeskUp WIN32 source/main.cc)
 enable_language(RC)
 target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
-else()
-    add_executable(DeskUp source/main.cc)
-    set(X11COMPATIBLE ON)
-    target_compile_definitions(DeskUp PUBLIC X11COMPATIBLE)
-endif()
 
 # --- wxWidgets static ---
 
@@ -69,37 +52,32 @@ include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/appImage.cmake)
 
-if(WIN32)
-    add_library(wxWidgetsDeps INTERFACE)
-    target_compile_definitions(wxWidgetsDeps INTERFACE wxWidgets_STATIC)
-    target_include_directories(wxWidgetsDeps INTERFACE ${wxWidgets_INCLUDE_DIRS})
-    target_link_libraries(wxWidgetsDeps INTERFACE ${wxWidgets_LIBRARIES})
-    target_link_libraries(wxWidgetsDeps INTERFACE
-    ${wxWidgets_LIBRARIES}
-    shlwapi
-    version
-    ole32
-    oleaut32
-    uuid
-    comctl32
-    winmm
-    ws2_32
-    gdi32
-    user32
-    kernel32
-    )
-endif()
+add_library(wxWidgetsDeps INTERFACE)
+target_compile_definitions(wxWidgetsDeps INTERFACE wxWidgets_STATIC)
+target_include_directories(wxWidgetsDeps INTERFACE ${wxWidgets_INCLUDE_DIRS})
+target_link_libraries(wxWidgetsDeps INTERFACE ${wxWidgets_LIBRARIES})
+target_link_libraries(wxWidgetsDeps INTERFACE
+${wxWidgets_LIBRARIES}
+shlwapi
+version
+ole32
+oleaut32
+uuid
+comctl32
+winmm
+ws2_32
+gdi32
+user32
+kernel32
+)
 
 # --- Sub-libraries (without linking wxWidgets) ---
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
 
-if(WIN32)
-    target_link_libraries(DeskUp PUBLIC wxWidgetsDeps)
-endif()
+target_link_libraries(DeskUp PUBLIC wxWidgetsDeps)
 
 # --- Compile definitions ---
 target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
@@ -133,11 +111,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/install")
 install(TARGETS DeskUp DESTINATION bin)
 
 # --- CPack ---
-if(WIN32)
-    set(CPACK_GENERATOR "ZIP")
-elseif(UNIX AND NOT APPLE)
-    set(CPACK_GENERATOR "TGZ")
-endif()
+set(CPACK_GENERATOR "ZIP")
 
 include(InstallRequiredSystemLibraries)
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")

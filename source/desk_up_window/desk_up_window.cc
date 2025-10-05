@@ -4,23 +4,30 @@
 #include <string>
 #include <filesystem>
 
-#include "window_global.h"
+#include "window_core.h"
+
+namespace fs = std::filesystem;
 
 int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     
     std::string workspacePath = DESKUPDIR;
     workspacePath += "\\";
     workspacePath += workspaceName;
-    std::filesystem::create_directory((std::filesystem::path) workspacePath);
+    fs::create_directory((fs::path) workspacePath);
 
     std::vector<windowDesc> windows;
     try{
-        windows = current_window_backend->getAllWindows(current_window_backend);
+        windows = current_window_backend.get()->getAllWindows(current_window_backend.get());
     } catch(std::runtime_error &e){
         std::cout << e.what();
         return 0;
     } catch(...){
-        std::cout << "Unexpected something";
+        /*TODO: Show GUI error indicating what happened.
+        Here comes into play creating private exceptions 
+        to indicate what happened, because depending on 
+        the error, the action can be fatal, non-fatal or
+        user dependent*/
+        std::cout << "Something unexpected happened when saving all windows!" << std::endl;
         return 0;
     }
 
@@ -35,10 +42,11 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         std::cout << filePath << std::endl;
         
         if(!windows[i].saveTo(filePath)){
-            std::cout << windows[i].name << " could not be saved to local";
+            //TODO: show error message in GUI. Ask user if he wants to continue or not
+            std::cout << windows[i].name << " could not be saved to local!" << std::endl;
             continue;
         }
     }
 
     return 1;
-}   
+}

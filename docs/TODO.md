@@ -62,17 +62,52 @@
 
    [] The program needs to save information about the workspace. To do this, DeskUp must save folders and files with the necessary information. Decide where this files and folders go. The way to go should be to leave them visible. the user can do whatever it wants with them. advice to not touch them if the user is not familiar with them. this way people have freedom over the use of the software
 
-   [] For the workspaces, a file for each window should be used. Each workspace will be a folder containing all the files of the window.
+   [X] For the workspaces, a file for each window should be used. Each workspace will be a folder containing all the files of the window.
 
-   [] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
+   [X] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
 
    [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
 
 [] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
     underscores (X11_) only for external API's or libraries
 
-[] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
+[X] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
 
-[] in x11 and win backends, getAllWindows functions need to set the name of the window
+[X] in x11 and win backends, getAllWindows functions need to set the name of the window
 
 [] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
+
+
+# RESET - Linux dropped
+
+## 1. Clean up save-workspace PR
+
+[] (optional for this task) if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
+
+[X] Clean up backend functions, document them and maybe change structure if something is not clear: missing desk_up_frame, desk_up and desk_up_window: desk_up_frame and desk_up may be volatile bc in the future DeskUp might migrate to Qt
+
+[] (optional for this task) you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
+
+[X] the create Device function takes HWND. Instead, create a method to take a HWND and set the internal desk_up_hwnd to be the passed
+
+[X] Make the current device be a smart pointer
+
+[X] Add a readme inside the own backend to explain how the backend works
+
+[X] notify in the documentation about the possible throws and errors of a backend function: missing desk_up_win
+
+[/] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
+
+[] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
+
+[] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
+
+## 2. Implement loading workspaces - feature/load-workspace
+
+## <1> 3. Migrate to Qt - refactor/migrate-qt PR
+
+## <3> <1> 4. Implement CI/CD for windows again
+
+##  5. Add testing for the backend and benchmarks for the app
+
+[] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...

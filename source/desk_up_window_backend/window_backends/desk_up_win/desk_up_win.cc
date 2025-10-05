@@ -8,16 +8,26 @@
 
 #include "backend_utils.h"
 
-std::unique_ptr<HWND> desk_up_hwnd = nullptr;
+
+static std::unique_ptr<HWND> desk_up_hwnd = nullptr;
 
 struct windowData{
     HWND hwnd;
-};  
-
-DU_WindowBootStrap winWindowDevice = {
-    "win",
-    WIN_CreateDevice
 };
+
+DeskUpWindowBootStrap winWindowDevice = {
+    "win",
+    WIN_CreateDevice,
+    WIN_isAvailable
+};
+
+bool WIN_isAvailable(){
+    #ifdef _WIN32
+        return true;
+    #endif
+    
+    return false;
+}
 
 std::string WIN_getDeskUpPath(){
     PWSTR wpath = nullptr;
@@ -50,73 +60,22 @@ std::string WIN_getDeskUpPath(){
     return p.string();
 }
 
-unsigned int WIN_getWindowHeight(DU_windowDevice * _this){
+int WIN_getWindowXPos(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
-        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowHeight!");
+        throw std::invalid_argument("WIN_getWindowXPos: invalid HWND");
     }
 
     WINDOWINFO pwi;
     pwi.cbSize = sizeof(WINDOWINFO);
     
-    //fills pwi with information about the given window
+    // Fill pwi with information about the given window
     if(!GetWindowInfo(data->hwnd, &pwi)){
         DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN32 could not return the window height! Cause:";
-
+        const char * contextMessage = "WIN_getWindowXPos: GetWindowInfo: ";
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-
-        throw std::runtime_error(errorMessage);
-        
-    }
-    
-    const unsigned int height = pwi.rcWindow.bottom - pwi.rcWindow.top;
-    return height;
-}
-
-unsigned int WIN_getWindowWidth(DU_windowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowWidth!");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    //fills pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN32 could not return the window height! Cause:";
-
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-
-        throw std::runtime_error(errorMessage);
-        
-    }
-    
-    const unsigned int width  = pwi.rcWindow.right  - pwi.rcWindow.left;
-    return width;
-}
-
-unsigned int WIN_getWindowXPos(DU_windowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowXPos!");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    //fills pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN32 could not return the window height! Cause:";
-
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
     
@@ -124,23 +83,22 @@ unsigned int WIN_getWindowXPos(DU_windowDevice * _this){
     return x;
 }
 
-unsigned int WIN_getWindowYPos(DU_windowDevice * _this){
+int WIN_getWindowYPos(DeskUpWindowDevice * _this){
     const windowData * data = (windowData *) _this->internalData;
     
     if(!data->hwnd){
-        throw std::invalid_argument("Invalid arguments in function WIN_GetWindowYPos!");
+        throw std::invalid_argument("WIN_getWindowYPos: invalid HWND");
     }
 
     WINDOWINFO pwi;
     pwi.cbSize = sizeof(WINDOWINFO);
     
-    //fills pwi with information about the given window
+    // Fill pwi with information about the given window
     if(!GetWindowInfo(data->hwnd, &pwi)){
         DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN32 could not return the window height! Cause:";
-
+        const char * contextMessage = "WIN_getWindowYPos: GetWindowInfo: ";
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
     
@@ -148,17 +106,63 @@ unsigned int WIN_getWindowYPos(DU_windowDevice * _this){
     return y;
 }
 
-//every os works with different types for interpreting paths, so work with std 
-std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
+unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
+    const windowData * data = (windowData *) _this->internalData;
+    
+    if(!data->hwnd){
+        throw std::invalid_argument("WIN_getWindowWidth: invalid HWND");
+    }
+
+    WINDOWINFO pwi;
+    pwi.cbSize = sizeof(WINDOWINFO);
+    
+    // Fill pwi with information about the given window
+    if(!GetWindowInfo(data->hwnd, &pwi)){
+        DWORD windowsError = GetLastError();
+        const char * contextMessage = "WIN_getWindowWidth: GetWindowInfo: ";
+        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
+        delete (windowData *) _this->internalData;
+        throw std::runtime_error(errorMessage);
+    }
+    
+    const unsigned int width  = pwi.rcWindow.right  - pwi.rcWindow.left;
+    return width;
+}
+
+unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
+    const windowData * data = (windowData *) _this->internalData;
+    
+    if(!data->hwnd){
+        throw std::invalid_argument("WIN_getWindowHeight: invalid HWND");
+    }
+
+    WINDOWINFO pwi;
+    pwi.cbSize = sizeof(WINDOWINFO);
+    
+    // Fill pwi with information about the given window
+    if(!GetWindowInfo(data->hwnd, &pwi)){
+        DWORD windowsError = GetLastError();
+        const char * contextMessage = "WIN_getWindowHeight: GetWindowInfo: ";
+        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
+        delete (windowData *) _this->internalData;
+        throw std::runtime_error(errorMessage);
+    }
+    
+    const unsigned int height = pwi.rcWindow.bottom - pwi.rcWindow.top;
+    return height;
+}
+
+std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
     const auto* data = static_cast<const windowData*>(_this->internalData);
     if (!data || !data->hwnd || !IsWindow(data->hwnd)) {
-        throw std::invalid_argument("Invalid HWND in WIN_GetPathFromWindow");
+        throw std::invalid_argument("WIN_getPathFromWindow: invalid HWND");
     }
 
     DWORD pid = 0;
     if (!GetWindowThreadProcessId(data->hwnd, &pid) || pid == 0) {
         const DWORD err = GetLastError();
-        throw std::runtime_error(getSystemErrorMessageWindows(err, "GetWindowThreadProcessId: "));
+        delete (windowData *) _this->internalData;
+        throw std::runtime_error(getSystemErrorMessageWindows(err, "WIN_getPathFromWindow: GetWindowThreadProcessId: "));
     }
 
     HANDLE processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
@@ -167,7 +171,8 @@ std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
         if(err == ERROR_ACCESS_DENIED){
             return "";
         }
-        throw std::runtime_error(getSystemErrorMessageWindows(err, "OpenProcess: "));
+        delete (windowData *) _this->internalData;
+        throw std::runtime_error(getSystemErrorMessageWindows(err, "WIN_getPathFromWindow: OpenProcess: "));
     }
 
     std::string result;
@@ -176,7 +181,7 @@ std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
         DWORD dwSize = 512;
         std::vector<wchar_t> wbuf(dwSize);
 
-        for (;;) {
+        while(1){
             DWORD size = dwSize;
             if (QueryFullProcessImageNameW(processHandle, 0, wbuf.data(), &size)) {
                 result = WideStringToUTF8(wbuf.data());
@@ -188,9 +193,10 @@ std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
                 wbuf.assign(dwSize, L'\0');
                 continue;
             }
-            throw std::runtime_error(getSystemErrorMessageWindows(err, "QueryFullProcessImageNameW: "));
+            throw std::runtime_error(getSystemErrorMessageWindows(err, "WIN_getPathFromWindow: QueryFullProcessImageNameW: "));
         }
     } catch (...) {
+        delete (windowData *) _this->internalData;
         CloseHandle(processHandle);
         throw;
     }
@@ -199,7 +205,7 @@ std::string WIN_GetPathFromWindow(DU_windowDevice* _this) {
     return result;
 }
 
-std::string WIN_GetNameFromPath(const std::string& path) {
+std::string WIN_getNameFromPath(const std::string& path) {
     if (path.empty()) {
         std::cerr << "path is empty\n";
         return "";
@@ -221,11 +227,12 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
     if (!GetWindowRect(hwnd, &r)) return TRUE;
     if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0) return TRUE;
 
-    //recover the parameters once we are inside. We can now use both DU_windowDevice and fill the vector with windows
-    std::pair<std::vector<windowDesc> *, DU_windowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DU_windowDevice *> *) reinterpret_cast<void *>(lparam);
+    // Retrieve parameters and types
+    std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> *)
+                                                                                                             reinterpret_cast<void *>(lparam);
 
     std::vector<windowDesc> * windows = parameters->first;
-    DU_windowDevice * dev = parameters->second;
+    DeskUpWindowDevice * dev = parameters->second;
 
     if(windows == nullptr){
         std::cout << "The vector of windows could not be passed to the callback!" << std::endl;
@@ -242,17 +249,16 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
         return FALSE;
     }
 
-    //skip deskUp
+    // Omit DeskUp window
     if(*desk_up_hwnd.get() == hwnd){
         return TRUE;
     }
 
-    //fill a new windowDesc and push it to 'windows'
-
+    // Build and add windowDesc
     windowDesc window;
     
     try{
-        //load the internal device with the identifier of the window so that backend functions can use them
+        // Load HWND into the device so backend functions use it
         reinterpret_cast<windowData*>(dev->internalData)->hwnd = hwnd;
 
         window.x = WIN_getWindowXPos(dev);
@@ -262,80 +268,91 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
         
         std::cout << ": " << window.x << ", " << window.y;
 
-        window.pathToExec = WIN_GetPathFromWindow(dev);
+        window.pathToExec = WIN_getPathFromWindow(dev);
         
         std::cout << window.pathToExec << std::endl;
-        window.name = WIN_GetNameFromPath(window.pathToExec);
+        window.name = WIN_getNameFromPath(window.pathToExec);
 
-        //after that erase it so that we dont use a previous hwnd by accident
+        // Clear to avoid accidentally reusing HWND
         reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
 
     } catch(std::invalid_argument &error){
-        std::cout << "An error occurred when passing arguments to the functions that return window attributes:" << error.what() << std::endl;
+        std::cout << "WIN_createAndSaveWindow: invalid argument: " << error.what() << std::endl;
         SetLastError(ERROR_BAD_ARGUMENTS);
         return FALSE;
     } catch(std::runtime_error &error){
-        std::cout << "A windows error occurred when trying to access the window properties:" << error.what() << std::endl;
+        std::cout << "WIN_createAndSaveWindow: windows error: " << error.what() << std::endl;
         SetLastError(ERROR_BAD_COMMAND);
         return FALSE;
     } catch(...){
-        std::cout << "something unexpected happened" << std::endl;
+        std::cout << "WIN_createAndSaveWindow: unexpected error" << std::endl;
         SetLastError(ERROR_FUNCTION_FAILED);
         return FALSE;
     }
-
 
     windows->push_back(window);
 
     return TRUE;
 }
 
-std::vector<windowDesc> WIN_getAllWindows(DU_windowDevice * _this){
+std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
     
     std::vector<windowDesc> windows;
 
-    std::pair<std::vector<windowDesc> *, DU_windowDevice *> callbackParameters{&windows, _this};
+    std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> callbackParameters{&windows, _this};
     
     HDESK desktop = NULL;
 
-    //we need to "fit" both the vector of the windows and the own DU_windowDevice inside the callback inside LPARAM
+    // Pass vector + device through LPARAM
     if(!EnumDesktopWindows(desktop, /*callback*/ WIN_createAndSaveWindow, reinterpret_cast<LPARAM>((void *) &callbackParameters))){
         DWORD error = GetLastError();
-        std::string errorMessage = getSystemErrorMessageWindows(error);
-        
+        std::string errorMessage = getSystemErrorMessageWindows(error, "WIN_getAllWindows: ");
+        delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
 
     return windows;
 }
 
+// For now, the app considers only the first DeskUp window
+BOOL CALLBACK WIN_isDeskUp(HWND hwnd, LPARAM lparam){
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd, &pid);
 
-DU_windowDevice * WIN_CreateDevice(HWND deskUpHWND){
-    //set all the functions of a DU_windowDevice variable to the functions of x11. Also set internalData to 
-
-    if(deskUpHWND){
-        desk_up_hwnd = std::make_unique<HWND>(deskUpHWND);
+    DWORD myPid = GetCurrentProcessId();
+    if (pid == myPid) {
+        HWND * h = reinterpret_cast<HWND*>(lparam);
+        *h = hwnd;
+        return FALSE;
     }
+    return TRUE;
+}
 
-    DU_windowDevice * device;
+static HWND WIN_getDeskUpHWND(){
 
-    try{
-        device = new DU_windowDevice;
-    } catch(std::bad_alloc &a){
-        std::cerr << a.what();
-        return nullptr;
-    }
+    HWND myWindows;
 
-    device->getWindowHeight = WIN_getWindowHeight;
-    device->getWindowWidth = WIN_getWindowWidth;
-    device->getWindowXPos = WIN_getWindowXPos;
-    device->getWindowYPos = WIN_getWindowYPos;
-    device->getAllWindows = WIN_getAllWindows;
-    device->getDeskUpPath = WIN_getDeskUpPath;
+    // For now, default desktop
+    HDESK desk = NULL;
+    EnumDesktopWindows(desk, WIN_isDeskUp, reinterpret_cast<LPARAM>(&myWindows));
 
-    device->internalData = (void *) new windowData();
+    return myWindows;
+}
 
-    
+DeskUpWindowDevice WIN_CreateDevice(){
+    // Set function pointers and initialize internal data
+    desk_up_hwnd = std::make_unique<HWND>(WIN_getDeskUpHWND());
+
+    DeskUpWindowDevice device;
+
+    device.getWindowHeight = WIN_getWindowHeight;
+    device.getWindowWidth  = WIN_getWindowWidth;
+    device.getWindowXPos   = WIN_getWindowXPos;
+    device.getWindowYPos   = WIN_getWindowYPos;
+    device.getAllWindows   = WIN_getAllWindows;
+    device.getDeskUpPath   = WIN_getDeskUpPath;
+
+    device.internalData = (void *) new windowData();
     
     return device;
 }
