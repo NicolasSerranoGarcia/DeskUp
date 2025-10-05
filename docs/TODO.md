@@ -82,11 +82,11 @@
 
 ## 1. Clean up save-workspace PR
 
-(optional for this task) [] if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
+[] (optional for this task) if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
 
 [X] Clean up backend functions, document them and maybe change structure if something is not clear: missing desk_up_frame, desk_up and desk_up_window: desk_up_frame and desk_up may be volatile bc in the future DeskUp might migrate to Qt
 
-(optional for this task) [] you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
+[] (optional for this task) you may need to work with some apps individually. Some apps do not make it easy to get info from them. Chrome, for example, does not expose the tabs as windows or something the windows API can see. You will need to create or make user install an extension to get that info, and then redirect it to deskUp.
 
 [X] the create Device function takes HWND. Instead, create a method to take a HWND and set the internal desk_up_hwnd to be the passed
 
@@ -94,7 +94,7 @@
 
 [X] Add a readme inside the own backend to explain how the backend works
 
-[/] notify in the documentation about the possible throws and errors of a backend function: missing desk_up_win
+[X] notify in the documentation about the possible throws and errors of a backend function: missing desk_up_win
 
 [/] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
 
