@@ -29,6 +29,50 @@ bool WIN_isAvailable(){
     return false;
 }
 
+// For now, the app considers only the first DeskUp window
+BOOL CALLBACK WIN_isDeskUp(HWND hwnd, LPARAM lparam){
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd, &pid);
+
+    DWORD myPid = GetCurrentProcessId();
+    if (pid == myPid) {
+        HWND * h = reinterpret_cast<HWND*>(lparam);
+        *h = hwnd;
+        return FALSE;
+    }
+    return TRUE;
+}
+
+static HWND WIN_getDeskUpHWND(){
+
+    HWND myWindows;
+
+    // For now, default desktop
+    HDESK desk = NULL;
+    EnumDesktopWindows(desk, WIN_isDeskUp, reinterpret_cast<LPARAM>(&myWindows));
+
+    return myWindows;
+}
+
+DeskUpWindowDevice WIN_CreateDevice(){
+    // Set function pointers and initialize internal data
+    desk_up_hwnd = std::make_unique<HWND>(WIN_getDeskUpHWND());
+
+    DeskUpWindowDevice device;
+
+    device.getWindowHeight = WIN_getWindowHeight;
+    device.getWindowWidth  = WIN_getWindowWidth;
+    device.getWindowXPos   = WIN_getWindowXPos;
+    device.getWindowYPos   = WIN_getWindowYPos;
+    device.getAllWindows   = WIN_getAllWindows;
+    device.getDeskUpPath   = WIN_getDeskUpPath;
+    device.loadProcessFromPath = WIN_loadProcessFromPath;
+
+    device.internalData = (void *) new windowData();
+    
+    return device;
+}
+
 std::string WIN_getDeskUpPath(){
     PWSTR wpath = nullptr;
     std::string base;
@@ -314,45 +358,30 @@ std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
     return windows;
 }
 
-// For now, the app considers only the first DeskUp window
-BOOL CALLBACK WIN_isDeskUp(HWND hwnd, LPARAM lparam){
-    DWORD pid = 0;
-    GetWindowThreadProcessId(hwnd, &pid);
+void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
 
-    DWORD myPid = GetCurrentProcessId();
-    if (pid == myPid) {
-        HWND * h = reinterpret_cast<HWND*>(lparam);
-        *h = hwnd;
-        return FALSE;
+    if(!path){
+        throw std::invalid_argument("WIN_loadProcessFromPath: the path is empty!");
     }
-    return TRUE;
-}
 
-static HWND WIN_getDeskUpHWND(){
+    if(!_this || !_this->internalData){
+        throw std::invalid_argument("WIN_loadProcessFromPath: the device!");
+    }
 
-    HWND myWindows;
+    SHELLEXECUTEINFO ShExecInfo;
+    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShExecInfo.fMask = 0;
+    ShExecInfo.hwnd = NULL;
+    ShExecInfo.lpVerb = NULL;
+    ShExecInfo.lpFile = (TCHAR *) path;
+    ShExecInfo.lpParameters = NULL;
+    ShExecInfo.lpDirectory = NULL;
+    ShExecInfo.nShow = SW_MAXIMIZE;
+    ShExecInfo.hInstApp = NULL;
 
-    // For now, default desktop
-    HDESK desk = NULL;
-    EnumDesktopWindows(desk, WIN_isDeskUp, reinterpret_cast<LPARAM>(&myWindows));
+    if(!ShellExecuteEx(&ShExecInfo)){
+        throw new std::runtime_error(getSystemErrorMessageWindows(GetLastError(), "WIN_loadProcessFromPath: "));
+    }
 
-    return myWindows;
-}
-
-DeskUpWindowDevice WIN_CreateDevice(){
-    // Set function pointers and initialize internal data
-    desk_up_hwnd = std::make_unique<HWND>(WIN_getDeskUpHWND());
-
-    DeskUpWindowDevice device;
-
-    device.getWindowHeight = WIN_getWindowHeight;
-    device.getWindowWidth  = WIN_getWindowWidth;
-    device.getWindowXPos   = WIN_getWindowXPos;
-    device.getWindowYPos   = WIN_getWindowYPos;
-    device.getAllWindows   = WIN_getAllWindows;
-    device.getDeskUpPath   = WIN_getDeskUpPath;
-
-    device.internalData = (void *) new windowData();
-    
-    return device;
+    ((windowData *)_this->internalData)->hwnd = ShExecInfo.hwnd;
 }

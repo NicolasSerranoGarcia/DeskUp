@@ -114,6 +114,17 @@ struct DeskUpWindowDevice{
     std::vector<windowDesc> (*getAllWindows)(DeskUpWindowDevice * _this);
 
     /**
+     * @brief A pointer to function that is used to open a window from a given path. If the path is empty, 
+     * 
+     * @param _this The very same instance
+     * @param path a \c const \c char* to the executable
+     * @return \c void
+     * @version 0.1.0
+     * @date 2025
+     */
+    void (*loadProcessFromPath)(DeskUpWindowDevice * _this, const char * path);
+
+    /**
      * @brief A pointer that points to the specific information needed by each backend
      * 
      * @details each backend defines WindowData, which is the template to seek the values of this pointer. Whenever a device call wants to access

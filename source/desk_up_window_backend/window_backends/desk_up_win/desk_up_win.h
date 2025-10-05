@@ -170,4 +170,16 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
  */
 std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this);
 
+/**
+ * @brief Creates a process from the specified path. 
+ *
+ * @param _this The same device instance.
+ * @param path a literal representing the path to the executable linked with the program
+ * @return \c void
+ * @throws
+ * @version 0.1.0
+ * @date 2025
+ */
+void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path);
+
 #endif
