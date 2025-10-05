@@ -4,7 +4,7 @@
   <br/>
 
   <h1>DeskUp</h1>
-  <p>A cross-platform desktop application to save and restore your workspaces instantly.</p>
+  <p>A lightweight desktop application written in C++ to save and restore your workspaces instantly.</p>
 </div>
 
 <!-- TABLE OF CONTENTS -->
@@ -17,14 +17,13 @@
     - [Key Features](#key-features)
 - [Getting Started](#getting-started)
   - [Windows](#windows)
-  - [Linux](#linux)
 - [Future Features](#future-features)
 - [Support This Project](#support)
 ---
 
 # 📖 DeskUp <a name="about-project"></a>
 
-**DeskUp** is a lightweight, cross-platform desktop application that lets you save and load your workspaces instantly.  
+**DeskUp** is a lightweight, desktop application that lets you save and load your workspaces instantly.  
 Whether you work with multiple terminals, editors, or applications, DeskUp helps you quickly restore your setup and keep your workflow organized.  
 
 ---
@@ -36,7 +35,6 @@ Whether you work with multiple terminals, editors, or applications, DeskUp helps
 
 ### Development & Tooling <a name="development-tooling"></a>
 - **Build System:** [CMake](https://cmake.org/), [CTest](https://cmake.org/cmake/help/latest/manual/ctest.1.html), [CPack](https://cmake.org/cmake/help/latest/module/CPack.html)  
-- **Packaging & Distribution:** [AppImage](https://appimage.org/) + [linuxdeploy](https://github.com/linuxdeploy/linuxdeploy)  
 - **CI/CD:** [GitHub Actions](https://github.com/features/actions)  
 - **Documentation:** [Doxygen](https://www.doxygen.nl/)  
 - **Testing:** [Google Test](https://github.com/google/googletest)  
@@ -69,30 +67,6 @@ Follow the instructions below to run **DeskUp** locally depending on your operat
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ---
-
-### 🐧 Linux <a name="linux"></a>
-
-#### Prerequisites
-- `x86_64` architecture  
-- Tested on Ubuntu 20.04+, but should work on most distributions released after ~2018
-
-#### Setup
-1. Go to [releases](https://www.github.com/NicolasSerranoGarcia/DeskUp/releases)  
-2. Download the latest `.AppImage`  
-
-#### Make it executable
-
-```bash
-chmod +x DeskUp-vX.Y.Z-x86_64.AppImage
-```
-
-#### Run
-
-```bash
-./DeskUp-vX.Y.Z-x86_64.AppImage
-```
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### 🔭 Future Features <a name="future-features"></a>
 
