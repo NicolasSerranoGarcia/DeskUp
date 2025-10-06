@@ -164,11 +164,23 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c std::vector<windowDesc> with the abstract description of each window.
  * @throws std::runtime_error If \c EnumDesktopWindows fails
- *         (message: "WIN_getAllWindows: <cause>").
+ *         (message: "WIN_getAllOpenWindows: <cause>").
  * @version 0.1.0
  * @date 2025
  */
-std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this);
+std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
+
+/**
+ * @brief Enumerates all saved windows from a workspace path
+ *
+ * @param _this The same device instance.
+ * @return \c std::vector<windowDesc> with the abstract description of each saved window.
+ * @throws std::runtime_error If \c EnumDesktopWindows fails
+ *         (message: "WIN_getAllSavedWindows: <cause>").
+ * @version 0.1.1
+ * @date 2025
+ */
+windowDesc WIN_getSavedWindow(DeskUpWindowDevice * _this, const char * pathToWorkSpace);
 
 /**
  * @brief Creates a process from the specified path. 
@@ -177,7 +189,7 @@ std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this);
  * @param path a literal representing the path to the executable linked with the program
  * @return \c void
  * @throws
- * @version 0.1.0
+ * @version 0.1.1
  * @date 2025
  */
 void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path);

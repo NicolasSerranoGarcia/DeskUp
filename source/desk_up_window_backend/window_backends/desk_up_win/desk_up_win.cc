@@ -64,7 +64,7 @@ DeskUpWindowDevice WIN_CreateDevice(){
     device.getWindowWidth  = WIN_getWindowWidth;
     device.getWindowXPos   = WIN_getWindowXPos;
     device.getWindowYPos   = WIN_getWindowYPos;
-    device.getAllOpenWindows   = WIN_getAllWindows;
+    device.getAllOpenWindows   = WIN_getAllOpenWindows;
     device.getDeskUpPath   = WIN_getDeskUpPath;
     device.loadProcessFromPath = WIN_loadProcessFromPath;
 
@@ -250,9 +250,13 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
 }
 
 std::string WIN_getNameFromPath(const std::string& path) {
+    static int unnamedWindowNum = 0;
     if (path.empty()) {
         std::cerr << "path is empty\n";
-        return "";
+        std::string p = "window";
+        p+= std::to_string(unnamedWindowNum);
+        unnamedWindowNum++;
+        return p;
     }
 
     std::string name;
@@ -339,7 +343,7 @@ BOOL CALLBACK WIN_createAndSaveWindow(HWND hwnd, LPARAM lparam){
     return TRUE;
 }
 
-std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
+std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this){
     
     std::vector<windowDesc> windows;
 
@@ -350,7 +354,7 @@ std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this){
     // Pass vector + device through LPARAM
     if(!EnumDesktopWindows(desktop, /*callback*/ WIN_createAndSaveWindow, reinterpret_cast<LPARAM>((void *) &callbackParameters))){
         DWORD error = GetLastError();
-        std::string errorMessage = getSystemErrorMessageWindows(error, "WIN_getAllWindows: ");
+        std::string errorMessage = getSystemErrorMessageWindows(error, "WIN_getAllOpenWindows: ");
         delete (windowData *) _this->internalData;
         throw std::runtime_error(errorMessage);
     }
@@ -376,7 +380,7 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
     ShExecInfo.lpFile = (TCHAR *) path;
     ShExecInfo.lpParameters = NULL;
     ShExecInfo.lpDirectory = NULL;
-    ShExecInfo.nShow = SW_MAXIMIZE;
+    ShExecInfo.nShow = SW_NORMAL;
     ShExecInfo.hInstApp = NULL;
 
     if(!ShellExecuteEx(&ShExecInfo)){
@@ -384,4 +388,12 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
     }
 
     ((windowData *)_this->internalData)->hwnd = ShExecInfo.hwnd;
+}
+
+windowDesc WIN_getSavedWindow(DeskUpWindowDevice * _this, const char * pathToDUFile){
+    if(!pathToDUFile){
+        throw std::invalid_argument("WIN_getSavedWindow: The path to the file is empty");
+    }
+
+    return {0,0,0,0,0,0};
 }
