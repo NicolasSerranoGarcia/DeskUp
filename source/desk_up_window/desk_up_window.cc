@@ -42,7 +42,7 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         std::cout << filePath << std::endl;
         
         if(!windows[i].saveTo(filePath)){
-            //TODO: show error message in GUI. Ask user if he wants to continue or not
+            //TODO: show error message in GUI. Ask user if he wants to continue or not depending on the exception thrown
             std::cout << windows[i].name << " could not be saved to local!" << std::endl;
             continue;
         }
