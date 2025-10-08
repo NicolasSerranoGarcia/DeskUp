@@ -180,7 +180,7 @@ std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
  * @version 0.2.0
  * @date 2025
  */
-windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, const char * path);
+windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path);
 
 /**
  * @brief Creates a process from the specified path. 
@@ -192,6 +192,6 @@ windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, const char * path)
  * @version 0.2.0
  * @date 2025
  */
-void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path);
+void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
 
 #endif

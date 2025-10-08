@@ -369,9 +369,9 @@ std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this){
     return windows;
 }
 
-void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
+void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path){
 
-    if(!path){
+    if(path.empty()){
         throw std::invalid_argument("WIN_loadProcessFromPath: the path is empty!");
     }
 
@@ -384,7 +384,7 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
     ShExecInfo.fMask = 0;
     ShExecInfo.hwnd = NULL;
     ShExecInfo.lpVerb = NULL;
-    ShExecInfo.lpFile = (TCHAR *) path;
+    ShExecInfo.lpFile = (TCHAR *) path.c_str();
     ShExecInfo.lpParameters = NULL;
     ShExecInfo.lpDirectory = NULL;
     ShExecInfo.nShow = SW_NORMAL;
@@ -397,59 +397,44 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
     ((windowData *)_this->internalData)->hwnd = ShExecInfo.hwnd;
 }
 
-windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, const char * path){
-    if (!path){
-        throw std::invalid_argument("WIN_recoverSavedWindow: The path to the file is empty");
-    }
-
-    fs::path p(path);
-
-    if(!fs::exists(p)){
-        throw std::invalid_argument("WIN_recoverSavedWindow: The path to the file is not valid!");
-    }
-
-    if(p.string().find(WIN_getDeskUpPath()) == std::string::npos){
-        throw std::invalid_argument("WIN_recoverSavedWindow: The path to the file is not a DeskUp workspace!");
-    }
+windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, std::filesystem::path p){
 
     std::ifstream f;
 
-    f.open(p, std::ios::in);
-
+    f.open(p.string(), std::ios::in);
+    
+    
     if(!f.is_open()){
         throw std::runtime_error("WIN_recoverSavedWindow: Could not open the file containing the window!");
     }
+    
+    windowDesc w = {"",0,0,0,0,""};
+    std::string s;
+    int i = 0;
 
-    auto parseFile = [](std::ifstream &file){
-        windowDesc w = {0,0,0,0,0,0};
-        std::string s;
-        int i = 0;
-        while(std::getline(file, s)){
-            switch(i){
-                case 0:
-                    w.pathToExec = s;
-                    w.name = WIN_getNameFromPath(s);
-                    break;
-                case 1:
-                    w.x = std::stoi(s);
-                    break;
-                case 2: 
-                    w.y = std::stoi(s);
-                    break;
-                case 3:
-                    w.w = std::stoi(s);
-                    break;
-                case 4:
-                    w.h = std::stoi(s);
-                    break;
-                default:
-                    break;
-            }
-            i++;
+    while(std::getline(f, s)){
+        switch(i){
+            case 0:
+                w.pathToExec = s;
+                w.name = WIN_getNameFromPath(s);
+                break;
+            case 1:
+                w.x = std::stoi(s);
+                break;
+            case 2: 
+                w.y = std::stoi(s);
+                break;
+            case 3:
+                w.w = std::stoi(s);
+                break;
+            case 4:
+                w.h = std::stoi(s);
+                break;
+            default:
+                break;
         }
+        i++;
+    }
 
-        return w;
-    };
-
-    return parseFile(f);
+    return w;
 }
