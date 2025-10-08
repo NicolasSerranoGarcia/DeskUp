@@ -4,9 +4,12 @@
 #include <cstdlib>
 #include <iostream>
 #include <shlobj.h>
+#include <fstream>
 #include <filesystem>
 
 #include "backend_utils.h"
+
+namespace fs = std::filesystem;
 
 
 static std::unique_ptr<HWND> desk_up_hwnd = nullptr;
@@ -55,6 +58,9 @@ static HWND WIN_getDeskUpHWND(){
 }
 
 DeskUpWindowDevice WIN_CreateDevice(){
+
+    //Initialize COM (Object Component Model), which may be used by the shell when recovering the windows from the files.
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     // Set function pointers and initialize internal data
     desk_up_hwnd = std::make_unique<HWND>(WIN_getDeskUpHWND());
 
@@ -66,7 +72,8 @@ DeskUpWindowDevice WIN_CreateDevice(){
     device.getWindowYPos   = WIN_getWindowYPos;
     device.getAllOpenWindows   = WIN_getAllOpenWindows;
     device.getDeskUpPath   = WIN_getDeskUpPath;
-    device.loadProcessFromPath = WIN_loadProcessFromPath;
+    device.loadWindowFromPath = WIN_loadProcessFromPath;
+    device.recoverSavedWindow = WIN_recoverSavedWindow;
 
     device.internalData = (void *) new windowData();
     
@@ -390,10 +397,59 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const char * path){
     ((windowData *)_this->internalData)->hwnd = ShExecInfo.hwnd;
 }
 
-windowDesc WIN_getSavedWindow(DeskUpWindowDevice * _this, const char * pathToDUFile){
-    if(!pathToDUFile){
-        throw std::invalid_argument("WIN_getSavedWindow: The path to the file is empty");
+windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, const char * path){
+    if (!path){
+        throw std::invalid_argument("WIN_recoverSavedWindow: The path to the file is empty");
     }
 
-    return {0,0,0,0,0,0};
+    fs::path p(path);
+
+    if(!fs::exists(p)){
+        throw std::invalid_argument("WIN_recoverSavedWindow: The path to the file is not valid!");
+    }
+
+    if(p.string().find(WIN_getDeskUpPath()) == std::string::npos){
+        throw std::invalid_argument("WIN_recoverSavedWindow: The path to the file is not a DeskUp workspace!");
+    }
+
+    std::ifstream f;
+
+    f.open(p, std::ios::in);
+
+    if(!f.is_open()){
+        throw std::runtime_error("WIN_recoverSavedWindow: Could not open the file containing the window!");
+    }
+
+    auto parseFile = [](std::ifstream &file){
+        windowDesc w = {0,0,0,0,0,0};
+        std::string s;
+        int i = 0;
+        while(std::getline(file, s)){
+            switch(i){
+                case 0:
+                    w.pathToExec = s;
+                    w.name = WIN_getNameFromPath(s);
+                    break;
+                case 1:
+                    w.x = std::stoi(s);
+                    break;
+                case 2: 
+                    w.y = std::stoi(s);
+                    break;
+                case 3:
+                    w.w = std::stoi(s);
+                    break;
+                case 4:
+                    w.h = std::stoi(s);
+                    break;
+                default:
+                    break;
+            }
+            i++;
+        }
+
+        return w;
+    };
+
+    return parseFile(f);
 }
