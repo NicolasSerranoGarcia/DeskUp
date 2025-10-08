@@ -30,6 +30,7 @@
 
 #include <vector>
 #include <string>
+#include <filesystem>
 
 #include "window_desc.h"
 
@@ -122,7 +123,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    void (*loadWindowFromPath)(DeskUpWindowDevice * _this, const char * path);
+    void (*loadWindowFromPath)(DeskUpWindowDevice * _this, std::string path);
 
     /**
      * @brief A pointer to function that is used to recover a window from a deskUp file, which shall be located inside appData\DeskUp
@@ -134,7 +135,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    windowDesc (*recoverSavedWindow)(DeskUpWindowDevice * _this, const char * filePath);
+    windowDesc (*recoverSavedWindow)(DeskUpWindowDevice * _this, std::filesystem::path filePath);
 
     /**
      * @brief A pointer that points to the specific information needed by each backend
