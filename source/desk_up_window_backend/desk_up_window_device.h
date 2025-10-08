@@ -122,7 +122,19 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    void (*loadProcessFromPath)(DeskUpWindowDevice * _this, const char * path);
+    void (*loadWindowFromPath)(DeskUpWindowDevice * _this, const char * path);
+
+    /**
+     * @brief A pointer to function that is used to recover a window from a deskUp file, which shall be located inside appData\DeskUp
+     * 
+     * @param _this The very same instance
+     * @param path a \c const \c char* to the executable
+     * @return A \c windowDesc representing the recovered window. If any of the recovery processes fails, the associated field will be set to
+     * the default value for it's type (int 0 and string "")
+     * @version 0.1.0
+     * @date 2025
+     */
+    windowDesc (*recoverSavedWindow)(DeskUpWindowDevice * _this, const char * filePath);
 
     /**
      * @brief A pointer that points to the specific information needed by each backend
