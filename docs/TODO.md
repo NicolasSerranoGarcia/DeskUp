@@ -108,6 +108,12 @@
 
 [] (optional for this task) If the user introduces a workspace name that already exists, show option to replace or not
 
+[] show visually all the workspaces available and let user choose one
+
+[] give an option to delete all the workspaces. 
+
+[] add an option to run deskUp on windows startup 
+
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
 ## <3> <1> 4. Implement CI/CD for windows again
