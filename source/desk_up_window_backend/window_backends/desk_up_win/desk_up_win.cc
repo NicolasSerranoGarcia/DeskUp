@@ -130,7 +130,7 @@ int WIN_getWindowXPos(DeskUpWindowDevice * _this){
         throw std::runtime_error(errorMessage);
     }
     
-    const unsigned int x = pwi.rcWindow.left;
+    const unsigned int x = pwi.rcClient.left;
     return x;
 }
 
@@ -153,7 +153,7 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this){
         throw std::runtime_error(errorMessage);
     }
     
-    const unsigned int y = pwi.rcWindow.top;
+    const unsigned int y = pwi.rcClient.top;
     return y;
 }
 
@@ -176,7 +176,7 @@ unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
         throw std::runtime_error(errorMessage);
     }
     
-    const unsigned int width  = pwi.rcWindow.right  - pwi.rcWindow.left;
+    const unsigned int width  = pwi.rcClient.right  - pwi.rcClient.left;
     return width;
 }
 
@@ -199,7 +199,7 @@ unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
         throw std::runtime_error(errorMessage);
     }
     
-    const unsigned int height = pwi.rcWindow.bottom - pwi.rcWindow.top;
+    const unsigned int height = pwi.rcClient.bottom - pwi.rcClient.top;
     return height;
 }
 

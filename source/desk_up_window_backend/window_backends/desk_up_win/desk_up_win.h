@@ -88,7 +88,7 @@ DeskUpWindowDevice WIN_CreateDevice();
 std::string WIN_getDeskUpPath();
 
 /**
- * @brief Gets the X position (top-left corner) of the active window in the device.
+ * @brief Gets the X position (top-left corner) of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c int with the X coordinate of the window.
@@ -102,7 +102,7 @@ std::string WIN_getDeskUpPath();
 int WIN_getWindowXPos(DeskUpWindowDevice * _this);
 
 /**
- * @brief Gets the Y position (top-left corner) of the active window in the device.
+ * @brief Gets the Y position (top-left corner) of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c int with the Y coordinate of the window.
@@ -116,7 +116,7 @@ int WIN_getWindowXPos(DeskUpWindowDevice * _this);
 int WIN_getWindowYPos(DeskUpWindowDevice * _this);
 
 /**
- * @brief Gets the width of the active window in the device.
+ * @brief Gets the width of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window width.
@@ -130,7 +130,7 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this);
 unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
 
 /**
- * @brief Gets the height of the active window in the device.
+ * @brief Gets the height of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window height.
