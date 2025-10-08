@@ -369,45 +369,17 @@ std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this){
     return windows;
 }
 
-void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path){
-
-    if(path.empty()){
-        throw std::invalid_argument("WIN_loadProcessFromPath: the path is empty!");
-    }
-
-    if(!_this || !_this->internalData){
-        throw std::invalid_argument("WIN_loadProcessFromPath: the device!");
-    }
-
-    SHELLEXECUTEINFO ShExecInfo;
-    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-    ShExecInfo.fMask = 0;
-    ShExecInfo.hwnd = NULL;
-    ShExecInfo.lpVerb = NULL;
-    ShExecInfo.lpFile = (TCHAR *) path.c_str();
-    ShExecInfo.lpParameters = NULL;
-    ShExecInfo.lpDirectory = NULL;
-    ShExecInfo.nShow = SW_NORMAL;
-    ShExecInfo.hInstApp = NULL;
-
-    if(!ShellExecuteEx(&ShExecInfo)){
-        throw new std::runtime_error(getSystemErrorMessageWindows(GetLastError(), "WIN_loadProcessFromPath: "));
-    }
-
-    ((windowData *)_this->internalData)->hwnd = ShExecInfo.hwnd;
-}
-
-windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, std::filesystem::path p){
+windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, std::filesystem::path path){
 
     std::ifstream f;
 
-    f.open(p.string(), std::ios::in);
+    f.open(path.string(), std::ios::in);
     
     
     if(!f.is_open()){
         throw std::runtime_error("WIN_recoverSavedWindow: Could not open the file containing the window!");
     }
-    
+
     windowDesc w = {"",0,0,0,0,""};
     std::string s;
     int i = 0;
@@ -437,4 +409,36 @@ windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, std::filesystem::path p)
     }
 
     return w;
+}
+
+void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path){
+
+    if(path.empty()){
+        throw std::invalid_argument("WIN_loadProcessFromPath: the path is empty!");
+    }
+
+    if(!_this || !_this->internalData){
+        throw std::invalid_argument("WIN_loadProcessFromPath: the device!");
+    }
+
+    SHELLEXECUTEINFO ShExecInfo;
+    ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShExecInfo.fMask = 0;
+    ShExecInfo.hwnd = NULL;
+    ShExecInfo.lpVerb = NULL;
+    ShExecInfo.lpFile = (TCHAR *) path.c_str();
+    ShExecInfo.lpParameters = NULL;
+    ShExecInfo.lpDirectory = NULL;
+    ShExecInfo.nShow = SW_NORMAL;
+    ShExecInfo.hInstApp = NULL;
+
+    if(!ShellExecuteEx(&ShExecInfo)){
+        throw new std::runtime_error(getSystemErrorMessageWindows(GetLastError(), "WIN_loadProcessFromPath: "));
+    }
+
+    ((windowData *)_this->internalData)->hwnd = ShExecInfo.hwnd;
+}
+
+void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window){
+    
 }

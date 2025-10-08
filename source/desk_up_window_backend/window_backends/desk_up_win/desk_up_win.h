@@ -188,10 +188,23 @@ windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::p
  * @param _this The same device instance.
  * @param path a literal representing the path to the executable linked with the program
  * @return \c void
- * @throws
+ * @throws std::runtime_error If \c ShellExecuteEx fails
+ *         (message: "WIN_loadProcessFromPath: <cause>").
  * @version 0.2.0
  * @date 2025
  */
 void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
+
+/**
+ * @brief Resizes a window according to the windowDesc parameter geometry.
+ *
+ * @param _this The same device instance.
+ * @param window a windowDesc instance which geometry wants to be used to resize the window
+ * @return \c void
+ * @throws
+ * @version 0.2.0
+ * @date 2025
+ */
+void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
 
 #endif
