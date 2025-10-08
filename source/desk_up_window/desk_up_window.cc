@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <filesystem>
+#include <cctype>
 
 #include "window_core.h"
 
@@ -50,3 +51,33 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
 
     return 1;
 }
+
+int DeskUpWindow::restoreWindows(std::string workspaceName){
+    //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace), 
+    //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
+
+    fs::path p (DESKUPDIR);
+    p = p / workspaceName;
+
+    std::error_code err;
+    if(!fs::exists(p, err) || err){
+        throw std::invalid_argument("restoreWindows: The workspace name is not valid!");
+    }
+
+    try{
+        for(auto const &file : fs::directory_iterator{p}){
+            windowDesc w = current_window_backend.get()->recoverSavedWindow(current_window_backend.get(), file.path());
+            current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), w.pathToExec);
+        }
+    } catch(const fs::filesystem_error &e){
+        std::cout << e.what() << std::endl;
+    } catch(const std::runtime_error &r){
+        std::cout << r.what() << std::endl;
+    } catch(const std::invalid_argument &a){
+        std::cout << a.what() << std::endl;
+    } catch(const std::exception &ex){
+        std::cout << ex.what() << std::endl;
+    }
+
+    return 1;
+};

@@ -84,6 +84,9 @@ struct DeskUpWindow{
      *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
      */
     static int saveAllWindowsLocal(std::string workspaceName);
+
+
+    static int restoreWindows(std::string workspaceName);
 };
 
 #endif
