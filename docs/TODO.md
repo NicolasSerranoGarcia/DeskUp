@@ -104,7 +104,9 @@
 
 ## 2. Implement loading workspaces - feature/load-workspace
 
-[] Implement a function in the backend to open an executable
+[X] Implement a function in the backend to open an executable
+
+[] (optional for this task) If the user introduces a workspace name that already exists, show option to replace or not
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
