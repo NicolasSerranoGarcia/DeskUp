@@ -1,4 +1,4 @@
-# 🧩 DeskUp — Internal Architecture and Flow
+# DeskUp — Internal Architecture and Flow
 
 DeskUp is organized into three main layers:
 
@@ -10,7 +10,7 @@ This document is here for anyone to have a clear understanding of how DeskUp ope
 
 ---
 
-## 1️⃣ Initialization — Choosing and bootstrapping a backend
+## 1️. Initialization — Choosing and bootstrapping a backend
 
 When DeskUp starts, the application calls `DU_Init`
 (declared in [`source/desk_up_window_backend/window_core.h`](./desk_up_window_backend/window_core.h)
@@ -36,7 +36,7 @@ If none is available, it returns `0`.
 
 ---
 
-## 2️⃣ High-level operations — DeskUpWindow façade
+## 2️. High-level operations — DeskUpWindow façade
 
 `DeskUpWindow` is defined in
 [`source/desk_up_window/desk_up_window.h`](./desk_up_window/desk_up_window.h)
@@ -57,7 +57,7 @@ If any backend or I/O operation fails, the function catches the exception and re
 
 ---
 
-## 3️⃣ Window representation — The `windowDesc` structure
+## 3️. Window representation — The `windowDesc` structure
 
 Defined in [`source/desk_up_window_backend/window_desc/window_desc.h`](./desk_up_window_backend/window_desc/window_desc.h)
 and implemented in [`source/desk_up_window_backend/window_desc/window_desc.cc`](./desk_up_window_backend/window_desc/window_desc.cc).
@@ -76,7 +76,7 @@ Each `windowDesc` instance represents a window in an abstract, cross-platform wa
 
 ---
 
-## 4️⃣ Backend implementation — Windows
+## 4. Backend implementation — Windows
 
 The Windows backend lives in
 [`source/desk_up_window_backend/window_backends/desk_up_win/desk_up_win.h`](./desk_up_window_backend/window_backends/desk_up_win/desk_up_win.h)
@@ -91,7 +91,7 @@ DeskUpWindowBootStrap winWindowDevice = {
 };
 ```
 
-### 🔹 Backend creation
+### Backend creation
 - `WIN_CreateDevice()` builds a new `DeskUpWindowDevice` and wires function pointers for:
   - `getAllWindows`
   - `getWindowHeight`, `getWindowWidth`, `getWindowXPos`, `getWindowYPos`
@@ -100,7 +100,7 @@ DeskUpWindowBootStrap winWindowDevice = {
   
 All the common functions necessary for any platform to make deskUp work. If there are platfrom-specific calls, they won't appear in the API.
 
-### 🔹 Enumerating windows
+### Enumerating windows
 `WIN_getAllWindows()` calls `EnumDesktopWindows`, which triggers a callback to:
 1. Skip invisible or zero-sized windows.
 2. Populate a `windowDesc` using:
@@ -109,7 +109,7 @@ All the common functions necessary for any platform to make deskUp work. If ther
      `GetWindowThreadProcessId` → `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)` → `QueryFullProcessImageNameW`.
 3. Append each valid record to a `std::vector<windowDesc>`.
 
-### 🔹 Workspace path resolution
+### Workspace path resolution
 `WIN_getDeskUpPath()` determines the folder:
 - Uses `SHGetKnownFolderPath(FOLDERID_RoamingAppData)` when available.
 - Falls back to `%APPDATA%` or the executable directory.
@@ -117,28 +117,28 @@ All the common functions necessary for any platform to make deskUp work. If ther
 
 ---
 
-## 5️⃣ How everything connects — Flow summary
+## 5️. How everything connects — Flow summary
 
 ```text
 DU_Init()
-  ├─> winWindowDevice.isAvailable() → WIN_isAvailable()
-  ├─> winWindowDevice.createDevice() → WIN_CreateDevice()
-  ├─> dev.getDeskUpPath() → WIN_getDeskUpPath()
-  └─> sets DESKUPDIR and current_window_backend
+  |--> winWindowDevice.isAvailable() -> WIN_isAvailable()
+  |--> winWindowDevice.createDevice() -> WIN_CreateDevice()
+  |--> dev.getDeskUpPath() -> WIN_getDeskUpPath()
+  \--> sets DESKUPDIR and current_window_backend
 
 DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
-  ├─> builds <DESKUPDIR>\WorkspaceName
-  ├─> current_window_backend->getAllWindows(...) → WIN_getAllWindows()
-  │     ├─> EnumDesktopWindows → WIN_createAndSaveWindow()
-  │     └─> fills std::vector<windowDesc>
-  ├─> iterates vector
-  │     └─> windowDesc::saveTo(<workspace path>)
-  └─> returns success (1) or failure (0)
+  |--> builds <DESKUPDIR>\WorkspaceName
+  |--> current_window_backend->getAllWindows(...) -> WIN_getAllWindows()
+  |     |--> EnumDesktopWindows -> WIN_createAndSaveWindow()
+  |     \--> fills std::vector<windowDesc>
+  |--> iterates vector
+  |     \--> windowDesc::saveTo(<workspace path>)
+  \--> returns success (1) or failure (0)
 ```
 
 ---
 
-## 6️⃣ File map
+## 6️. File map
 
 | Layer | Path | Description |
 |-------|------|--------------|
@@ -153,7 +153,7 @@ DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
 
 ---
 
-## 7️⃣ Extensibility
+## 7️. Extensibility
 
 DeskUp’s modular design allows adding new platforms easily.
 
