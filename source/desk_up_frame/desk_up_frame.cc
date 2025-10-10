@@ -106,7 +106,6 @@ void DeskUpFrame::OnRestore(wxCommandEvent& event)
     }
 
     if (!DeskUpWindow::restoreWindows(workspaceName.ToStdString())){
-        wxMessageBox("Something went wrong! Please restart Desk Up", "Desk Up error", wxOK | wxICON_INFORMATION);
-        wxExit();
+        wxMessageBox("The workspace does not exist!", "No workspace", wxOK | wxICON_INFORMATION);
     }
 }
