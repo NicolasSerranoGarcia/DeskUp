@@ -120,10 +120,10 @@ struct DeskUpWindowDevice{
      * @param _this The very same instance
      * @param path a \c const \c char* to the executable
      * @return \c void
-     * @version 0.1.0
+     * @version 0.2.0
      * @date 2025
      */
-    void (*loadWindowFromPath)(DeskUpWindowDevice * _this, std::string path);
+    void (*loadWindowFromPath)(DeskUpWindowDevice * _this, const std::string path);
 
     /**
      * @brief A pointer to function that is used to recover a window from a deskUp file, which shall be located inside appData\DeskUp
@@ -132,10 +132,36 @@ struct DeskUpWindowDevice{
      * @param path a \c const \c char* to the executable
      * @return A \c windowDesc representing the recovered window. If any of the recovery processes fails, the associated field will be set to
      * the default value for it's type (int 0 and string "")
-     * @version 0.1.0
+     * @version 0.2.0
      * @date 2025
      */
     windowDesc (*recoverSavedWindow)(DeskUpWindowDevice * _this, std::filesystem::path filePath);
+
+    /**
+     * @brief A pointer to function that is used to resize a given window.
+     * 
+     * @details Information about the window whose geometry is intended to modify must be specified inside the \c _this->internalData parameter
+     * 
+     * 
+     * @param _this The very same instance
+     * @param path a \c windowDesc instance whose geometry wants to be used for the resizing
+     * @return A \c void
+     * @version 0.2.0
+     * @date 2025
+     */
+    void (*resizeWindow)(DeskUpWindowDevice * _this, const windowDesc window);
+
+        /**
+     * @brief A pointer to function that is used to close all the windows associated with a given path.
+     * 
+     * @param _this The very same instance
+     * @param path a \c std::string instance that represents the path
+     * @param allowForce Whether if the call should force the program to close
+     * @return The number of closed windows from a specific app
+     * @version 0.2.0
+     * @date 2025
+     */
+    unsigned int (*closeWindowFromPath)(DeskUpWindowDevice * _this, const std::string& path, bool allowForce);
 
     /**
      * @brief A pointer that points to the specific information needed by each backend
