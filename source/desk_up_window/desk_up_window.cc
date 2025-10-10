@@ -61,14 +61,19 @@ int DeskUpWindow::restoreWindows(std::string workspaceName){
 
     std::error_code err;
     if(!fs::exists(p, err) || err){
-        throw std::invalid_argument("restoreWindows: The workspace name is not valid!");
+        //TODO: throw an exception that represents that the workspace name does not exist
+        return 0;
     }
 
     try{
         for(auto const &file : fs::directory_iterator{p}){
             windowDesc w = current_window_backend.get()->recoverSavedWindow(current_window_backend.get(), file.path());
+            std::cout << w.x << " " << w.y << " " << w.w << " " << w.h << w.pathToExec << std::endl;
+            current_window_backend.get()->closeWindowFromPath(current_window_backend.get(), w.pathToExec, true);
             current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), w.pathToExec);
+            current_window_backend.get()->resizeWindow(current_window_backend.get(), w);
         }
+    //in the future, different exceptions must rethrow or do different things
     } catch(const fs::filesystem_error &e){
         std::cout << e.what() << std::endl;
     } catch(const std::runtime_error &r){
@@ -77,6 +82,9 @@ int DeskUpWindow::restoreWindows(std::string workspaceName){
         std::cout << a.what() << std::endl;
     } catch(const std::exception &ex){
         std::cout << ex.what() << std::endl;
+    } catch(...){
+        std::cout << "Something unexpected happened!" << std::endl;
+        return 0;
     }
 
     return 1;

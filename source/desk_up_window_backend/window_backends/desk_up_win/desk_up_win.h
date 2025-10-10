@@ -197,6 +197,8 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
 
 /**
  * @brief Resizes a window according to the windowDesc parameter geometry.
+ * 
+ * @details Information about the window whose geometry is intended to modify must be specified inside the \c _this->internalData parameter
  *
  * @param _this The same device instance.
  * @param window a windowDesc instance which geometry wants to be used to resize the window
@@ -206,5 +208,19 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
  * @date 2025
  */
 void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
+
+/**
+ * @brief This function closes all the instances associated with an executable, specified by the \c path parameter.
+ * 
+ *
+ * @param _this The same device instance.
+ * @param path A \c std::string instance representing the path to check
+ * @param allowForce Whether if the call should force the windows it finds to close
+ * @return \c The number of associated windows closed in the process
+ * @throws
+ * @version 0.2.0
+ * @date 2025
+ */
+unsigned int WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
 
 #endif
