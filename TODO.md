@@ -116,12 +116,10 @@
 
 [] (optional for this task) give an option to clear all the tabs when opening a workspace or not.
 
-[] when restoring the workspaces, it would be nice to restore them in the same z-index they were
-
-[] Some apps are linked with windows, because maybe the user downloaded them in the appstore. This makes it so that they
+[] (optional for this task) Some apps are linked with windows, because maybe the user downloaded them in the appstore. This makes it so that they
 don't have an easy access when saving their info. Treat this in some way.(UWP)
 
-[] look into github pages for the documentation, and link it to your main portfolio page
+[] (optional for this task) look into github pages for the documentation, and link it to your main portfolio page
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
