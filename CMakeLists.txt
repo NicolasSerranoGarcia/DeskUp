@@ -58,7 +58,14 @@ target_compile_definitions(wxWidgetsDeps INTERFACE wxWidgets_STATIC)
 target_include_directories(wxWidgetsDeps INTERFACE ${wxWidgets_INCLUDE_DIRS})
 target_link_libraries(wxWidgetsDeps INTERFACE ${wxWidgets_LIBRARIES})
 target_link_libraries(wxWidgetsDeps INTERFACE
-${wxWidgets_LIBRARIES}
+${wxWidgets_LIBRARIES})
+
+# --- Sub-libraries (without linking wxWidgets) ---
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
+
+target_link_libraries(DeskUp PUBLIC wxWidgetsDeps
 shlwapi
 version
 ole32
@@ -69,15 +76,7 @@ winmm
 ws2_32
 gdi32
 user32
-kernel32
-)
-
-# --- Sub-libraries (without linking wxWidgets) ---
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
-
-target_link_libraries(DeskUp PUBLIC wxWidgetsDeps)
+kernel32)
 
 # --- Compile definitions ---
 target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
