@@ -88,7 +88,7 @@ DeskUpWindowDevice WIN_CreateDevice();
 std::string WIN_getDeskUpPath();
 
 /**
- * @brief Gets the X position (top-left corner) of the active window in the device.
+ * @brief Gets the X position (top-left corner) of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c int with the X coordinate of the window.
@@ -102,7 +102,7 @@ std::string WIN_getDeskUpPath();
 int WIN_getWindowXPos(DeskUpWindowDevice * _this);
 
 /**
- * @brief Gets the Y position (top-left corner) of the active window in the device.
+ * @brief Gets the Y position (top-left corner) of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c int with the Y coordinate of the window.
@@ -116,7 +116,7 @@ int WIN_getWindowXPos(DeskUpWindowDevice * _this);
 int WIN_getWindowYPos(DeskUpWindowDevice * _this);
 
 /**
- * @brief Gets the width of the active window in the device.
+ * @brief Gets the width of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window width.
@@ -130,7 +130,7 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this);
 unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
 
 /**
- * @brief Gets the height of the active window in the device.
+ * @brief Gets the height of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window height.
@@ -164,10 +164,63 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c std::vector<windowDesc> with the abstract description of each window.
  * @throws std::runtime_error If \c EnumDesktopWindows fails
- *         (message: "WIN_getAllWindows: <cause>").
+ *         (message: "WIN_getAllOpenWindows: <cause>").
  * @version 0.1.0
  * @date 2025
  */
-std::vector<windowDesc> WIN_getAllWindows(DeskUpWindowDevice * _this);
+std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
+
+/**
+ * @brief Enumerates all saved windows from a workspace path
+ *
+ * @param _this The same device instance.
+ * @return \c std::vector<windowDesc> with the abstract description of each saved window.
+ * @throws std::runtime_error If \c EnumDesktopWindows fails
+ *         (message: "WIN_getAllSavedWindows: <cause>").
+ * @version 0.2.0
+ * @date 2025
+ */
+windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path);
+
+/**
+ * @brief Creates a process from the specified path. 
+ *
+ * @param _this The same device instance.
+ * @param path a literal representing the path to the executable linked with the program
+ * @return \c void
+ * @throws std::runtime_error If \c ShellExecuteEx fails
+ *         (message: "WIN_loadProcessFromPath: <cause>").
+ * @version 0.2.0
+ * @date 2025
+ */
+void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
+
+/**
+ * @brief Resizes a window according to the windowDesc parameter geometry.
+ * 
+ * @details Information about the window whose geometry is intended to modify must be specified inside the \c _this->internalData parameter
+ *
+ * @param _this The same device instance.
+ * @param window a windowDesc instance which geometry wants to be used to resize the window
+ * @return \c void
+ * @throws
+ * @version 0.2.0
+ * @date 2025
+ */
+void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
+
+/**
+ * @brief This function closes all the instances associated with an executable, specified by the \c path parameter.
+ * 
+ *
+ * @param _this The same device instance.
+ * @param path A \c std::string instance representing the path to check
+ * @param allowForce Whether if the call should force the windows it finds to close
+ * @return \c The number of associated windows closed in the process
+ * @throws
+ * @version 0.2.0
+ * @date 2025
+ */
+unsigned int WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
 
 #endif

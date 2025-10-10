@@ -50,7 +50,7 @@
  * @see DU_Init
  * @see DESKUPDIR
  * @see current_window_backend
- * @see DeskUpWindowDevice::getAllWindows
+ * @see DeskUpWindowDevice::getAllOpenWindows
  * @see windowDesc
  * @see windowDesc::saveTo
  * @version 0.1.1
@@ -67,7 +67,7 @@ struct DeskUpWindow{
      * `windowDesc::saveTo()`. Backend errors are handled internally.
      *
      * **Calls (indirectly through the backend):**
-     * - `DeskUpWindowDevice::getAllWindows(DeskUpWindowDevice*)`
+     * - `DeskUpWindowDevice::getAllOpenWindows(DeskUpWindowDevice*)`
      * - `windowDesc::saveTo(const std::string&)`
      *
      * **Reads:**
@@ -84,6 +84,9 @@ struct DeskUpWindow{
      *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
      */
     static int saveAllWindowsLocal(std::string workspaceName);
+
+
+    static int restoreWindows(std::string workspaceName);
 };
 
 #endif

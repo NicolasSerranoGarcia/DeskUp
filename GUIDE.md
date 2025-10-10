@@ -12,7 +12,15 @@
 
 ```bash
 pacman -S --needed mingw-w64-x86_64-graphviz
-
+pacman -Syu
+pacman -S mingw-w64-x86_64-texlive-bin \
+          mingw-w64-x86_64-texlive-core \
+          mingw-w64-x86_64-texlive-latex-recommended \
+          mingw-w64-x86_64-texlive-latex-extra
+pacman -S mingw-w64-x86_64-texlive-plain-generic
+pacman -S mingw-w64-x86_64-texlive-fonts-recommended
+pacman -S mingw-w64-x86_64-texlive-extra-utils \
+          mingw-w64-x86_64-ghostscript
 ```
 
 ## 📁 Initial Setup
@@ -180,6 +188,7 @@ cpack
 ```bash
 doxygen -u Doxyfile
 doxygen Doxyfile
+pdflatex --shell-escape refman.tex
 ```
 
 ### 🧾 Example of Doxygen-style Comment:

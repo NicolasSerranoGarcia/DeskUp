@@ -3,6 +3,11 @@
 #include "desk_up_window.h"
 #include "window_core.h"
 
+enum {
+    ID_AddWorkspace = 1,
+    ID_RestoreWorkspace,
+};
+
 DeskUpFrame::DeskUpFrame()
         : wxFrame(nullptr, wxID_ANY, "DeskUp")
 {
@@ -15,7 +20,8 @@ DeskUpFrame::DeskUpFrame()
     }
 
     wxMenu *menuFile = new wxMenu;
-    menuFile->Append(wxID_ADD, "Add workspace \tctrl+N");
+    menuFile->Append(ID_AddWorkspace, "Add workspace \tctrl+N");
+    menuFile->Append(ID_RestoreWorkspace, "Restore workspace \tctrl+R");
     menuFile->AppendSeparator();
     menuFile->Append(wxID_EXIT);
  
@@ -23,7 +29,7 @@ DeskUpFrame::DeskUpFrame()
     menuHelp->Append(wxID_ABOUT);
  
     wxMenuBar *menuBar = new wxMenuBar;
-    menuBar->Append(menuFile, "&File");
+    menuBar->Append(menuFile, "&Workspace");
     menuBar->Append(menuHelp, "&Help");
  
     SetMenuBar(menuBar);
@@ -31,9 +37,10 @@ DeskUpFrame::DeskUpFrame()
     CreateStatusBar();
     SetStatusText("Welcome to DeskUp!");
 
-    Bind(wxEVT_MENU, &DeskUpFrame::OnAdd, this, wxID_ADD);
+    Bind(wxEVT_MENU, &DeskUpFrame::OnAdd, this, ID_AddWorkspace);
     Bind(wxEVT_MENU, &DeskUpFrame::OnAbout, this, wxID_ABOUT);
     Bind(wxEVT_MENU, &DeskUpFrame::OnExit, this, wxID_EXIT);
+    Bind(wxEVT_MENU, &DeskUpFrame::OnRestore, this, ID_RestoreWorkspace);
 }
 
 void DeskUpFrame::OnExit(wxCommandEvent& event)
@@ -75,4 +82,30 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
         wxExit();
     }
 
+}
+
+void DeskUpFrame::OnRestore(wxCommandEvent& event)
+{
+        wxString workspaceName;
+
+    while(1){
+
+        wxTextEntryDialog createWorkspace(this, "Enter the workspace name", "Restore workspace");
+        
+        if(createWorkspace.ShowModal() != wxID_OK){
+            return;
+        } 
+
+        workspaceName = createWorkspace.GetValue();
+
+        if(!workspaceName.empty()){
+            break;
+        }
+        
+        wxMessageBox("The workspace name cannot be empty!", "Workspace name", wxOK | wxICON_INFORMATION);
+    }
+
+    if (!DeskUpWindow::restoreWindows(workspaceName.ToStdString())){
+        wxMessageBox("The workspace does not exist!", "No workspace", wxOK | wxICON_INFORMATION);
+    }
 }

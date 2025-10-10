@@ -2,6 +2,7 @@
 
 #include <string>
 #include <windows.h>
+#include <algorithm>
 
 std::string WideStringToUTF8(LPCWCH wideString) {
     if (!wideString) return {};
@@ -67,4 +68,34 @@ std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[
     }
 
     return finalMessage;
+}
+
+std::string toLowerStr(const std::string& s){
+    
+    std::string res;
+    res.reserve(s.size());
+    for (unsigned char c : s) {
+        res += static_cast<char>(std::tolower(c));
+    }
+    return res;
+}
+
+std::string normalizePathLower(const std::string& p){
+    std::string s = p;
+    std::replace(s.begin(), s.end(), '/', '\\');
+    return toLowerStr(s);
+}
+
+std::wstring UTF8ToWide(const std::string& s){
+    if (s.empty()){
+        return L"";
+    }
+
+    //get the necessary size that the conversion will need
+    int n = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), nullptr, 0);
+    //create a string with that size to assure capacity
+    std::wstring w(n, L'\0');
+    //make the conversion
+    MultiByteToWideChar(CP_UTF8, 0, s.c_str(), (int)s.size(), w.data(), n);
+    return w;
 }

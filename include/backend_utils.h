@@ -30,7 +30,17 @@
 
 #include <Windows.h>
 #include <string>
-    
+
+
+/**
+ * @brief A function to convert from any wide char type to UTF-8. Used as a helper for getSystemErrorMessageWindows()
+ * 
+ * @param wideString A char chain of UTF-16 or other type of formatting 
+ * @return \c std::string representing the string passed as a parameter converted to UTF-8
+ * @version 0.1.0
+ * @date 2025
+ */
+std::string WideStringToUTF8(LPCWCH wideString);
 
 /**
  * @brief A function to convert a Windows error (the return of GetLastError() for example) to a readable error that can be printed
@@ -44,13 +54,34 @@
 std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[] = ""); 
 
 /**
- * @brief A function to convert from any wide char type to UTF-8. Used as a helper for getSystemErrorMessageWindows()
+ * @brief A function to convert a string to its lowercase version. Note that it does not alter the original string
  * 
- * @param wideString A char chain of UTF-16 or other type of formatting 
- * @return \c std::string representing the string passed as a parameter converted to UTF-8
- * @version 0.1.0
+ * @param s the string to convert to lowercase
+ * @return \c std::string representing the lowercase version
+ * @version 0.2.0
  * @date 2025
  */
-std::string WideStringToUTF8(LPCWCH wideString);
+std::string toLowerStr(const std::string& s);
+
+/**
+ * @brief A function to convert a generic path to a windows path using backslash path and later convert it to lowercase. Note that 
+ * it does not alter the original string. 
+ * 
+ * @param s the string path to alter
+ * @return \c std::string representing the altered path
+ * @version 0.2.0
+ * @date 2025
+ */
+std::string normalizePathLower(const std::string& p);
+
+/**
+ * @brief A function to convert a normal string into a wide one. Note that the original string doesn't get altered
+ * 
+ * @param s the string intended to convert
+ * @return \c std::wstring representing the wide string
+ * @version 0.2.0
+ * @date 2025
+ */
+std::wstring UTF8ToWide(const std::string& s);
 
 #endif

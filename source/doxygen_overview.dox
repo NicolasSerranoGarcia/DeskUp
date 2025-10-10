@@ -121,19 +121,19 @@ DeskUpWindowBootStrap winWindowDevice = {
 
 ```text
 DU_Init()
-  ├─> winWindowDevice.isAvailable() → WIN_isAvailable()
-  ├─> winWindowDevice.createDevice() → WIN_CreateDevice()
-  ├─> dev.getDeskUpPath() → WIN_getDeskUpPath()
-  └─> sets DESKUPDIR and current_window_backend
+  |--> winWindowDevice.isAvailable() -> WIN_isAvailable()
+  |--> winWindowDevice.createDevice() -> WIN_CreateDevice()
+  |--> dev.getDeskUpPath() -> WIN_getDeskUpPath()
+  \--> sets DESKUPDIR and current_window_backend
 
 DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
-  ├─> builds <DESKUPDIR>\WorkspaceName
-  ├─> current_window_backend->getAllWindows(...) → WIN_getAllWindows()
-  │     ├─> EnumDesktopWindows → WIN_createAndSaveWindow()
-  │     └─> fills std::vector<windowDesc>
-  ├─> iterates vector
-  │     └─> windowDesc::saveTo(<workspace path>)
-  └─> returns success (1) or failure (0)
+  |--> builds <DESKUPDIR>\WorkspaceName
+  |--> current_window_backend->getAllWindows(...) -> WIN_getAllWindows()
+  |     |--> EnumDesktopWindows -> WIN_createAndSaveWindow()
+  |     \--> fills std::vector<windowDesc>
+  |--> iterates vector
+  |     \--> windowDesc::saveTo(<workspace path>)
+  \--> returns success (1) or failure (0)
 ```
 
 ---
