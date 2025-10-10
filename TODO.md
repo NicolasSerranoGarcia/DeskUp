@@ -121,6 +121,8 @@
 [] Some apps are linked with windows, because maybe the user downloaded them in the appstore. This makes it so that they
 don't have an easy access when saving their info. Treat this in some way.(UWP)
 
+[] look into github pages for the documentation, and link it to your main portfolio page
+
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
 ## <3> <1> 4. Implement CI/CD for windows again
