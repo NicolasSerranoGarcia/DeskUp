@@ -108,13 +108,18 @@
 
 [] (optional for this task) If the user introduces a workspace name that already exists, show option to replace or not
 
-[] show visually all the workspaces available and let user choose one
+[] (optional for this task) show visually all the workspaces available and let user choose one
 
-[] give an option to delete all the workspaces. 
+[] (optional for this task) give an option to delete all the workspaces. 
 
-[] add an option to run deskUp on windows startup 
+[] (optional for this task) add an option to run deskUp on windows startup 
 
-[] when saving the windows, also save the z-component of the window
+[] (optional for this task) give an option to clear all the tabs when opening a workspace or not.
+
+[] when restoring the workspaces, it would be nice to restore them in the same z-index they were
+
+[] Some apps are linked with windows, because maybe the user downloaded them in the appstore. This makes it so that they
+don't have an easy access when saving their info. Treat this in some way.(UWP)
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
@@ -123,3 +128,15 @@
 ##  5. Add testing for the backend and benchmarks for the app
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
+
+## 6. Migrate to the wide (W sufix) version of the windows API
+
+This essentially means chaning string types to wide ones and doing #define UNICODE before including windows.h
+
+## 7. Support for browsers: Create an extension to gather information about the tabs and windows.
+
+[] implement a pipeline with the extension that is able to recover the information of the tabs before saving the workspace.
+The resulting information in the file saved should be marked as being a browser, which, tabs, windows, visibility... and then when loading it, it should do kind of the same thing as the desk up backend: The recovered information should be the same regardless of the browser, but
+when executing it in the terminal, you should change the command depending on the browser.
+
+# MILESTONE 1.0.0 STABLE
