@@ -188,6 +188,7 @@ cpack
 ```bash
 doxygen -u Doxyfile
 doxygen Doxyfile
+pdflatex --shell-escape refman.tex
 ```
 
 ### 🧾 Example of Doxygen-style Comment:
