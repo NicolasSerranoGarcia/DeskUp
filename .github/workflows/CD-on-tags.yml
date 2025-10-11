@@ -133,9 +133,9 @@ jobs:
         tag_name: ${{ github.ref_name }}
         release_name: Release ${{ github.ref_name }}
         body: |
-          ### 🔒 Windows Security Notice
+          ### Windows Security Notice
 
-          ⚠️ When running the `.exe` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
+          When running the `.exe` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
 
           This application is safe to use and does **not** contain any malware. The warning appears simply because the executable is new and unsigned.
 
@@ -156,6 +156,10 @@ jobs:
           3. Search for `DeskUp.exe` and run it!
           
           > Note: You do **not** need to install anything else — all dependencies are included.
+
+          # **Release notes**
+
+          ${{ steps.notes.outputs.notes }}
 
         draft: false
         prerelease: false
@@ -269,7 +273,3 @@ jobs:
   #         chmod +x DeskUp
   #         ./DeskUp
   #         ``` -->
-
-  #         🚀 **Release notes**
-
-  #         ${{ steps.notes.outputs.notes }}
