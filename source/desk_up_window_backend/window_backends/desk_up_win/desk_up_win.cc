@@ -554,11 +554,6 @@ static std::vector<DWORD> WIN_getPidsByPath(const std::string& path){
     return pids;
 }
 
-static bool WIN_isProcessOpenByPath(const std::string& path){
-    auto v = WIN_getPidsByPath(path);
-    return !v.empty();
-}
-
 static std::vector<HWND> GetTopLevelWindowsByPid(DWORD pid){
     std::vector<HWND> out;
 
