@@ -411,6 +411,7 @@ windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, std::filesystem::path pa
         i++;
     }
 
+    f.close();
     return w;
 }
 
