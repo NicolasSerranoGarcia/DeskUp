@@ -25,7 +25,7 @@ DeskUpWindowBootStrap winWindowDevice = {
     WIN_isAvailable
 };
 
-bool WIN_isAvailable(){
+bool WIN_isAvailable() noexcept {
     #ifdef _WIN32
         return true;
     #endif
@@ -175,7 +175,7 @@ unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
         DWORD windowsError = GetLastError();
         const char * contextMessage = "WIN_getWindowWidth: GetWindowInfo: ";
         std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-        delete (windowData *) _this->internalData;
+        
         throw std::runtime_error(errorMessage);
     }
     

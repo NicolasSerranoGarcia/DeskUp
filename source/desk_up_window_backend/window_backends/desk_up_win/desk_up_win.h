@@ -60,7 +60,7 @@ extern DeskUpWindowBootStrap winWindowDevice;
  * @version 0.1.0
  * @date 2025
  */
-bool WIN_isAvailable();
+bool WIN_isAvailable() noexcept;
 
 /**
  * @brief Creates a Windows \c DeskUpWindowDevice.
