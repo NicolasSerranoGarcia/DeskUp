@@ -68,18 +68,24 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
 
         workspaceName = createWorkspace.GetValue();
 
-        if(!workspaceName.empty()){
-            break;
+        if(workspaceName.empty()){
+            wxMessageBox("The workspace name cannot be empty!", "Workspace name", wxOK | wxICON_ERROR);
+            continue;
         }
-        
-        wxMessageBox("Your workspace name cannot be empty!", "Workspace name", wxOK | wxICON_INFORMATION);
-    }
-    
-    std::cout << workspaceName;
 
-    if (!DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString())){
-        wxMessageBox("Something went wrong! Please restart Desk Up", "Desk Up error", wxOK | wxICON_INFORMATION);
-        wxExit();
+        if(!DeskUpWindow::isWorkspaceValid(workspaceName.ToStdString())){
+            wxMessageBox("The workspace name is not valid! Blacklisted characters: \\/:?*\"<>|", "Workspace name not valid", wxOK | wxICON_ERROR);
+            continue;
+        }
+
+        break;
+
+    }
+
+    if (!DeskUpWindow::existsWorkspace(workspaceName.ToStdString())){
+        DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString());
+    } else{
+        wxMessageBox("The workspace already exists. Do you wish to rewrite it? ", "Workspace exists", wxYES_NO | wxCANCEL | wxNO_DEFAULT | wxICON_QUESTION);
     }
 
 }
@@ -98,14 +104,23 @@ void DeskUpFrame::OnRestore(wxCommandEvent& event)
 
         workspaceName = createWorkspace.GetValue();
 
-        if(!workspaceName.empty()){
-            break;
+        if(workspaceName.empty()){
+            wxMessageBox("The workspace name cannot be empty!", "Workspace name", wxOK | wxICON_ERROR);
+            continue;
         }
-        
-        wxMessageBox("The workspace name cannot be empty!", "Workspace name", wxOK | wxICON_INFORMATION);
+
+        if(!DeskUpWindow::isWorkspaceValid(workspaceName.ToStdString())){
+            wxMessageBox("The workspace name is not valid! Blacklisted characters: \\/:?*\"<>|", "Workspace name not valid", wxOK | wxICON_ERROR);
+            continue;
+        }
+
+        break;
+
     }
 
-    if (!DeskUpWindow::restoreWindows(workspaceName.ToStdString())){
-        wxMessageBox("The workspace does not exist!", "No workspace", wxOK | wxICON_INFORMATION);
+    if (DeskUpWindow::existsWorkspace(workspaceName.ToStdString())){
+        DeskUpWindow::restoreWindows(workspaceName.ToStdString());
+    } else{
+        wxMessageBox("The workspace does not exist!", "Workspace does not exist", wxOK | wxICON_INFORMATION);
     }
 }
