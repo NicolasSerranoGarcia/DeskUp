@@ -18,7 +18,6 @@ int windowDesc::saveTo(std::string path){
     windowFile.open(path, std::ios::out);
 
     if(!windowFile.is_open()){
-        //TODO: here you should throw a private exception that represents that the file could not be opened
         std::cout << "SaveTo: open: Could not open file" << path << std::endl;
         return 0;
     }
