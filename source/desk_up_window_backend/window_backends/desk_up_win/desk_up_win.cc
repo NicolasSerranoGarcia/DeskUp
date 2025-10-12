@@ -543,7 +543,7 @@ static std::vector<DWORD> WIN_getPidsByPath(const std::string& path){
             if(pid == 0) continue;
 
             std::string img;
-            if(!QueryProcessImagePathA(pid, img) || img.empty()) continue;
+            if(!WIN_QueryProcessImagePathA(pid, img) || img.empty()) continue;
 
             if(normalizePathLower(img) == target){
                 pids.push_back(pid);
@@ -580,7 +580,7 @@ static bool WIN_closeProcessByPid(DWORD pid, DWORD timeoutMs, bool allowForce){
     HANDLE h = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, pid);
     if(!h) return false;
 
-    auto wins = GetTopLevelWindowsByPid(pid);
+    auto wins = WIN_GetTopLevelWindowsByPid(pid);
     for(HWND w : wins){
         SendMessageTimeout(w, WM_CLOSE, 0, 0, SMTO_ABORTIFHUNG, 2000, nullptr);
     }
