@@ -34,6 +34,8 @@ add_executable(DeskUp WIN32 source/main.cc)
 enable_language(RC)
 target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
 
+add_compile_definitions(DESKUP_VERSION="${PROJECT_VERSION}")
+
 # --- wxWidgets static ---
 
 set(wxWidgets_USE_STATIC ON)
