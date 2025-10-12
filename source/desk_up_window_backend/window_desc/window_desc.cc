@@ -6,7 +6,7 @@
 
 namespace fs = std::filesystem;
 
-int windowDesc::saveTo(std::string path){
+int windowDesc::saveTo(fs::path path){
     
     if(path.empty()){
         std::cout << "file path empty" << std::endl;

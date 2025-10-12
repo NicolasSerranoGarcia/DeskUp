@@ -38,6 +38,9 @@
 #define WINDOWDESC_H
 
 #include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 /**
  * @struct windowDesc
@@ -101,7 +104,7 @@ struct windowDesc {
      *
      * @see windowDesc
      */
-    int saveTo(std::string path);
+    int saveTo(fs::path path);
 
     /**
      * @brief Returns whether the window description is invalid or empty.
