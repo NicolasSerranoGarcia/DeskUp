@@ -85,8 +85,82 @@ struct DeskUpWindow{
      */
     static int saveAllWindowsLocal(std::string workspaceName);
 
-
+    /**
+     * @brief restores all tabs saved previously in the workspace name specified by the parameter.
+     *
+     * @details
+     *
+     * **Calls (indirectly through the backend):**
+     *
+     * **Reads:**
+     *
+     * @param workspaceName Name of the workspace folder to use under @ref DESKUPDIR.
+     * @return `1` on success (even if some files may be skipped due to per-window failures),
+     *         `0` if a backend error or unexpected error occurs during enumeration.
+     *
+     * @throws
+     *
+     * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
+     *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
+     */
     static int restoreWindows(std::string workspaceName);
+
+    /**
+     * @brief This function checks whether if a string is a valid name for a workspace folder.
+     *
+     * @details
+     *
+     * **Calls (indirectly through the backend):**
+     *
+     * **Reads:**
+     *
+     * @param workspaceName Name of the workspace to check
+     * @return \c true if the workspace name is valid, \c false otherwise
+     *
+     * @throws
+     *
+     * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
+     *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
+     */
+    static bool isWorkspaceValid(const std::string& workspaceName);
+
+    /**
+     * @brief This function checks whether if a given workspace with the name \c workspaceName already exists
+     *
+     * @details
+     *
+     * **Calls (indirectly through the backend):**
+     *
+     * **Reads:**
+     *
+     * @param workspaceName Name of the workspace folder to use under @ref DESKUPDIR.
+     * @return \c true if the workspace exists, \c false otherwise
+     *
+     * @throws
+     *
+     * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
+     *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
+     */
+    static bool existsWorkspace(const std::string& workspaceName);
+
+    /**
+     * @brief This function deletes a workspace
+     *
+     * @details
+     *
+     * **Calls (indirectly through the backend):**
+     *
+     * **Reads:**
+     *
+     * @param workspaceName Name of the workspace folder to use under @ref DESKUPDIR.
+     * @return \c true if the workspace was deleted, \c false otherwise
+     *
+     * @throws
+     *
+     * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
+     *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
+     */
+    static int deleteWorkspace(const std::string& workspaceName);
 };
 
 #endif

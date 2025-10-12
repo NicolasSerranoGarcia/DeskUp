@@ -89,3 +89,55 @@ int DeskUpWindow::restoreWindows(std::string workspaceName){
 
     return 1;
 };
+
+bool DeskUpWindow::isWorkspaceValid(const std::string& workspaceName){
+    if(workspaceName.empty()){
+        return false;
+    }
+
+    std::string blackList = {"\\/:?*\"<>|"};
+
+    for(const char c : blackList){
+        
+        if(workspaceName.find(c) != std::string::npos){
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool DeskUpWindow::existsWorkspace(const std::string& workspaceName){
+    if(workspaceName.empty()){
+        return false;
+    }
+
+    fs::path p{DESKUPDIR};
+    p /= workspaceName;
+
+    if(!fs::exists(p) || !fs::is_directory(p)){
+        return false;
+    }
+
+    return true;
+}
+
+int DeskUpWindow::deleteWorkspace(const std::string& workspaceName){
+    if(!existsWorkspace(workspaceName)){
+        return 0;
+    }
+
+    fs::path p{DESKUPDIR};
+    p /= workspaceName;
+
+
+    std::error_code err;
+
+    uintmax_t n = fs::remove_all(p, err);
+
+    if(err){
+        return 0;
+    }
+
+    return n;
+}
