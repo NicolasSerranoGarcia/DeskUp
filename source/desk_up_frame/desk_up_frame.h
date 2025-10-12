@@ -12,6 +12,10 @@ class DeskUpFrame : public wxFrame{
     void OnExit(wxCommandEvent& event);
     void OnAbout(wxCommandEvent& event);
     void OnRestore(wxCommandEvent& event);
+
+    static int showSaveSuccessful();
+
+    static int showRestoreSuccessful();
 };
 
 #endif

@@ -3,6 +3,9 @@
 #include "desk_up_window.h"
 #include "window_core.h"
 
+#include <wx/aboutdlg.h>
+#include <fstream>
+
 enum {
     ID_AddWorkspace = 1,
     ID_RestoreWorkspace,
@@ -50,8 +53,18 @@ void DeskUpFrame::OnExit(wxCommandEvent& event)
 
 void DeskUpFrame::OnAbout(wxCommandEvent& event)
 {
-    wxMessageBox("About DeskUp message",
-                 "About DeskUp", wxOK | wxICON_INFORMATION);
+
+
+    wxAboutDialogInfo info;
+    info.SetName("DeskUp");
+    info.SetVersion(DESKUP_VERSION);
+    info.SetDescription("A workspace manager for Windows that lets you save and restore window layouts.");
+    info.SetCopyright("© 2025 Nicolas Serrano Garcia");
+    info.SetDevelopers({"Nicolas Serrano Garcia"});
+    info.SetLicence("Licensed under GPLv3. See LICENSE for details.");
+    info.SetWebSite("https://github.com/NicolasSerranoGarcia/DeskUp");
+
+    wxAboutBox(info);
 }
 
 void DeskUpFrame::OnAdd(wxCommandEvent& event)
@@ -84,8 +97,15 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
 
     if (!DeskUpWindow::existsWorkspace(workspaceName.ToStdString())){
         DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString());
+        showSaveSuccessful();
     } else{
-        wxMessageBox("The workspace already exists. Do you wish to rewrite it? ", "Workspace exists", wxYES_NO | wxCANCEL | wxNO_DEFAULT | wxICON_QUESTION);
+        int res = wxMessageBox("The workspace already exists. Do you wish to rewrite it? ", "Workspace exists",
+                                                                                wxYES_NO | wxCANCEL | wxNO_DEFAULT | wxICON_QUESTION);
+        if(res == wxYES){
+            DeskUpWindow::removeWorkspace(workspaceName.ToStdString());
+            DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString());
+            showSaveSuccessful();
+        }
     }
 
 }
@@ -120,7 +140,16 @@ void DeskUpFrame::OnRestore(wxCommandEvent& event)
 
     if (DeskUpWindow::existsWorkspace(workspaceName.ToStdString())){
         DeskUpWindow::restoreWindows(workspaceName.ToStdString());
+        showRestoreSuccessful();
     } else{
-        wxMessageBox("The workspace does not exist!", "Workspace does not exist", wxOK | wxICON_INFORMATION);
+        wxMessageBox("The workspace does not exist!", "Workspace does not exist", wxOK | wxICON_ERROR);
     }
+}
+
+int DeskUpFrame::showSaveSuccessful(){
+    return wxMessageBox("The workspace was saved successfully!", "Workspace saved", wxOK | wxICON_DEFAULT_TYPE);
+}
+
+int DeskUpFrame::showRestoreSuccessful(){
+    return wxMessageBox("The workspace was restored successfully!", "Workspace restored", wxOK | wxICON_DEFAULT_TYPE);
 }
