@@ -33,22 +33,22 @@
 
 namespace DeskUpEx {
 
-    class AccessDenied final : public std::runtime_error{
+    class DeskUpException : public std::runtime_error{
         public:
         private:
     };
 
-    class WorkspaceNotExists final : public std::runtime_error{
+    class AccessDenied final : public DeskUpException{
         public:
         private:
     };
 
-    class DeskUpFileNotExists final : public std::runtime_error{
+    class WorkspaceNotExists final : public DeskUpException{
         public:
         private:
     };
 
-    class workspaceAlreadyExists final : public std::runtime_error{
+    class WorkspaceAlreadyExists final : public DeskUpException{
         public:
         private:
     };
