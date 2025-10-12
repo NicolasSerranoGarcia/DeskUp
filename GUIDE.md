@@ -185,6 +185,10 @@ cpack
 
 ### 📝 Generate Documentation
 
+| Flag                     | DESCRIPTION                       | Default |
+|--------------------------|--------------------------------------|---------|
+| `-DGNERATE_DOCS=ON\|OFF` | Enables/disables the creation of docs | OFF |
+
 ```bash
 doxygen -u Doxyfile
 doxygen Doxyfile
