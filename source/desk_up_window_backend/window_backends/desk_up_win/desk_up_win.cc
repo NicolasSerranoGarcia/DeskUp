@@ -500,7 +500,7 @@ void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window){
 }
 
 //Next is helpers for WIN_relaunchAndResize()
-static bool QueryProcessImagePathA(DWORD pid, std::string& out){
+static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out){
     HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
     if(!h) return false;
 
@@ -554,7 +554,7 @@ static std::vector<DWORD> WIN_getPidsByPath(const std::string& path){
     return pids;
 }
 
-static std::vector<HWND> GetTopLevelWindowsByPid(DWORD pid){
+static std::vector<HWND> WIN_GetTopLevelWindowsByPid(DWORD pid){
     std::vector<HWND> out;
 
     struct Ctx{ DWORD pid; std::vector<HWND>* out; };
