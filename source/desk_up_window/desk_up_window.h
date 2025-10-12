@@ -160,7 +160,7 @@ struct DeskUpWindow{
      * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
      *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
      */
-    static int deleteWorkspace(const std::string& workspaceName);
+    static int removeWorkspace(const std::string& workspaceName);
 };
 
 #endif

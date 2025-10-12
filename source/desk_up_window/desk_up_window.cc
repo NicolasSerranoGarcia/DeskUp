@@ -11,10 +11,9 @@ namespace fs = std::filesystem;
 
 int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     
-    std::string workspacePath = DESKUPDIR;
-    workspacePath += "\\";
-    workspacePath += workspaceName;
-    fs::create_directory((fs::path) workspacePath);
+    fs::path workspacePath = DESKUPDIR;
+    workspacePath /= workspaceName;
+    fs::create_directory(workspacePath);
 
     std::vector<windowDesc> windows;
     try{
@@ -35,14 +34,13 @@ int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     for(unsigned int i = 0; i < windows.size(); i++){
         
         //create path
-        std::string filePath(workspacePath);
-        filePath += "\\";
-        filePath += windows[i].name;
+        fs::path p(workspacePath);
+        p /= windows[i].name;
 
 
-        std::cout << filePath << std::endl;
+        // std::cout << p << std::endl;
         
-        if(!windows[i].saveTo(filePath)){
+        if(!windows[i].saveTo(p)){
             //TODO: show error message in GUI. Ask user if he wants to continue or not depending on the exception thrown
             std::cout << windows[i].name << " could not be saved to local!" << std::endl;
             continue;
@@ -57,20 +55,17 @@ int DeskUpWindow::restoreWindows(std::string workspaceName){
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
     fs::path p (DESKUPDIR);
-    p = p / workspaceName;
-
-    std::error_code err;
-    if(!fs::exists(p, err) || err){
-        //TODO: throw an exception that represents that the workspace name does not exist
-        return 0;
-    }
+    p /= workspaceName;
 
     try{
+        bool forceTermination = true;
         for(auto const &file : fs::directory_iterator{p}){
             windowDesc w = current_window_backend.get()->recoverSavedWindow(current_window_backend.get(), file.path());
-            std::cout << w.x << " " << w.y << " " << w.w << " " << w.h << w.pathToExec << std::endl;
-            current_window_backend.get()->closeWindowFromPath(current_window_backend.get(), w.pathToExec, true);
+
+            current_window_backend.get()->closeWindowFromPath(current_window_backend.get(),
+                                                                             w.pathToExec, forceTermination);
             current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), w.pathToExec);
+
             current_window_backend.get()->resizeWindow(current_window_backend.get(), w);
         }
     //in the future, different exceptions must rethrow or do different things
@@ -122,7 +117,7 @@ bool DeskUpWindow::existsWorkspace(const std::string& workspaceName){
     return true;
 }
 
-int DeskUpWindow::deleteWorkspace(const std::string& workspaceName){
+int DeskUpWindow::removeWorkspace(const std::string& workspaceName){
     if(!existsWorkspace(workspaceName)){
         return 0;
     }
@@ -133,11 +128,11 @@ int DeskUpWindow::deleteWorkspace(const std::string& workspaceName){
 
     std::error_code err;
 
-    uintmax_t n = fs::remove_all(p, err);
+    fs::remove_all(p, err);
 
     if(err){
         return 0;
     }
 
-    return n;
+    return 1;
 }
