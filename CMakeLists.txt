@@ -71,8 +71,9 @@ ${wxWidgets_LIBRARIES})
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
+add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error)
 
-target_link_libraries(DeskUp PUBLIC wxWidgetsDeps
+target_link_libraries(DeskUp PUBLIC
 shlwapi
 version
 ole32
@@ -85,6 +86,8 @@ gdi32
 user32
 kernel32)
 
+target_link_libraries(DeskUp PUBLIC wxWidgetsDeps)
+
 # --- Compile definitions ---
 target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
 target_link_libraries(DeskUp PRIVATE DeskUp-compiler-flags)
@@ -94,6 +97,7 @@ target_link_libraries(DeskUp PRIVATE
     desk_up_library
     desk_up_frame_library
     desk_up_window_library
+    desk_up_error_library
     ${wxWidgets_LIBRARIES}
 )
 

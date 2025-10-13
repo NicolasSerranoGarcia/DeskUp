@@ -13,6 +13,7 @@ target_sources(desk_up_window_library PUBLIC ${CMAKE_CURRENT_LIST_DIR}/desk_up_w
 target_include_directories(desk_up_window_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend
                                                             ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_backends/desk_up_win
                                                             ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/windowDesc
+                                                            ${CMAKE_SOURCE_DIR}/source/desk_up_error
                                                             ${CMAKE_SOURCE_DIR}/include)
 
 #Make directory with the window backend visible for this library
