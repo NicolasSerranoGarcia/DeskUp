@@ -63,6 +63,7 @@ namespace DeskUp {
             ErrType type() const noexcept { return errType; }
             Level level() const noexcept { return lvl; }
             int attempts() const noexcept { return retries; }
+            windowDesc whichWindow() const noexcept { return affectedWindow; };
 
             bool isFatal() const noexcept { return lvl == Level::Fatal; }
             bool isRetriable() const noexcept { return lvl == Level::Retry; }
@@ -123,6 +124,7 @@ namespace DeskUp {
             Level lvl;
             ErrType errType;
             unsigned int retries;
+            windowDesc affectedWindow;
     };
 
 }
