@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 cmake_policy(SET CMP0135 NEW)
 cmake_policy(SET CMP0077 NEW)
 
@@ -14,7 +18,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
 # --- Compiler flags ---
 add_library(DeskUp-compiler-flags INTERFACE)
-target_compile_features(DeskUp-compiler-flags INTERFACE cxx_std_17)
+target_compile_features(DeskUp-compiler-flags INTERFACE cxx_std_23)
 
 # GCC/Clang flags
 target_compile_options(DeskUp-compiler-flags INTERFACE
@@ -30,7 +34,7 @@ target_link_options(DeskUp-compiler-flags INTERFACE
 )
 
 # --- Executable ---
-add_executable(DeskUp WIN32 source/main.cc)
+add_executable(DeskUp WIN32 source/main.cc source/desk_up_error/desk_up_error.h)
 enable_language(RC)
 target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
 
