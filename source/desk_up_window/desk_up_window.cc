@@ -6,6 +6,7 @@
 #include <cctype>
 
 #include "window_core.h"
+#include "desk_up_error.h"
 
 namespace fs = std::filesystem;
 
