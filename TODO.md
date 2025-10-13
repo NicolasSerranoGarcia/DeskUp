@@ -60,22 +60,22 @@
 
 ## <1> 2. Use backend inside the project: files and connecting the backend with them
 
-   [] The program needs to save information about the workspace. To do this, DeskUp must save folders and files with the necessary information. Decide where this files and folders go. The way to go should be to leave them visible. the user can do whatever it wants with them. advice to not touch them if the user is not familiar with them. this way people have freedom over the use of the software
+   [X] The program needs to save information about the workspace. To do this, DeskUp must save folders and files with the necessary information. Decide where this files and folders go. The way to go should be to leave them visible. the user can do whatever it wants with them. advice to not touch them if the user is not familiar with them. this way people have freedom over the use of the software
 
    [X] For the workspaces, a file for each window should be used. Each workspace will be a folder containing all the files of the window.
 
    [X] Decide the structure of the file itself: what goes inside? which pattern does it follow? (...)
 
-   [] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
+   [X] The process of saving is pretty much straightforward, but loading workspaces needs an intermediate level. Find a good way to connect the backend with this information.
 
-[] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
+[X] Rename some files and folders incorrectly named: class DU_windowBootstrap to DeskUpWindowBootstrap, DU_WindowDevice to DeskUpWindowDevice... this keeps
     underscores (X11_) only for external API's or libraries
 
 [X] choosing which device to use is not being done correctly. You need to implement it using cmake and defining macros.
 
 [X] in x11 and win backends, getAllWindows functions need to set the name of the window
 
-[] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
+[X] Change the name of some incorrectly set classes and folders: windowDesc, DU_* Change everything DeskUp related to have DeskUpWhatever instead of DU_
 
 
 # RESET - Linux dropped
@@ -96,7 +96,7 @@
 
 [X] notify in the documentation about the possible throws and errors of a backend function: missing desk_up_win
 
-[/] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
+[X] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
 
 [] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
 
@@ -116,8 +116,7 @@
 
 [] (optional for this task) give an option to clear all the tabs when opening a workspace or not.
 
-[] (optional for this task) Some apps are linked with windows, because maybe the user downloaded them in the appstore. This makes it so that they
-don't have an easy access when saving their info. Treat this in some way.(UWP)
+[] (optional for this task) Some apps are linked with windows, because maybe the user downloaded them in the app store. This makes it so that they don't have an easy access when saving their info. Treat this in some way.(UWP)
 
 [] (optional for this task) look into github pages for the documentation, and link it to your main portfolio page
 
@@ -129,9 +128,9 @@ don't have an easy access when saving their info. Treat this in some way.(UWP)
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
 
-## 6. Migrate to the wide (W sufix) version of the windows API
+## 6. Migrate to the wide (W suffix) version of the windows API
 
-This essentially means chaning string types to wide ones and doing #define UNICODE before including windows.h
+This essentially means changing string types to wide ones and doing #define UNICODE before including windows.h
 
 ## 7. Support for browsers: Create an extension to gather information about the tabs and windows.
 
