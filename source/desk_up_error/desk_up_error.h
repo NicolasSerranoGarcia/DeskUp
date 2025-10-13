@@ -112,10 +112,10 @@ namespace DeskUp {
                         lvl = Level::Retry; typ = ErrType::Io; break;
 
                     default:
-                        lvl = Level::Retry; typ = ErrType::Unexpected; break;
+                        lvl = Level::Default; typ = ErrType::Default; break;
                 }
 
-                std::string msg = getSystemErrorMessageWindows(code);
+                std::string msg = getSystemErrorMessageWindows(code, context);
                 unsigned int t = tries.value_or(0);
                 return Error(lvl, typ, t, std::move(msg));
             }
