@@ -29,6 +29,7 @@
 #define DESKUPWINDOW_H
 
 #include <string>
+#include <expected>
 
 /**
  * @struct DeskUpWindow
