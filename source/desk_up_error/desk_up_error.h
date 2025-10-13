@@ -39,7 +39,8 @@ namespace DeskUp {
     enum class Level{
         Fatal,
         Retry,
-        Default
+        Default,
+        None
     };
 
     enum class ErrType{
@@ -48,17 +49,24 @@ namespace DeskUp {
         SharingViolation, 
         Io, 
         InvalidInput, 
-        Unexpected
+        Unexpected,
+        Default,
+        None
     };
 
     class Error final : public std::runtime_error{
         public:
+            Error() : std::runtime_error(""), lvl(Level::None), errType(ErrType::None), retries(0){};
             Error(Level l, ErrType err, unsigned int t, std::string msg) : std::runtime_error(std::move(msg)), 
-                                                                                            level(l), errType(err), retries(t){};
+                                                                                            lvl(l), errType(err), retries(t){};
             
             ErrType type() const noexcept { return errType; }
-            Level severity() const noexcept { return level; }
+            Level level() const noexcept { return lvl; }
             int attempts() const noexcept { return retries; }
+
+            bool isFatal() const noexcept { return lvl == Level::Fatal; }
+            bool isRetriable() const noexcept { return lvl == Level::Retry; }
+            explicit operator bool() const noexcept{ return lvl != Level::None; };
 
             //Only for windows
             //This function should be automated to convert the windows error to the specific Level, ErrType. 
@@ -112,7 +120,7 @@ namespace DeskUp {
                 return Error(lvl, typ, t, std::move(msg));
             }
         private:
-            Level level;
+            Level lvl;
             ErrType errType;
             unsigned int retries;
     };
