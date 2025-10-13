@@ -9,6 +9,7 @@
 #include <tlhelp32.h> 
 
 #include "backend_utils.h"
+#include "desk_up_error.h"
 
 namespace fs = std::filesystem;
 
