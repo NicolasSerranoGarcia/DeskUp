@@ -6,6 +6,7 @@ target_sources(desk_up_win_library PUBLIC ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.
 #Make backend directories visible for this library
 target_include_directories(desk_up_win_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend
                                                         ${CMAKE_SOURCE_DIR}/include
+                                                        ${CMAKE_SOURCE_DIR}/source/desk_up_error
                                                         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc)
 
 #Link against the abstract window_desc struct library located in ../window_desc from this file
