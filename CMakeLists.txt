@@ -34,7 +34,7 @@ target_link_options(DeskUp-compiler-flags INTERFACE
 )
 
 # --- Executable ---
-add_executable(DeskUp WIN32 source/main.cc source/desk_up_error/desk_up_error.h)
+add_executable(DeskUp WIN32 source/main.cc)
 enable_language(RC)
 target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
 
@@ -71,7 +71,6 @@ ${wxWidgets_LIBRARIES})
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
 add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error)
 
 target_link_libraries(DeskUp PUBLIC
 shlwapi
@@ -93,13 +92,26 @@ target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
 target_link_libraries(DeskUp PRIVATE DeskUp-compiler-flags)
 
 # --- Link sub-libraries ---
+# --- Link sub-libraries ---
+# Quita el start/end group (no te ayudó en este caso)
+# target_link_options(DeskUp PRIVATE -Wl,--start-group)
+
 target_link_libraries(DeskUp PRIVATE
-    desk_up_library
-    desk_up_frame_library
-    desk_up_window_library
-    desk_up_error_library
-    ${wxWidgets_LIBRARIES}
+  wxWidgetsDeps    
+  -Wl,--start-group        # ya lo tienes arriba; colócalo si quieres aquí
+  desk_up_frame_library    # consumidor (llama a DeskUpWindow::...)
+  desk_up_window_library   # proveedor de DeskUpWindow
+  desk_up_win_library      # usa backend_utils ⇒ déjalo a la izquierda de backend_utils
+  desk_up_error_library    # usa backend_utils
+  backend_utils_library    # proveedor
+  window_desc_library      # proveedor
+  desk_up_library  
+  -Wl,--end-group        # (tu core, si procede aquí)
+${wxWidgets_LIBRARIES}
+
 )
+
+# target_link_options(DeskUp PRIVATE -Wl,--end-group)
 
 # --- Build type ---
 if(NOT CMAKE_BUILD_TYPE)

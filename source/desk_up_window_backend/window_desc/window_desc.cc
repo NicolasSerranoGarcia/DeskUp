@@ -29,6 +29,12 @@ int windowDesc::saveTo(fs::path path){
     << std::endl << this->w 
     << std::endl << this->h;
 
+    std::cout << this->pathToExec 
+    << std::endl << this->x 
+    << std::endl << this->y 
+    << std::endl << this->w 
+    << std::endl << this->h << "helloue" << std::endl;
+
     windowFile.close();
 
     return 1;

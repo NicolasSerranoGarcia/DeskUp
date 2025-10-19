@@ -31,6 +31,8 @@
 #include <string>
 #include <expected>
 
+#include "desk_up_error.h"
+
 /**
  * @struct DeskUpWindow
  * @brief Convenience façade for workspace-level window operations.
@@ -84,7 +86,7 @@ struct DeskUpWindow{
      * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
      *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
      */
-    static int saveAllWindowsLocal(std::string workspaceName);
+    static DeskUp::Status saveAllWindowsLocal(std::string workspaceName);
 
     /**
      * @brief restores all tabs saved previously in the workspace name specified by the parameter.

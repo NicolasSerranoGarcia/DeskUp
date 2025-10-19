@@ -33,6 +33,7 @@
 #include <filesystem>
 
 #include "window_desc.h"
+#include "desk_up_error.h"
 
 /**
  * @struct DeskUpWindowDevice
@@ -59,7 +60,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    unsigned int (*getWindowHeight)(DeskUpWindowDevice * _this);
+    DeskUp::Result<unsigned int> (*getWindowHeight)(DeskUpWindowDevice * _this);
 
     /**
      * @brief A pointer to function that is used to get the width of a window.
@@ -69,7 +70,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    unsigned int (*getWindowWidth)(DeskUpWindowDevice * _this);
+    DeskUp::Result<unsigned int> (*getWindowWidth)(DeskUpWindowDevice * _this);
 
     /**
      * @brief A pointer to function that is used to get the X position of a the top left corner of a window.
@@ -79,7 +80,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    int (*getWindowXPos)(DeskUpWindowDevice * _this);
+    DeskUp::Result<int> (*getWindowXPos)(DeskUpWindowDevice * _this);
 
     /**
      * @brief A pointer to function that is used to get the Y position of a the top left corner of a window.
@@ -89,7 +90,9 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    int (*getWindowYPos)(DeskUpWindowDevice * _this);
+    DeskUp::Result<int> (*getWindowYPos)(DeskUpWindowDevice * _this);
+
+    DeskUp::Result<std::string> (*getPathFromWindow)(DeskUpWindowDevice * _this);
 
     /**
      * @brief A pointer to function that is used to get the generic DeskUp workspaces path.
@@ -112,7 +115,7 @@ struct DeskUpWindowDevice{
      * @version 0.1.0
      * @date 2025
      */
-    std::vector<windowDesc> (*getAllOpenWindows)(DeskUpWindowDevice * _this);
+    DeskUp::Result<std::vector<windowDesc>> (*getAllOpenWindows)(DeskUpWindowDevice * _this);
 
     /**
      * @brief A pointer to function that is used to open a window from a given path. If the path is empty, 

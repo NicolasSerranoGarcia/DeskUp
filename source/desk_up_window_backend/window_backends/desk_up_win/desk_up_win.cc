@@ -6,10 +6,35 @@
 #include <shlobj.h>
 #include <fstream>
 #include <filesystem>
-#include <tlhelp32.h> 
+#include <tlhelp32.h>
+#include <expected> 
+#include <chrono>
+#include <thread>
 
 #include "backend_utils.h"
 #include "desk_up_error.h"
+
+using namespace std::chrono_literals;
+
+template<typename F>
+static DeskUp::Status retry_op(F&& f, std::string_view ctx, int max_attempts = 3, std::chrono::milliseconds first_delay = 100ms)
+{
+    auto delay = first_delay;
+    for (int i = 0; i < max_attempts; ++i) {
+        if (f()){
+            return {};
+        } 
+        DeskUp::Error e = DeskUp::Error::fromLastWinError(ctx, i+1);
+        if (e.isFatal()) {
+            return std::unexpected(std::move(e));
+        }
+
+        std::this_thread::sleep_for(delay);
+        delay *= 2;
+    }
+
+    return std::unexpected(DeskUp::Error::fromLastWinError(ctx, max_attempts));
+}
 
 namespace fs = std::filesystem;
 
@@ -72,6 +97,7 @@ DeskUpWindowDevice WIN_CreateDevice(){
     device.getWindowWidth  = WIN_getWindowWidth;
     device.getWindowXPos   = WIN_getWindowXPos;
     device.getWindowYPos   = WIN_getWindowYPos;
+    device.getPathFromWindow = WIN_getPathFromWindow;
     device.getAllOpenWindows   = WIN_getAllOpenWindows;
     device.getDeskUpPath   = WIN_getDeskUpPath;
     device.loadWindowFromPath = WIN_loadProcessFromPath;
@@ -115,150 +141,114 @@ std::string WIN_getDeskUpPath(){
     return p.string();
 }
 
-int WIN_getWindowXPos(DeskUpWindowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("WIN_getWindowXPos: invalid HWND");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    // Fill pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN_getWindowXPos: GetWindowInfo: ";
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(errorMessage);
-    }
-    
-    const unsigned int x = pwi.rcClient.left;
-    return x;
-}
-
-int WIN_getWindowYPos(DeskUpWindowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("WIN_getWindowYPos: invalid HWND");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    // Fill pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN_getWindowYPos: GetWindowInfo: ";
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(errorMessage);
-    }
-    
-    const unsigned int y = pwi.rcClient.top;
-    return y;
-}
-
-unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("WIN_getWindowWidth: invalid HWND");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    // Fill pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN_getWindowWidth: GetWindowInfo: ";
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-        
-        throw std::runtime_error(errorMessage);
-    }
-    
-    const unsigned int width  = pwi.rcClient.right  - pwi.rcClient.left;
-    return width;
-}
-
-unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this){
-    const windowData * data = (windowData *) _this->internalData;
-    
-    if(!data->hwnd){
-        throw std::invalid_argument("WIN_getWindowHeight: invalid HWND");
-    }
-
-    WINDOWINFO pwi;
-    pwi.cbSize = sizeof(WINDOWINFO);
-    
-    // Fill pwi with information about the given window
-    if(!GetWindowInfo(data->hwnd, &pwi)){
-        DWORD windowsError = GetLastError();
-        const char * contextMessage = "WIN_getWindowHeight: GetWindowInfo: ";
-        std::string errorMessage = getSystemErrorMessageWindows(windowsError, contextMessage);
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(errorMessage);
-    }
-    
-    const unsigned int height = pwi.rcClient.bottom - pwi.rcClient.top;
-    return height;
-}
-
-std::string WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
+DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) {
     const auto* data = static_cast<const windowData*>(_this->internalData);
-    if (!data || !data->hwnd || !IsWindow(data->hwnd)) {
-        throw std::invalid_argument("WIN_getPathFromWindow: invalid HWND");
+    if (!data || !IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                                             "WIN_getWindowXPos: invalid HWND"));
+    }
+
+    WINDOWINFO wi{};
+    wi.cbSize = sizeof(wi);
+    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+                      "WIN_getWindowXPos: GetWindowInfo: ");
+    if (!r) return std::unexpected(std::move(r.error()));
+    return static_cast<int>(wi.rcWindow.left);
+}
+
+DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice* _this) {
+    const auto* data = static_cast<const windowData*>(_this->internalData);
+    if (!data || !IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                                             "WIN_getWindowYPos: invalid HWND"));
+    }
+
+    WINDOWINFO wi{};
+    wi.cbSize = sizeof(wi);
+    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+                      "WIN_getWindowYPos: GetWindowInfo: ");
+    if (!r) return std::unexpected(std::move(r.error()));
+    return static_cast<int>(wi.rcWindow.top);
+}
+
+DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) {
+    const auto* data = static_cast<const windowData*>(_this->internalData);
+    if (!data || !IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                                             "WIN_getWindowWidth: invalid HWND"));
+    }
+
+    WINDOWINFO wi{};
+    wi.cbSize = sizeof(wi);
+    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+                      "WIN_getWindowWidth: GetWindowInfo: ");
+    if (!r) return std::unexpected(std::move(r.error()));
+    return static_cast<unsigned>(wi.rcWindow.right - wi.rcWindow.left);
+}
+
+DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
+    const auto* data = static_cast<const windowData*>(_this->internalData);
+    if (!data || !IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                                             "WIN_getWindowHeight: invalid HWND"));
+    }
+
+    WINDOWINFO wi{};
+    wi.cbSize = sizeof(wi);
+    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+                      "WIN_getWindowHeight: GetWindowInfo: ");
+    if (!r) return std::unexpected(std::move(r.error()));
+    return static_cast<unsigned>(wi.rcWindow.bottom - wi.rcWindow.top);
+}
+
+
+DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
+    const auto* data = static_cast<const windowData*>(_this->internalData);
+    if (!data || !IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                                             "WIN_getPathFromWindow: invalid HWND"));
     }
 
     DWORD pid = 0;
-    if (!GetWindowThreadProcessId(data->hwnd, &pid) || pid == 0) {
-        const DWORD err = GetLastError();
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(getSystemErrorMessageWindows(err, "WIN_getPathFromWindow: GetWindowThreadProcessId: "));
-    }
 
-    HANDLE processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
-    if (!processHandle) {
-        const DWORD err = GetLastError();
-        if(err == ERROR_ACCESS_DENIED){
-            return "";
-        }
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(getSystemErrorMessageWindows(err, "WIN_getPathFromWindow: OpenProcess: "));
-    }
+    auto r = retry_op([&]{
+        return GetWindowThreadProcessId(data->hwnd, &pid) != 0 && pid != 0;
+    }, "WIN_getPathFromWindow: GetWindowThreadProcessId: ");
+    if (!r) return std::unexpected(std::move(r.error()));
+
+    HANDLE processHandle = nullptr;
+    r = retry_op([&]{
+        processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+        return processHandle != nullptr;
+    }, "WIN_getPathFromWindow: OpenProcess: ");
+    if (!r) return std::unexpected(std::move(r.error()));
 
     std::string result;
-    try {
+    DWORD capacity = 512;
+    std::vector<wchar_t> wbuf(capacity);
 
-        DWORD dwSize = 512;
-        std::vector<wchar_t> wbuf(dwSize);
-
-        while(1){
-            DWORD size = dwSize;
-            if (QueryFullProcessImageNameW(processHandle, 0, wbuf.data(), &size)) {
-                result = WideStringToUTF8(wbuf.data());
-                break;
-            }
-            DWORD err = GetLastError();
-            if (err == ERROR_INSUFFICIENT_BUFFER) {
-                dwSize *= 2;
-                wbuf.assign(dwSize, L'\0');
-                continue;
-            }
-            throw std::runtime_error(getSystemErrorMessageWindows(err, "WIN_getPathFromWindow: QueryFullProcessImageNameW: "));
+    for (;;) {
+        DWORD size = capacity;
+        if (QueryFullProcessImageNameW(processHandle, 0, wbuf.data(), &size)) {
+            result = WideStringToUTF8(wbuf.data());
+            break;
         }
-    } catch (...) {
-        delete (windowData *) _this->internalData;
-        CloseHandle(processHandle);
-        throw;
+        DWORD err = GetLastError();
+        if (err == ERROR_INSUFFICIENT_BUFFER) {
+            capacity *= 2;
+            wbuf.assign(capacity, L'\0');
+            continue;
+        } else {
+            CloseHandle(processHandle);
+            return std::unexpected(DeskUp::Error::fromLastWinError(
+                err, "WIN_getPathFromWindow: QueryFullProcessImageNameW: "));
+        }
     }
 
     CloseHandle(processHandle);
     return result;
 }
+
 
 std::string WIN_getNameFromPath(const std::string& path) {
     static int unnamedWindowNum = 0;
@@ -280,94 +270,99 @@ std::string WIN_getNameFromPath(const std::string& path) {
     return name.substr(0, name.size() - 4);
 }
 
-std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this){
+struct params {
+        DeskUpWindowDevice* dev;
+        std::vector<windowDesc>* res;
+        DeskUp::Error* err;
+};
 
-    auto createAndSaveWindow = [](HWND hwnd, LPARAM lparam){
-        if (!IsWindowVisible(hwnd)) return TRUE;
-        RECT r;
-        if (!GetWindowRect(hwnd, &r)) return TRUE;
-        if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0) return TRUE;
+static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
+    using DeskUp::Error; // si aplica
 
-        // Retrieve parameters and types
-        std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> * parameters = (std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> *)
-                                                                                                                reinterpret_cast<void *>(lparam);
+    if (!IsWindowVisible(hwnd)) return TRUE;
 
-        std::vector<windowDesc> * windows = parameters->first;
-        DeskUpWindowDevice * dev = parameters->second;
+    RECT r{};
+    if (!GetWindowRect(hwnd, &r)) return TRUE;
+    if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0) return TRUE;
 
-        if(windows == nullptr){
-            std::cout << "The vector of windows could not be passed to the callback!" << std::endl;
-            return FALSE;
-        }
+    auto* parameters = reinterpret_cast<params*>(lparam);
+    if (!parameters || !parameters->res || !parameters->dev || !parameters->dev->internalData) {
+        std::cout << "Invalid parameters passed to callback\n";
+        return FALSE;
+    }
 
-        if(dev == nullptr){
-            std::cout << "The device could not be passed to the callback!" << std::endl;
-            return FALSE;
-        }
+    auto& windows = *parameters->res;
+    auto& err     = *parameters->err;
+    DeskUpWindowDevice* dev = parameters->dev;
 
-        if(dev->internalData == nullptr){
-            std::cout << "The device could not be passed to the callback!" << std::endl;
-            return FALSE;
-        }
-
-        // Omit DeskUp window
-        if(*desk_up_hwnd.get() == hwnd){
-            return TRUE;
-        }
-
-        // Build and add windowDesc
-        windowDesc window;
-        
-        try{
-            // Load HWND into the device so backend functions use it
-            reinterpret_cast<windowData*>(dev->internalData)->hwnd = hwnd;
-
-            window.x = WIN_getWindowXPos(dev);
-            window.y = WIN_getWindowYPos(dev);
-            window.h = WIN_getWindowHeight(dev);
-            window.w = WIN_getWindowWidth(dev);
-            
-            std::cout << ": " << window.x << ", " << window.y;
-
-            window.pathToExec = WIN_getPathFromWindow(dev);
-            
-            std::cout << window.pathToExec << std::endl;
-            window.name = WIN_getNameFromPath(window.pathToExec);
-
-            // Clear to avoid accidentally reusing HWND
-            reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
-
-        } catch(std::invalid_argument &error){
-            std::cout << "WIN_createAndSaveWindow: invalid argument: " << error.what() << std::endl;
-            SetLastError(ERROR_BAD_ARGUMENTS);
-            return FALSE;
-        } catch(std::runtime_error &error){
-            std::cout << "WIN_createAndSaveWindow: windows error: " << error.what() << std::endl;
-            SetLastError(ERROR_BAD_COMMAND);
-            return FALSE;
-        } catch(...){
-            std::cout << "WIN_createAndSaveWindow: unexpected error" << std::endl;
-            SetLastError(ERROR_FUNCTION_FAILED);
-            return FALSE;
-        }
-
-        windows->push_back(window);
-
+    if (*desk_up_hwnd.get() == hwnd) {
         return TRUE;
-    };
+    }
 
+    reinterpret_cast<windowData*>(dev->internalData)->hwnd = hwnd;
+
+    windowDesc window;
+
+    if (auto res = WIN_getWindowXPos(dev); res.has_value()) {
+        window.x = std::move(res.value());
+    } else {
+        err = std::move(res.error());
+        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+        return err.isFatal() ? FALSE : TRUE;
+    }
+
+    if (auto res = WIN_getWindowYPos(dev); res.has_value()) {
+        window.y = std::move(res.value());
+    } else {
+        err = std::move(res.error());
+        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+        return err.isFatal() ? FALSE : TRUE;
+    }
+
+    if (auto res = WIN_getWindowWidth(dev); res.has_value()) {
+        window.w = std::move(res.value());
+    } else {
+        err = std::move(res.error());
+        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+        return err.isFatal() ? FALSE : TRUE;
+    }
+
+    if (auto res = WIN_getWindowHeight(dev); res.has_value()) {
+        window.h = std::move(res.value());
+    } else {
+        err = std::move(res.error());
+        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+        return err.isFatal() ? FALSE : TRUE;
+    }
+
+    if (auto res = WIN_getPathFromWindow(dev); res.has_value()) {
+        window.pathToExec = std::move(res.value());
+    } else {
+        err = std::move(res.error());
+        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+        return err.isFatal() ? FALSE : TRUE;
+    }
+
+    std::cout << window.pathToExec << std::endl;
+    window.name = WIN_getNameFromPath(window.pathToExec);
+
+    reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+
+    windows.push_back(window);
+    return TRUE;
+}
+
+DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice* _this){
     std::vector<windowDesc> windows;
+    DeskUp::Error error{};
 
-    std::pair<std::vector<windowDesc> *, DeskUpWindowDevice *> callbackParameters{&windows, _this};
-    
+
+    params p{ _this, &windows, &error };
+
     HDESK desktop = NULL;
 
-    // Pass vector + device through LPARAM
-    if(!EnumDesktopWindows(desktop, /*callback*/ createAndSaveWindow, reinterpret_cast<LPARAM>((void *) &callbackParameters))){
-        DWORD error = GetLastError();
-        std::string errorMessage = getSystemErrorMessageWindows(error, "WIN_getAllOpenWindows: ");
-        delete (windowData *) _this->internalData;
-        throw std::runtime_error(errorMessage);
+    if (!EnumDesktopWindows(desktop, WIN_CreateAndSaveWindowProc, reinterpret_cast<LPARAM>(&p))) {
+        return std::unexpected(error);
     }
 
     return windows;
@@ -626,3 +621,4 @@ unsigned int WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& pa
 
     return n;
 }
+

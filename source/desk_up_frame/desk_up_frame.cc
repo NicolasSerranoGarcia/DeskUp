@@ -103,8 +103,10 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
                                                                                 wxYES_NO | wxCANCEL | wxNO_DEFAULT | wxICON_QUESTION);
         if(res == wxYES){
             DeskUpWindow::removeWorkspace(workspaceName.ToStdString());
-            DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString());
-            showSaveSuccessful();
+            
+            if(showMessageFromError(DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString()).error()) == -1){
+                showSaveSuccessful();
+            }
         }
     }
 
@@ -152,4 +154,23 @@ int DeskUpFrame::showSaveSuccessful(){
 
 int DeskUpFrame::showRestoreSuccessful(){
     return wxMessageBox("The workspace was restored successfully!", "Workspace restored", wxOK | wxICON_DEFAULT_TYPE);
+}
+
+int DeskUpFrame::showMessageFromError(DeskUp::Error err){
+    
+    if(!err){
+        return -1;
+    }
+
+    if(err.isFatal()){
+        wxMessageBox("There was an error with the last action! DeskUp cannot continue. Try restarting Desk Up with permissions and/or freeing memory on your device", 
+                                                "Desk Up Error", wxOK | wxICON_ERROR);
+        wxExit();
+    }
+
+    if(err.isRetriable()){
+        return wxMessageBox("There was an error with the last action! Try again later", "Desk Up Error", wxOK | wxICON_ERROR);
+    }
+
+    return -1;
 }

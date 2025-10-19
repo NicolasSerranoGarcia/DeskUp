@@ -10,45 +10,38 @@
 
 namespace fs = std::filesystem;
 
-int DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
+DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     
     fs::path workspacePath = DESKUPDIR;
     workspacePath /= workspaceName;
     fs::create_directory(workspacePath);
+    
+    auto windows = current_window_backend.get()->getAllOpenWindows(current_window_backend.get());
 
-    std::vector<windowDesc> windows;
-    try{
-        windows = current_window_backend.get()->getAllOpenWindows(current_window_backend.get());
-    } catch(std::runtime_error &e){
-        std::cout << e.what();
-        return 0;
-    } catch(...){
-        /*TODO: Show GUI error indicating what happened.
-        Here comes into play creating private exceptions 
-        to indicate what happened, because depending on 
-        the error, the action can be fatal, non-fatal or
-        user dependent*/
-        std::cout << "Something unexpected happened when saving all windows!" << std::endl;
-        return 0;
+    if(!windows.has_value()){
+        return std::unexpected(std::move(windows.error()));
     }
 
-    for(unsigned int i = 0; i < windows.size(); i++){
+    std::cout << "hola";
+
+    for(unsigned int i = 0; i < windows.value().size(); i++){
+    std::cout << "hola";
         
         //create path
         fs::path p(workspacePath);
-        p /= windows[i].name;
+        p /= windows.value()[i].name;
 
 
         // std::cout << p << std::endl;
         
-        if(!windows[i].saveTo(p)){
+        if(!windows.value()[i].saveTo(p)){
             //TODO: show error message in GUI. Ask user if he wants to continue or not depending on the exception thrown
-            std::cout << windows[i].name << " could not be saved to local!" << std::endl;
+            std::cout << windows.value()[i].name << " could not be saved to local!" << std::endl;
             continue;
         }
     }
 
-    return 1;
+    return {};
 }
 
 int DeskUpWindow::restoreWindows(std::string workspaceName){

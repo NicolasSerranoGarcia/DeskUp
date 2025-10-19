@@ -37,6 +37,7 @@
 #include "window_desc.h"
 #include "desk_up_window_bootstrap.h"
 #include "desk_up_window_device.h"
+#include "desk_up_error.h"
 
 /**
  * @brief Windows backend bootstrap descriptor.
@@ -99,7 +100,7 @@ std::string WIN_getDeskUpPath();
  * @version 0.1.0
  * @date 2025
  */
-int WIN_getWindowXPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the Y position (top-left corner) of the active (client) window in the device.
@@ -113,7 +114,7 @@ int WIN_getWindowXPos(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-int WIN_getWindowYPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the width of the active (client) window in the device.
@@ -127,7 +128,7 @@ int WIN_getWindowYPos(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the height of the active (client) window in the device.
@@ -141,7 +142,7 @@ unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the absolute path of the executable that owns the active window.
@@ -156,7 +157,7 @@ unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
+DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this);
 
 /**
  * @brief Enumerates all visible/non-minimized windows on the desktop.
@@ -168,7 +169,7 @@ std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
+DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
 
 /**
  * @brief Enumerates all saved windows from a workspace path
