@@ -22,10 +22,7 @@ DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         return std::unexpected(std::move(windows.error()));
     }
 
-    std::cout << "hola";
-
     for(unsigned int i = 0; i < windows.value().size(); i++){
-    std::cout << "hola";
         
         //create path
         fs::path p(workspacePath);

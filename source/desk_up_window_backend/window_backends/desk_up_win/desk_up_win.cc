@@ -14,6 +14,7 @@
 #include "backend_utils.h"
 #include "desk_up_error.h"
 
+namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 
 template<typename F>
@@ -35,8 +36,6 @@ static DeskUp::Status retry_op(F&& f, std::string_view ctx, int max_attempts = 3
 
     return std::unexpected(DeskUp::Error::fromLastWinError(ctx, max_attempts));
 }
-
-namespace fs = std::filesystem;
 
 
 static std::unique_ptr<HWND> desk_up_hwnd = nullptr;
@@ -140,6 +139,7 @@ std::string WIN_getDeskUpPath(){
     std::filesystem::create_directories(p, ec);
     return p.string();
 }
+
 
 DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) {
     const auto* data = static_cast<const windowData*>(_this->internalData);
@@ -277,7 +277,6 @@ struct params {
 };
 
 static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
-    using DeskUp::Error; // si aplica
 
     if (!IsWindowVisible(hwnd)) return TRUE;
 
@@ -348,7 +347,7 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
 
     reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
 
-    windows.push_back(window);
+    windows.push_back(std::move(window));
     return TRUE;
 }
 
@@ -362,7 +361,7 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
     HDESK desktop = NULL;
 
     if (!EnumDesktopWindows(desktop, WIN_CreateAndSaveWindowProc, reinterpret_cast<LPARAM>(&p))) {
-        return std::unexpected(error);
+        return std::unexpected(std::move(error));
     }
 
     return windows;
@@ -495,7 +494,6 @@ void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window){
     }
 }
 
-//Next is helpers for WIN_relaunchAndResize()
 static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out){
     HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
     if(!h) return false;
