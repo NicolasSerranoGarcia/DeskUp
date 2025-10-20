@@ -106,7 +106,7 @@ struct DeskUpWindow{
      * @note Ensure @ref DU_Init has been called successfully before invoking this method so that
      *       @ref DESKUPDIR and @ref current_window_backend are properly initialized.
      */
-    static int restoreWindows(std::string workspaceName);
+    static DeskUp::Status restoreWindows(std::string workspaceName);
 
     /**
      * @brief This function checks whether if a string is a valid name for a workspace folder.

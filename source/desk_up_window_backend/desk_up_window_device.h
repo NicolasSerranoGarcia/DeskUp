@@ -138,7 +138,7 @@ struct DeskUpWindowDevice{
      * @version 0.2.0
      * @date 2025
      */
-    windowDesc (*recoverSavedWindow)(DeskUpWindowDevice * _this, std::filesystem::path filePath);
+    DeskUp::Result<windowDesc> (*recoverSavedWindow)(DeskUpWindowDevice * _this, std::filesystem::path filePath);
 
     /**
      * @brief A pointer to function that is used to resize a given window.

@@ -367,46 +367,109 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
     return windows;
 }
 
-windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice *, std::filesystem::path path){
+DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::filesystem::path path) noexcept{
 
-    std::ifstream f;
-
-    f.open(path.string(), std::ios::in);
-    
-    
-    if(!f.is_open()){
-        throw std::runtime_error("WIN_recoverSavedWindow: Could not open the file containing the window!");
+    std::error_code fec;
+    if (!fs::exists(path, fec) || !fs::is_regular_file(path, fec)) {
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+            "WIN_recoverSavedWindow: path is not a regular file: " + path.string()
+        ));
+    }
+    if (fec) {
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Retry, DeskUp::ErrType::Io, 0,
+            "WIN_recoverSavedWindow: filesystem error: " + fec.message()
+        ));
     }
 
-    windowDesc w = {"",0,0,0,0,""};
+    constexpr int kMaxAttempts = 3;
+    std::chrono::milliseconds delay{100};
+    std::ifstream f;
+
+    for (int attempt = 1; attempt <= kMaxAttempts; ++attempt) {
+        f.open(path, std::ios::in);
+        if (f.is_open()) break;
+
+        if (attempt == kMaxAttempts) {
+            return std::unexpected(DeskUp::Error(
+                DeskUp::Level::Retry, DeskUp::ErrType::Io, attempt,
+                "WIN_recoverSavedWindow: could not open file: " + path.string()
+            ));
+        }
+        std::this_thread::sleep_for(delay);
+        delay *= 2;
+    }
+
+    windowDesc w = {"", 0, 0, 0, 0, ""};
+
     std::string s;
     int i = 0;
 
-    while(std::getline(f, s)){
-        switch(i){
+    auto parse_int = [](const std::string& str, const char* field) -> std::optional<int> {
+        try {
+            size_t pos = 0;
+            int val = std::stoi(str, &pos);
+            if (pos != str.size()) return std::nullopt;
+            return val;
+        } catch (...) { return std::nullopt; }
+    };
+
+    while (std::getline(f, s)) {
+        switch (i) {
             case 0:
                 w.pathToExec = s;
                 w.name = WIN_getNameFromPath(s);
                 break;
-            case 1:
-                w.x = std::stoi(s);
+            case 1: {
+                auto v = parse_int(s, "x");
+                if (!v) return std::unexpected(DeskUp::Error(
+                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    "WIN_recoverSavedWindow: invalid X coordinate"
+                ));
+                w.x = *v;
                 break;
-            case 2: 
-                w.y = std::stoi(s);
+            }
+            case 2: {
+                auto v = parse_int(s, "y");
+                if (!v) return std::unexpected(DeskUp::Error(
+                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    "WIN_recoverSavedWindow: invalid Y coordinate"
+                ));
+                w.y = *v;
                 break;
-            case 3:
-                w.w = std::stoi(s);
+            }
+            case 3: {
+                auto v = parse_int(s, "w");
+                if (!v || *v < 0) return std::unexpected(DeskUp::Error(
+                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    "WIN_recoverSavedWindow: invalid width"
+                ));
+                w.w = *v;
                 break;
-            case 4:
-                w.h = std::stoi(s);
+            }
+            case 4: {
+                auto v = parse_int(s, "h");
+                if (!v || *v < 0) return std::unexpected(DeskUp::Error(
+                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    "WIN_recoverSavedWindow: invalid height"
+                ));
+                w.h = *v;
                 break;
+            }
             default:
                 break;
         }
         i++;
     }
 
-    f.close();
+    if (i < 5) {
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+            "WIN_recoverSavedWindow: file content incomplete (need 5 lines)"
+        ));
+    }
+
     return w;
 }
 

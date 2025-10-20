@@ -41,39 +41,42 @@ DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     return {};
 }
 
-int DeskUpWindow::restoreWindows(std::string workspaceName){
+DeskUp::Status DeskUpWindow::restoreWindows(std::string workspaceName){
     //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace), 
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
     fs::path p (DESKUPDIR);
     p /= workspaceName;
 
-    try{
-        bool forceTermination = true;
-        for(auto const &file : fs::directory_iterator{p}){
-            windowDesc w = current_window_backend.get()->recoverSavedWindow(current_window_backend.get(), file.path());
+    bool forceTermination = true;
+    for(auto const &file : fs::directory_iterator{p}){
+        auto res = current_window_backend.get()->recoverSavedWindow(current_window_backend.get(), file.path());
 
-            current_window_backend.get()->closeWindowFromPath(current_window_backend.get(),
-                                                                             w.pathToExec, forceTermination);
-            current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), w.pathToExec);
-
-            current_window_backend.get()->resizeWindow(current_window_backend.get(), w);
+        if(!res.has_value()){
+            return std::unexpected(std::move(res.error()));
         }
-    //in the future, different exceptions must rethrow or do different things
-    } catch(const fs::filesystem_error &e){
-        std::cout << e.what() << std::endl;
-    } catch(const std::runtime_error &r){
-        std::cout << r.what() << std::endl;
-    } catch(const std::invalid_argument &a){
-        std::cout << a.what() << std::endl;
-    } catch(const std::exception &ex){
-        std::cout << ex.what() << std::endl;
-    } catch(...){
-        std::cout << "Something unexpected happened!" << std::endl;
-        return 0;
+
+        current_window_backend.get()->closeWindowFromPath(current_window_backend.get(),
+                                                                            res.value().pathToExec, forceTermination);
+
+        if(!res.has_value()){
+            return std::unexpected(std::move(res.error()));
+        }
+
+        current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), res.value().pathToExec);
+
+        if(!res.has_value()){
+            return std::unexpected(std::move(res.error()));
+        }
+
+        current_window_backend.get()->resizeWindow(current_window_backend.get(), res.value());
+
+        if(!res.has_value()){
+            return std::unexpected(std::move(res.error()));
+        }
     }
 
-    return 1;
+    return {};
 };
 
 bool DeskUpWindow::isWorkspaceValid(const std::string& workspaceName){

@@ -181,7 +181,7 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
  * @version 0.2.0
  * @date 2025
  */
-windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path);
+DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path) noexcept;
 
 /**
  * @brief Creates a process from the specified path. 
