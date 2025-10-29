@@ -102,14 +102,14 @@ DeskUpWindowDevice WIN_CreateDevice(){
     device.loadWindowFromPath = WIN_loadProcessFromPath;
     device.recoverSavedWindow = WIN_recoverSavedWindow;
     device.resizeWindow    = WIN_resizeWindow;
-    device.closeWindowFromPath = WIN_closeProcessFromPath;
+    device.closeProcessFromPath = WIN_closeProcessFromPath;
 
     device.internalData = (void *) new windowData();
     
     return device;
 }
 
-std::string WIN_getDeskUpPath(){
+DeskUp::Result<std::string> WIN_getDeskUpPath(){
     PWSTR wpath = nullptr;
     std::string base;
     if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, nullptr, &wpath)) && wpath){
@@ -498,17 +498,28 @@ static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 5000) {
     return hwndFound;
 }
 
-void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const std::string path){
+DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::string path) noexcept {
 
-    if(path.empty()){
-        throw std::invalid_argument("WIN_loadProcessFromPath: the path is empty!");
+    if (path.empty()) {
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal,
+            DeskUp::ErrType::InvalidInput,
+            0,
+            "WIN_loadProcessFromPath: empty path"
+        ));
     }
 
-    if(!_this || !_this->internalData){
-        throw std::invalid_argument("WIN_loadProcessFromPath: there was an error parsing the window device!");
+    if (!_this || !_this->internalData) {
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal,
+            DeskUp::ErrType::InvalidInput,
+            0,
+            "WIN_loadProcessFromPath: invalid window device"
+        ));
     }
 
-    SHELLEXECUTEINFO ShExecInfo;
+
+    SHELLEXECUTEINFO ShExecInfo{};
     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
     ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_DDEWAIT | SEE_MASK_NOASYNC;
     ShExecInfo.hwnd = NULL;
@@ -519,42 +530,63 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const std::string path)
     ShExecInfo.nShow = SW_NORMAL;
     ShExecInfo.hInstApp = NULL;
 
-    if(!ShellExecuteEx(&ShExecInfo)){
-        throw std::runtime_error(getSystemErrorMessageWindows(GetLastError(), "WIN_loadProcessFromPath: "));
-    }
+    auto status = retry_op([&] {
+        BOOL ok = ShellExecuteEx(&ShExecInfo);
+        if (!ok && GetLastError() == 0)
+            SetLastError(ERROR_FUNCTION_FAILED);
+        return ok != 0;
+    }, "WIN_loadProcessFromPath: ShellExecuteEx: ");
 
+    if (!status) {
+        return std::unexpected(status.error());
+    }
 
     if (ShExecInfo.hProcess) {
         WaitForInputIdle(ShExecInfo.hProcess, 2000);
         DWORD pid = GetProcessId(ShExecInfo.hProcess);
-
-        
         CloseHandle(ShExecInfo.hProcess);
-        //FindMainWindow can return nullptr, but it will be handled later
-        ((windowData *)_this->internalData)->hwnd = WIN_FindMainWindow(pid);
+
+        reinterpret_cast<windowData*>(_this->internalData)->hwnd = WIN_FindMainWindow(pid);
     }
+
+    return {};
 }
 
-void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window){
+
+DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window){
 
     if(!_this || !_this->internalData){
-        throw std::invalid_argument("WIN_resizeWindow: there was an error parsing the window device!");
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal,
+            DeskUp::ErrType::InvalidInput,
+            0,
+            "WIN_resizeWindow: invalid window device"
+        ));
     }
 
     windowData * data = reinterpret_cast<windowData*>(_this->internalData);
 
     if(!data->hwnd){
-        //this should not block execution. 
-        //throw std::runtime_error("WIN_resizeWindow: could not recover the handle to the window correctly!");
-        //for the moment just return
-        std::cout << "WIN_resizeWindow: no HWND for '" << window.name 
-                    << "' (" << window.pathToExec << "), skipping resize.\n";
-        return;
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal,
+            DeskUp::ErrType::InvalidInput,
+            0,
+            "WIN_resizeWindow: invalid hwnd"
+        ));
     }
 
-    if(!SetWindowPos(data->hwnd, nullptr, window.x, window.y, window.w, window.h, SWP_SHOWWINDOW)){
-        throw std::runtime_error(getSystemErrorMessageWindows(GetLastError(), "WIN_resizeWindow: "));
+    auto status = retry_op([&] {
+        BOOL ok = SetWindowPos(data->hwnd, nullptr, window.x, window.y, window.w, window.h, SWP_SHOWWINDOW);
+        if (!ok && GetLastError() == 0)
+            SetLastError(ERROR_FUNCTION_FAILED);
+        return ok != 0;
+    }, "WIN_resizeWindow: SetWindowPos: ");
+
+    if (!status) {
+        return std::unexpected(status.error());
     }
+
+    return {};
 }
 
 static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out){
@@ -670,14 +702,19 @@ static int WIN_closeProcessesByPath(const std::string& path, DWORD timeoutMs, bo
     return closed;
 }
 
-unsigned int WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce){
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce){
     if(path.empty()){
-        throw std::invalid_argument("WIN_relaunchAndResize: the path to the executable is empty!");
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal,
+            DeskUp::ErrType::InvalidInput,
+            0,
+            "WIN_closeProcessFromPath: empty path"
+        ));
     }
 
     int n = WIN_closeProcessesByPath(path, (DWORD) 1000, allowForce);
     if(n > 0){
-        std::cout << "WIN_relaunchAndResize: Closed " << n << "windows of path: " << path << "\n";
+        std::cout << "WIN_closeProcessByPath: Closed " << n << "windows of path: " << path << "\n";
     }
 
     return n;

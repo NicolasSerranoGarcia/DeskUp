@@ -86,7 +86,7 @@ DeskUpWindowDevice WIN_CreateDevice();
  * @version 0.1.0
  * @date 2025
  */
-std::string WIN_getDeskUpPath();
+DeskUp::Result<std::string> WIN_getDeskUpPath();
 
 /**
  * @brief Gets the X position (top-left corner) of the active (client) window in the device.
@@ -194,7 +194,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice * _this, st
  * @version 0.2.0
  * @date 2025
  */
-void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
+DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path) noexcept;
 
 /**
  * @brief Resizes a window according to the windowDesc parameter geometry.
@@ -208,7 +208,7 @@ void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
  * @version 0.2.0
  * @date 2025
  */
-void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
+DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
 
 /**
  * @brief This function closes all the instances associated with an executable, specified by the \c path parameter.
@@ -222,6 +222,6 @@ void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
  * @version 0.2.0
  * @date 2025
  */
-unsigned int WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
 
 #endif

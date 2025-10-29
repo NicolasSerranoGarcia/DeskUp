@@ -56,23 +56,23 @@ DeskUp::Status DeskUpWindow::restoreWindows(std::string workspaceName){
             return std::unexpected(std::move(res.error()));
         }
 
-        current_window_backend.get()->closeWindowFromPath(current_window_backend.get(),
+        auto result = current_window_backend.get()->closeProcessFromPath(current_window_backend.get(),
                                                                             res.value().pathToExec, forceTermination);
 
-        if(!res.has_value()){
-            return std::unexpected(std::move(res.error()));
+        if(!result.has_value()){
+            return std::unexpected(std::move(result.error()));
         }
 
-        current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), res.value().pathToExec);
+        auto resu = current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), res.value().pathToExec);
 
-        if(!res.has_value()){
-            return std::unexpected(std::move(res.error()));
+        if(!resu.has_value()){
+            return std::unexpected(std::move(resu.error()));
         }
 
-        current_window_backend.get()->resizeWindow(current_window_backend.get(), res.value());
+        resu = current_window_backend.get()->resizeWindow(current_window_backend.get(), res.value());
 
-        if(!res.has_value()){
-            return std::unexpected(std::move(res.error()));
+        if(!resu.has_value()){
+            return std::unexpected(std::move(resu.error()));
         }
     }
 
