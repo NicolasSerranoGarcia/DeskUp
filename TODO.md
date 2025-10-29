@@ -98,7 +98,7 @@
 
 [X] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
 
-[] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
+[X] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
 
 [X] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
 
@@ -132,7 +132,13 @@
 
 This essentially means changing string types to wide ones and doing #define UNICODE before including windows.h
 
-## 7. Support for browsers: Create an extension to gather information about the tabs and windows.
+## 7. Create DeskUp Error system 
+
+[X] finish migrating the backend to use DeskUp:: namespace for errors
+
+[] cleanup, show messages in the frontend and fix known issues regarding crashes when reopening workspaces
+
+## 8. Support for browsers: Create an extension to gather information about the tabs and windows.
 
 [] implement a pipeline with the extension that is able to recover the information of the tabs before saving the workspace.
 The resulting information in the file saved should be marked as being a browser, which, tabs, windows, visibility... and then when loading it, it should do kind of the same thing as the desk up backend: The recovered information should be the same regardless of the browser, but
