@@ -25,8 +25,8 @@ target_include_directories(desk_up_window_library PUBLIC
     ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_backends/desk_up_win
     ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc
     ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/backend_utils
-    ${CMAKE_SOURCE_DIR}/source/desk_up_window         # por si incluyes "desk_up_window.h"
-    ${CMAKE_SOURCE_DIR}/include                 # si usas headers globales
+    ${CMAKE_SOURCE_DIR}/source/desk_up_window
+    ${CMAKE_SOURCE_DIR}/include
 )
 
 # --- Subproyectos que compilan ---
@@ -40,8 +40,6 @@ add_subdirectory(
     ${CMAKE_BINARY_DIR}/source/desk_up_error
 )
 
-# Enlazados. Si desk_up_win_library ya "PUBLIC-linkea" window_desc y error, bastaría con desk_up_win_library.
-# Si no estás seguro, enlázalos explícitamente:
 target_link_libraries(desk_up_window_library
     PUBLIC
         backend_utils_library
