@@ -3,39 +3,52 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <cerrno>
+#include <cstring>
+#include <system_error>
 
 namespace fs = std::filesystem;
 
 int windowDesc::saveTo(fs::path path){
     
     if(path.empty()){
-        std::cout << "file path empty" << std::endl;
-        return 0;
+        std::cerr << "SaveTo: error: file path empty" << std::endl;
+        return ERR_EMPTY_PATH;
     }
-    
-    std::ofstream windowFile;
 
-    windowFile.open(path, std::ios::out);
-
+    std::ofstream windowFile(path, std::ios::out);
     if(!windowFile.is_open()){
-        std::cout << "SaveTo: open: Could not open file" << path << std::endl;
-        return 0;
-    }
 
+        std::error_code ec(errno, std::generic_category());
+        std::cerr << "SaveTo: error opening file '" << path << "': " << ec.message() << std::endl;
+
+        switch (errno) {
+            case EACCES:
+                return ERR_NO_PERMISSION;
+            case ENOENT:
+                return ERR_FILE_NOT_FOUND;
+            case ENOSPC:
+                return ERR_DISK_FULL;
+            default:
+                return ERR_FILE_NOT_OPEN;
+        }
+    }
 
     windowFile << this->pathToExec 
-    << std::endl << this->x 
-    << std::endl << this->y 
-    << std::endl << this->w 
-    << std::endl << this->h;
+               << std::endl << this->x 
+               << std::endl << this->y 
+               << std::endl << this->w 
+               << std::endl << this->h;
 
-    std::cout << this->pathToExec 
-    << std::endl << this->x 
-    << std::endl << this->y 
-    << std::endl << this->w 
-    << std::endl << this->h << "helloue" << std::endl;
+    if(!windowFile.good()){
+        return ERR_UNKNOWN;
+    }
 
     windowFile.close();
 
-    return 1;
+    std::cout << "Saved window: " << std::endl
+              << this->pathToExec << std::endl
+              << this->x << " " << this->y << " " << this->w << " " << this->h << std::endl;
+
+    return SAVE_SUCCESS;
 }

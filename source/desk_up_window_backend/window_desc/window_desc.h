@@ -121,4 +121,14 @@ struct windowDesc {
 
 };
 
+enum SaveErrorCode {
+    SAVE_SUCCESS = 1,
+    ERR_EMPTY_PATH = -1,
+    ERR_FILE_NOT_OPEN = -2,
+    ERR_NO_PERMISSION = -3,
+    ERR_FILE_NOT_FOUND = -4,
+    ERR_DISK_FULL = -5,
+    ERR_UNKNOWN = -6
+};
+
 #endif
