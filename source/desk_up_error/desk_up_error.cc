@@ -91,3 +91,31 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
     unsigned int t = tries.value_or(0);
     return Error(lvl, typ, t, std::move(msg));
 }
+
+DeskUp::Error DeskUp::Error::fromSaveError(int e){
+     switch (e) {
+        case 1:
+            return Error(Level::Info, ErrType::None, e, "windowDesc::saveTo: operation successful");
+
+        case -1:
+            return Error(Level::Error, ErrType::InvalidInput, e, "windowDesc::saveTo: file path is empty");
+
+        case -2:
+            return Error(Level::Error, ErrType::Io, e, "windowDesc::saveTo: could not open file");
+
+        case -3:
+            return Error(Level::Error, ErrType::AccessDenied, e, "windowDesc::saveTo: permission denied");
+
+        case -4:
+            return Error(Level::Error, ErrType::FileNotFound, e, "windowDesc::saveTo: file or directory not found");
+
+        case -5:
+            return Error(Level::Fatal, ErrType::DiskFull, e, "windowDesc::saveTo: disk full or no space left");
+
+        case -6:
+            return Error(Level::Error, ErrType::Unexpected, e, "windowDesc::saveTo: unknown I/O error");
+
+        default:
+            return Error(Level::Warning, ErrType::Default, e, "windowDesc::saveTo: unrecognized error code");
+    }
+}

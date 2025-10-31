@@ -38,20 +38,37 @@
 
 namespace DeskUp {
 
-    enum class Level{
+    enum class Level {
         Fatal,
+        Error,
+        Warning,
         Retry,
+        Info,
+        Debug,
         Default,
         None
     };
 
-    enum class ErrType{
-        InsufficientMemory, 
+    enum class ErrType {
+        InsufficientMemory,
         AccessDenied,
-        SharingViolation, 
-        Io, 
-        InvalidInput, 
+        SharingViolation,
+        Io,
+        DiskFull,
+        DeviceNotFound,
+        Timeout,
+        ResourceBusy,
+        FileNotFound,
+        InvalidFormat,
+        InvalidInput,
+        CorruptedData,
+        OutOfRange,
+        NetworkError,
+        ConnectionRefused,
+        HostUnreachable,
+        ProtocolError,
         Unexpected,
+        NotImplemented,
         Default,
         None
     };
@@ -81,6 +98,8 @@ namespace DeskUp {
 
             static Error fromLastWinError(std::string_view context = "", std::optional<unsigned int> tries = std::nullopt);
 
+            //uses SaveErrorCode, defined in window_desc.cc
+            static Error fromSaveError(int e);
         private:
             Level lvl;
             ErrType errType;
