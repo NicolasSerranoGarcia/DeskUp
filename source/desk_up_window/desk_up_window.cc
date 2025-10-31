@@ -22,23 +22,35 @@ DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         return std::unexpected(std::move(windows.error()));
     }
 
+    DeskUp::Error lastErr;
+
     for(unsigned int i = 0; i < windows.value().size(); i++){
         
         //create path
         fs::path p(workspacePath);
         p /= windows.value()[i].name;
-
-
-        // std::cout << p << std::endl;
         
-        if(!windows.value()[i].saveTo(p)){
+        if(int res = windows.value()[i].saveTo(p); res < 0){
             //TODO: show error message in GUI. Ask user if he wants to continue or not depending on the exception thrown
             std::cout << windows.value()[i].name << " could not be saved to local!" << std::endl;
+
+            auto err = DeskUp::Error::fromSaveError(res);
+
+            if(err.isFatal()){
+                return std::unexpected(std::move(err));
+            }
+
+            lastErr = err;
+
             continue;
         }
     }
 
-    return {};
+    if(lastErr.level() == DeskUp::Level::None){
+        return {};
+    }
+
+    return std::unexpected(std::move(lastErr));
 }
 
 DeskUp::Status DeskUpWindow::restoreWindows(std::string workspaceName){
