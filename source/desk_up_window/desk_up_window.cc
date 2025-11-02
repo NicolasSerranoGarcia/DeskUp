@@ -55,35 +55,36 @@ DeskUp::Status DeskUpWindow::restoreWindows(std::string workspaceName){
     //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace), 
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
-    fs::path p (DESKUPDIR);
+    fs::path p(DESKUPDIR);
     p /= workspaceName;
 
+    if (!fs::exists(p) || !fs::is_directory(p)) {
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Fatal, DeskUp::ErrType::NotFound, 0,
+            "restoreWindows: workspace not found: " + p.string()
+        ));
+    }
+
     bool forceTermination = true;
-    for(auto const &file : fs::directory_iterator{p}){
-        auto res = current_window_backend.get()->recoverSavedWindow(current_window_backend.get(), file.path());
+    for (const auto& file : fs::directory_iterator{p}) {
+        auto res = current_window_backend->recoverSavedWindow(current_window_backend.get(), file.path());
+        if (!res.has_value() && res.error().isFatal()) return std::unexpected(std::move(res.error()));
 
-        if(!res.has_value()){
-            return std::unexpected(std::move(res.error()));
+        auto closeRes = current_window_backend->closeProcessFromPath(current_window_backend.get(),
+                                                                    res->pathToExec, forceTermination);
+        if (!closeRes.has_value() && closeRes.error().isFatal()) return std::unexpected(std::move(closeRes.error()));
+
+        auto loadRes = current_window_backend->loadWindowFromPath(current_window_backend.get(), res->pathToExec);
+        if (!loadRes.has_value()){
+            if(loadRes.error().isFatal()){
+                return std::unexpected(std::move(loadRes.error()));
+            } 
+
+            std::cout << "Unrecovered window: " << loadRes.error().what();
         }
 
-        auto result = current_window_backend.get()->closeProcessFromPath(current_window_backend.get(),
-                                                                            res.value().pathToExec, forceTermination);
-
-        if(!result.has_value()){
-            return std::unexpected(std::move(result.error()));
-        }
-
-        auto resu = current_window_backend.get()->loadWindowFromPath(current_window_backend.get(), res.value().pathToExec);
-
-        if(!resu.has_value()){
-            return std::unexpected(std::move(resu.error()));
-        }
-
-        resu = current_window_backend.get()->resizeWindow(current_window_backend.get(), res.value());
-
-        if(!resu.has_value()){
-            return std::unexpected(std::move(resu.error()));
-        }
+        auto resizeRes = current_window_backend->resizeWindow(current_window_backend.get(), *res);
+        if (!resizeRes.has_value() && resizeRes.error().isFatal()) return std::unexpected(std::move(resizeRes.error()));
     }
 
     return {};
