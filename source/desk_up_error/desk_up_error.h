@@ -56,6 +56,7 @@ namespace DeskUp {
         AccessDenied,
         SharingViolation,
         Io,
+        NotFound,
         DiskFull,
         DeviceNotFound,
         Timeout,
