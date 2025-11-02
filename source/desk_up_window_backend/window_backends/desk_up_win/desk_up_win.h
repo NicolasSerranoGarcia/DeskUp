@@ -28,15 +28,16 @@
 #ifndef DESKUPWIN_H
 #define DESKUPWIN_H
 
-#include <Windows.h>
 #include <stdexcept>
 #include <vector>
 #include <filesystem>
-#include <stdlib.h>
 
-#include "window_desc.h"
+#include <stdlib.h>
+#include <Windows.h>
+
 #include "desk_up_window_bootstrap.h"
 #include "desk_up_window_device.h"
+#include "window_desc.h"
 #include "desk_up_error.h"
 
 /**

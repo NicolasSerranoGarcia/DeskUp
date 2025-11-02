@@ -1,8 +1,9 @@
 #include "backend_utils.h"
 
 #include <string>
-#include <windows.h>
 #include <algorithm>
+
+#include <windows.h>
 
 std::string WideStringToUTF8(LPCWCH wideString) {
     if (!wideString) return {};

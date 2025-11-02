@@ -1,6 +1,6 @@
 /**
- * @file window_core.h
- * @brief A struct wrapper used in the DeskUp backend
+ * @file desk_up_error.h
+ * @brief The declaration of the error system of Desk Up
  *
  * This file is part of DeskUp
  *
@@ -29,10 +29,11 @@
 #define DESKUPERROR_H
 
 #include <string>
-#include <Windows.h>
 #include <stdexcept>
 #include <optional>
 #include <expected>
+
+#include <Windows.h>
 
 #include "window_desc.h"
 #include "backend_utils.h"

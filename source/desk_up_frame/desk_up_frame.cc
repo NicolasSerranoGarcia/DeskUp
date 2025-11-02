@@ -1,12 +1,14 @@
 #include "desk_up_frame.h"
 
+#include <fstream>
+
+#include <wx/aboutdlg.h>
+
 #include "desk_up_error.h"
 #include "desk_up_error_gui_converter.h"
 #include "window_core.h"
 #include "desk_up_window.h"
 
-#include <wx/aboutdlg.h>
-#include <fstream>
 
 enum {
     ID_AddWorkspace = 1,

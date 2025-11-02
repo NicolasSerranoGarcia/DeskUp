@@ -1,6 +1,6 @@
 /**
  * @file backend_utils.h
- * @brief A struct wrapper used in DeskUp backend
+ * @brief Defines basic tools to easen the interaction with the Desk Up backend
  *
  * This file is part of DeskUp
  *
@@ -28,9 +28,9 @@
 #ifndef BACKENDUTILS_H
 #define BACKENDUTILS_H
 
-#include <Windows.h>
 #include <string>
 
+#include <Windows.h>
 
 /**
  * @brief A function to convert from any wide char type to UTF-8. Used as a helper for getSystemErrorMessageWindows()

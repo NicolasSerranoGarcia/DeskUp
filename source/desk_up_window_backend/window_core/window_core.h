@@ -1,6 +1,6 @@
 /**
  * @file window_core.h
- * @brief A struct wrapper used in the DeskUp backend
+ * @brief Declares basic code to interact with Desk Up
  *
  * This file is part of DeskUp
  *
