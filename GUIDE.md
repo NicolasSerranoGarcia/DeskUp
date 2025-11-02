@@ -189,9 +189,16 @@ cpack
 |--------------------------|--------------------------------------|---------|
 | `-DGNERATE_DOCS=ON\|OFF` | Enables/disables the creation of docs | OFF |
 
+
+on /build:
+
 ```bash
 doxygen -u Doxyfile
 doxygen Doxyfile
+```
+on docs/latex:
+
+```bash
 pdflatex --shell-escape refman.tex
 ```
 
