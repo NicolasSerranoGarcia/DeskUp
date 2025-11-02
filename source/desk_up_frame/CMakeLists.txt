@@ -7,6 +7,7 @@ add_library(desk_up_frame_library STATIC
 target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window
                                                         ${CMAKE_SOURCE_DIR}/source/desk_up_error
                                                         ${CMAKE_SOURCE_DIR}/include
+                                                        ${CMAKE_SOURCE_DIR}/source/desk_up_error_gui_converter
                                                         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend
                                                         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc
                                                         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/backend_utils

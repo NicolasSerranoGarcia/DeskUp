@@ -5,9 +5,9 @@ add_library(desk_up_error_library STATIC
 
 target_include_directories(desk_up_error_library
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}                    # .../source/desk_up_error
-        ${CMAKE_SOURCE_DIR}/include                    # si backend_utils.h está aquí
-        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/backend_utils                  # si backend_utils.h está aquí
-        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend  # si lo tuvieras ahí
-        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc  # si lo tuvieras ahí
+        ${CMAKE_CURRENT_SOURCE_DIR}  
+        ${CMAKE_SOURCE_DIR}/include                
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/backend_utils         
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend 
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc
 )
