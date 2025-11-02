@@ -136,7 +136,9 @@ This essentially means changing string types to wide ones and doing #define UNIC
 
 [X] finish migrating the backend to use DeskUp:: namespace for errors
 
-[] cleanup, show messages in the frontend and fix known issues regarding crashes when reopening workspaces
+[] cleanup, show messages in the frontend
+
+[] Reestructure the project: create a library for each component, and create a correct namespace for each part of the project (DeskUp:: for globals, then create namespaces inside namespaces...)
 
 ## 8. Support for browsers: Create an extension to gather information about the tabs and windows.
 
