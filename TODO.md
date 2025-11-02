@@ -138,9 +138,11 @@ This essentially means changing string types to wide ones and doing #define UNIC
 
 [X] cleanup, show messages in the frontend
 
-[] Restructure the project: create a library for each component, and create a correct namespace for each part of the project (DeskUp:: for globals, then create namespaces inside namespaces...)
+[/] Restructure the project: create a library for each component, and create a correct namespace for each part of the project (DeskUp:: for globals, then create namespaces inside namespaces...)
 
-[] fix potential errors on the backend, document new code and do something with retry_op
+[] (optional for this task) mingw gets saved as the default bash terminal, fix it
+
+[/] fix potential errors on the backend, document new code and do something with retry_op
 
 ## 8. Support for browsers: Create an extension to gather information about the tabs and windows.
 
