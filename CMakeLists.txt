@@ -1,21 +1,25 @@
-#./CMakeLists.txt
+# ./CMakeLists.txt
 
 # CMake config
 
     # --- CMake ---
+
         cmake_minimum_required(VERSION 3.20...3.25)
 
         set(CMAKE_CXX_STANDARD 23)
         set(CMAKE_CXX_STANDARD_REQUIRED ON)
         set(CMAKE_CXX_EXTENSIONS OFF)
 
-        cmake_policy(SET CMP0135 NEW)
-        cmake_policy(SET CMP0077 NEW)
-
     # --- Project ---
 
         file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
-        project(DeskUp VERSION ${PROJECT_VERSION_STRING})
+        project(
+            DeskUp
+            VERSION ${PROJECT_VERSION_STRING}
+            DESCRIPTION "DeskUp — Workspace automation for Windows"
+            HOMEPAGE_URL "https://github.com/NicolasSerranoGarcia/DeskUp"
+            LANGUAGES CXX RC
+        )
 
     # --- Build output ---
 
@@ -26,7 +30,7 @@
 # config_compiler_flags_library library
 
     # --- Compiler flags ---
-    
+
     add_library(config_compiler_flags_library INTERFACE)
     target_compile_features(config_compiler_flags_library INTERFACE cxx_std_23)
 
@@ -172,6 +176,10 @@
     set(CPACK_GENERATOR "ZIP")
 
     include(InstallRequiredSystemLibraries)
+    set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+    set(CPACK_PACKAGE_VENDOR "Nicolás Serrano García")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} automates your Windows workspace layout and window management.")
+    set(CPACK_PACKAGE_CONTACT "serranogarcianicolas@gmail.com")
     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
     set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
     set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
