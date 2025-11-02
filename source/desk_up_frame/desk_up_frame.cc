@@ -1,8 +1,9 @@
 #include "desk_up_frame.h"
 
-#include "desk_up_window.h"
-#include "window_core.h"
+#include "desk_up_error.h"
 #include "desk_up_error_gui_converter.h"
+#include "window_core.h"
+#include "desk_up_window.h"
 
 #include <wx/aboutdlg.h>
 #include <fstream>
@@ -47,12 +48,12 @@ DeskUpFrame::DeskUpFrame()
     Bind(wxEVT_MENU, &DeskUpFrame::OnRestore, this, ID_RestoreWorkspace);
 }
 
-void DeskUpFrame::OnExit(wxCommandEvent& event)
+void DeskUpFrame::OnExit(wxCommandEvent&)
 {
     Close(true);
 }
 
-void DeskUpFrame::OnAbout(wxCommandEvent& event)
+void DeskUpFrame::OnAbout(wxCommandEvent&)
 {
 
 
@@ -68,7 +69,7 @@ void DeskUpFrame::OnAbout(wxCommandEvent& event)
     wxAboutBox(info);
 }
 
-void DeskUpFrame::OnAdd(wxCommandEvent& event)
+void DeskUpFrame::OnAdd(wxCommandEvent&)
 {
     wxString workspaceName;
 
@@ -100,9 +101,9 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
         DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString());
         showSaveSuccessful();
     } else{
-        int res = wxMessageBox("The workspace already exists. Do you wish to rewrite it? ", "Workspace exists",
+        int response = wxMessageBox("The workspace already exists. Do you wish to rewrite it? ", "Workspace exists",
                                                                                 wxYES_NO | wxCANCEL | wxNO_DEFAULT | wxICON_QUESTION);
-        if(res == wxYES){
+        if(response == wxYES){
             DeskUpWindow::removeWorkspace(workspaceName.ToStdString());
             
             if(auto res = DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString()); !res.has_value()){
@@ -113,7 +114,7 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
 
 }
 
-void DeskUpFrame::OnRestore(wxCommandEvent& event)
+void DeskUpFrame::OnRestore(wxCommandEvent&)
 {
         wxString workspaceName;
 

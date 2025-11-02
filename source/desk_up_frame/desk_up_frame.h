@@ -2,7 +2,6 @@
 #define DESKUPFRAME_H
 
 #include <wx/wx.h>
-#include "desk_up_error.h"
 
 class DeskUpFrame : public wxFrame{
     public:
@@ -17,8 +16,6 @@ class DeskUpFrame : public wxFrame{
     static int showSaveSuccessful();
 
     static int showRestoreSuccessful();
-
-    static int showMessageFromError(DeskUp::Error err);
 };
 
 #endif

@@ -33,8 +33,9 @@
 #include <stdexcept>
 #include <optional>
 #include <expected>
-#include "backend_utils.h"
+
 #include "window_desc.h"
+#include "backend_utils.h"
 
 namespace DeskUp {
 

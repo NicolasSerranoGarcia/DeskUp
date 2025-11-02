@@ -1,7 +1,5 @@
 #include "window_core.h"
 
-#include "desk_up_error.h"
-
 static DeskUpWindowBootStrap devices[] = { winWindowDevice };
 
 static int numDevices = 1;

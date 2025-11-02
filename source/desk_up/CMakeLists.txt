@@ -1,4 +1,4 @@
-#./source/desk_up/CMakeLists.txt
+# ./source/desk_up/CMakeLists.txt
 
 # desk_up_library
 
@@ -17,7 +17,8 @@
 # Dependencies
 
     target_link_libraries(desk_up_library PRIVATE 
-        desk_up_wxWidgets_library
         config_compiler_flags_library
+        desk_up_wxWidgets_library
 
-        desk_up_frame_library)
+        desk_up_frame_library
+    )

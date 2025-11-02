@@ -10,9 +10,9 @@
 #include <expected> 
 #include <chrono>
 #include <thread>
+#include <shellapi.h>
 
 #include "backend_utils.h"
-#include "desk_up_error.h"
 
 namespace fs = std::filesystem;
 using namespace std::chrono_literals;
@@ -406,7 +406,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
     std::string s;
     int i = 0;
 
-    auto parse_int = [](const std::string& str, const char* field) -> std::optional<int> {
+    auto parse_int = [](const std::string& str, const char*) -> std::optional<int> {
         try {
             size_t pos = 0;
             int val = std::stoi(str, &pos);

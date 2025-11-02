@@ -6,14 +6,14 @@
 
 namespace DeskUp::UI {
 
-class ErrorAdapter {
-public:
-    static int showError(const DeskUp::Error& err);
-    static wxString getUserMessage(const DeskUp::Error& err);
+    class ErrorAdapter {
+    public:
+        static int showError(const DeskUp::Error& err);
+        static wxString getUserMessage(const DeskUp::Error& err);
 
-private:
-    static std::pair<wxString, long> mapLevel(Level lvl);
-};
+    private:
+        static std::pair<wxString, long> mapLevel(Level lvl);
+    };
 
 } 
 
