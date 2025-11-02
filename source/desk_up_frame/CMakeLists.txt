@@ -14,7 +14,7 @@ target_include_directories(desk_up_frame_library PUBLIC ${CMAKE_SOURCE_DIR}/sour
                                                         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_backends/desk_up_win)
 
 target_link_libraries(desk_up_frame_library PUBLIC window_desc_library
-                                                    wxWidgetsDeps)
+                                                        desk_up_wxWidgets_library)
 
 target_compile_definitions(desk_up_frame_library PUBLIC wxWidgets_STATIC)
 

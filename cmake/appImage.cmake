@@ -6,7 +6,7 @@ endif()
 
 if(GENERATE_APPIMAGE)
     if(UNIX AND NOT APPLE)
-        message(STATUS "GENERATE_APPIMAGE is ON")
+        message(STATUS "(DU) GENERATE_APPIMAGE is ON")
 
         #downlaod linuxdeploy
 
@@ -213,8 +213,8 @@ echo \"\$APP_NAME installed successfully!\"")
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         )
     else()
-        message(STATUS "You cannot generate an AppImage on Windows!")
+        message(STATUS "(DU) You cannot generate an AppImage on Windows!")
     endif()
 else()
-    message(STATUS "GENERATE_APPIMAGE is OFF")
+    message(STATUS "(DU) GENERATE_APPIMAGE is OFF")
 endif()

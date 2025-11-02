@@ -1,6 +1,6 @@
 
 if(BUILD_BENCHMARK)
-    message(STATUS "Building benchmark is ENABLED")
+    message(STATUS "(DU) Building benchmark is ENABLED")
     #add support for tests. Inside the CMakeLists.txt
     #inside test/, there are all the test modules.
     #using this structure, different flags can be defined
@@ -23,6 +23,6 @@ if(BUILD_BENCHMARK)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
 
 else()
-    message(STATUS "Building benchmark is DISABLED")
+    message(STATUS "(DU) Building benchmark is DISABLED")
 endif()
 

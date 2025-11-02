@@ -1,5 +1,5 @@
 if(GENERATE_DOCS)
-    message(STATUS "Generating docs is ENABLED")
+    message(STATUS "(DU) Generating docs is ENABLED")
 
     include(FetchContent)
     FetchContent_Declare(
@@ -19,7 +19,7 @@ if(GENERATE_DOCS)
     set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
     configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
 
-    message(STATUS "Doc files have been written to ${CMAKE_SOURCE_DIR}/docs")
+    message(STATUS "(DU) Doc files have been written to ${CMAKE_SOURCE_DIR}/docs")
 else()
-    message(STATUS "Generating docs is DISABLED")
+    message(STATUS "(DU) Generating docs is DISABLED")
 endif()
