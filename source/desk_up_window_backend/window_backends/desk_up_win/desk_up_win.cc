@@ -19,10 +19,10 @@ namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 
 template<typename F>
-static DeskUp::Status retry_op(F&& f, std::string_view ctx, int max_attempts = 3, std::chrono::milliseconds first_delay = 100ms)
+static DeskUp::Status retryOp(F&& f, std::string_view ctx, int maxAttempts = 3, std::chrono::milliseconds firstDelay = 50ms)
 {
-    auto delay = first_delay;
-    for (int i = 0; i < max_attempts; ++i) {
+    auto delay = firstDelay;
+    for (int i = 0; i < maxAttempts; ++i) {
         if (f()){
             return {};
         } 
@@ -35,7 +35,7 @@ static DeskUp::Status retry_op(F&& f, std::string_view ctx, int max_attempts = 3
         delay *= 2;
     }
 
-    return std::unexpected(DeskUp::Error::fromLastWinError(ctx, max_attempts));
+    return std::unexpected(DeskUp::Error::fromLastWinError(ctx, maxAttempts));
 }
 
 
@@ -61,7 +61,7 @@ bool WIN_isAvailable() noexcept {
 
 static HWND WIN_getDeskUpHWND(){
 
-    HWND deskUpWindow;
+    HWND deskUpWindow = nullptr;
 
     // For now, default desktop
     HDESK desk = NULL;
@@ -151,7 +151,7 @@ DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) {
 
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
                       "WIN_getWindowXPos: GetWindowInfo: ");
     if (!r) return std::unexpected(std::move(r.error()));
     return static_cast<int>(wi.rcWindow.left);
@@ -166,7 +166,7 @@ DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice* _this) {
 
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
                       "WIN_getWindowYPos: GetWindowInfo: ");
     if (!r) return std::unexpected(std::move(r.error()));
     return static_cast<int>(wi.rcWindow.top);
@@ -181,7 +181,7 @@ DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) {
 
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
                       "WIN_getWindowWidth: GetWindowInfo: ");
     if (!r) return std::unexpected(std::move(r.error()));
     return static_cast<unsigned>(wi.rcWindow.right - wi.rcWindow.left);
@@ -196,7 +196,7 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
 
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retry_op([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
                       "WIN_getWindowHeight: GetWindowInfo: ");
     if (!r) return std::unexpected(std::move(r.error()));
     return static_cast<unsigned>(wi.rcWindow.bottom - wi.rcWindow.top);
@@ -212,17 +212,19 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
 
     DWORD pid = 0;
 
-    auto r = retry_op([&]{
+    auto r = retryOp([&]{
         return GetWindowThreadProcessId(data->hwnd, &pid) != 0 && pid != 0;
     }, "WIN_getPathFromWindow: GetWindowThreadProcessId: ");
     if (!r) return std::unexpected(std::move(r.error()));
 
     HANDLE processHandle = nullptr;
-    r = retry_op([&]{
+    r = retryOp([&]{
         processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
+        if(!processHandle && GetLastError()==ERROR_ACCESS_DENIED) return true;
         return processHandle != nullptr;
     }, "WIN_getPathFromWindow: OpenProcess: ");
     if (!r) return std::unexpected(std::move(r.error()));
+    if (!processHandle) return std::string{};
 
     std::string result;
     DWORD capacity = 512;
@@ -254,21 +256,12 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
 std::string WIN_getNameFromPath(const std::string& path) {
     static int unnamedWindowNum = 0;
     if (path.empty()) {
-        std::cerr << "path is empty\n";
-        std::string p = "window";
-        p+= std::to_string(unnamedWindowNum);
-        unnamedWindowNum++;
-        return p;
+        return "window" + std::to_string(unnamedWindowNum++);
     }
 
-    std::string name;
-    for (int i = (int)path.length() - 1; i >= 0; --i) {
-        if (path[i] == '\\' || path[i] == '/')
-            break;
-        name.insert(name.begin(), path[i]);
-    }
-
-    return name.substr(0, name.size() - 4);
+    try {
+        return std::filesystem::path(path).stem().string();
+    } catch (...) { return "window" + std::to_string(unnamedWindowNum++); }
 }
 
 struct params {
@@ -362,10 +355,16 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
     HDESK desktop = NULL;
 
     if (!EnumDesktopWindows(desktop, WIN_CreateAndSaveWindowProc, reinterpret_cast<LPARAM>(&p))) {
-        return std::unexpected(std::move(error));
+        if (error.level() != DeskUp::Level::None) return std::unexpected(std::move(error));
+        return std::unexpected(DeskUp::Error::fromLastWinError("WIN_getAllOpenWindows: EnumDesktopWindows"));
     }
 
     return windows;
+}
+
+static inline void stripChars(std::string& s){ 
+    if(!s.empty() && s.back() == '\r') 
+        s.pop_back(); 
 }
 
 DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::filesystem::path path) noexcept{
@@ -417,6 +416,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
     };
 
     while (std::getline(f, s)) {
+        stripChars(s);
         switch (i) {
             case 0:
                 w.pathToExec = s;
@@ -425,7 +425,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
             case 1: {
                 auto v = parse_int(s, "x");
                 if (!v) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
                     "WIN_recoverSavedWindow: invalid X coordinate"
                 ));
                 w.x = *v;
@@ -434,7 +434,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
             case 2: {
                 auto v = parse_int(s, "y");
                 if (!v) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
                     "WIN_recoverSavedWindow: invalid Y coordinate"
                 ));
                 w.y = *v;
@@ -443,7 +443,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
             case 3: {
                 auto v = parse_int(s, "w");
                 if (!v || *v < 0) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
                     "WIN_recoverSavedWindow: invalid width"
                 ));
                 w.w = *v;
@@ -452,7 +452,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
             case 4: {
                 auto v = parse_int(s, "h");
                 if (!v || *v < 0) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
+                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
                     "WIN_recoverSavedWindow: invalid height"
                 ));
                 w.h = *v;
@@ -531,7 +531,7 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
     ShExecInfo.nShow = SW_NORMAL;
     ShExecInfo.hInstApp = NULL;
 
-    auto status = retry_op([&] {
+    auto status = retryOp([&] {
         BOOL ok = ShellExecuteEx(&ShExecInfo);
         if (!ok && GetLastError() == 0)
             SetLastError(ERROR_FUNCTION_FAILED);
@@ -546,9 +546,12 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
         WaitForInputIdle(ShExecInfo.hProcess, 2000);
         DWORD pid = GetProcessId(ShExecInfo.hProcess);
         CloseHandle(ShExecInfo.hProcess);
-
-        reinterpret_cast<windowData*>(_this->internalData)->hwnd = WIN_FindMainWindow(pid);
+        auto hwnd = WIN_FindMainWindow(pid);
+        reinterpret_cast<windowData*>(_this->internalData)->hwnd = hwnd;
+        if(!hwnd){
+            return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::NotFound, 0, path));
     }
+}
 
     return {};
 }
@@ -569,15 +572,21 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
 
     if(!data->hwnd){
         return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal,
+            DeskUp::Level::Retry,
             DeskUp::ErrType::InvalidInput,
             0,
-            "WIN_resizeWindow: invalid hwnd"
+            "WIN_resizeWindow: hwnd not found"
         ));
     }
 
-    auto status = retry_op([&] {
-        BOOL ok = SetWindowPos(data->hwnd, nullptr, window.x, window.y, window.w, window.h, SWP_SHOWWINDOW);
+    if (window.w <= 0 || window.h <= 0) {
+    return std::unexpected(DeskUp::Error(DeskUp::Level::Warning, DeskUp::ErrType::InvalidInput, 0,
+        "WIN_resizeWindow: non-positive width/height"));
+        }
+
+    auto status = retryOp([&] {
+        BOOL ok = SetWindowPos(data->hwnd, nullptr, window.x, window.y, window.w, window.h,
+                        SWP_SHOWWINDOW | SWP_NOZORDER);
         if (!ok && GetLastError() == 0)
             SetLastError(ERROR_FUNCTION_FAILED);
         return ok != 0;
@@ -715,9 +724,8 @@ DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const
 
     int n = WIN_closeProcessesByPath(path, (DWORD) 1000, allowForce);
     if(n > 0){
-        std::cout << "WIN_closeProcessByPath: Closed " << n << "windows of path: " << path << "\n";
+        std::cout << "WIN_closeProcessByPath: Closed " << n << " windows of path: " << path << "\n";
     }
 
     return n;
 }
-
