@@ -31,9 +31,7 @@ DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
         p /= windows.value()[i].name;
         
         if(int res = windows.value()[i].saveTo(p); res < 0){
-            //TODO: show error message in GUI. Ask user if he wants to continue or not depending on the exception thrown
-            std::cout << windows.value()[i].name << " could not be saved to local!" << std::endl;
-
+            
             auto err = DeskUp::Error::fromSaveError(res);
 
             if(err.isFatal()){

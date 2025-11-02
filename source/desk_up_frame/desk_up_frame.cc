@@ -2,6 +2,7 @@
 
 #include "desk_up_window.h"
 #include "window_core.h"
+#include "desk_up_error_gui_converter.h"
 
 #include <wx/aboutdlg.h>
 #include <fstream>
@@ -104,8 +105,8 @@ void DeskUpFrame::OnAdd(wxCommandEvent& event)
         if(res == wxYES){
             DeskUpWindow::removeWorkspace(workspaceName.ToStdString());
             
-            if(showMessageFromError(DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString()).error()) == -1){
-                showSaveSuccessful();
+            if(auto res = DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString()); !res.has_value()){
+                DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
             }
         }
     }
@@ -141,8 +142,11 @@ void DeskUpFrame::OnRestore(wxCommandEvent& event)
     }
 
     if (DeskUpWindow::existsWorkspace(workspaceName.ToStdString())){
-        DeskUpWindow::restoreWindows(workspaceName.ToStdString());
-        showRestoreSuccessful();
+        auto res = DeskUpWindow::restoreWindows(workspaceName.ToStdString());
+
+        if(!res.has_value()){
+            DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
+        }
     } else{
         wxMessageBox("The workspace does not exist!", "Workspace does not exist", wxOK | wxICON_ERROR);
     }
@@ -154,23 +158,4 @@ int DeskUpFrame::showSaveSuccessful(){
 
 int DeskUpFrame::showRestoreSuccessful(){
     return wxMessageBox("The workspace was restored successfully!", "Workspace restored", wxOK | wxICON_DEFAULT_TYPE);
-}
-
-int DeskUpFrame::showMessageFromError(DeskUp::Error err){
-    
-    if(!err){
-        return -1;
-    }
-
-    if(err.isFatal()){
-        wxMessageBox("There was an error with the last action! DeskUp cannot continue. Try restarting Desk Up with permissions and/or freeing memory on your device", 
-                                                "Desk Up Error", wxOK | wxICON_ERROR);
-        wxExit();
-    }
-
-    if(err.isRetriable()){
-        return wxMessageBox("There was an error with the last action! Try again later", "Desk Up Error", wxOK | wxICON_ERROR);
-    }
-
-    return -1;
 }
