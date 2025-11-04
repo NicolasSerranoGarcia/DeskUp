@@ -278,6 +278,10 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
     if (!GetWindowRect(hwnd, &r)) return TRUE;
     if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0) return TRUE;
 
+    char title[256];
+    GetWindowTextA(hwnd, title, sizeof(title));
+    if (strlen(title) == 0) return TRUE;
+
     auto* parameters = reinterpret_cast<params*>(lparam);
     if (!parameters || !parameters->res || !parameters->dev || !parameters->dev->internalData) {
         std::cout << "Invalid parameters passed to callback\n";
@@ -476,7 +480,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
 
 //Helper for WIN_loadProcessFromPath. It just returns the specified handle for the pid. It is used to get the hwnd of the launched window
 //to resize it later
-static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 5000) {
+static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 500) {
     HWND hwndFound = nullptr;
     auto enumCallback = [](HWND hwnd, LPARAM lParam) -> BOOL {
         auto data = reinterpret_cast<std::pair<DWORD, HWND*>*>(lParam);
@@ -532,9 +536,14 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
     ShExecInfo.hInstApp = NULL;
 
     auto status = retryOp([&] {
+        SetLastError(0);
         BOOL ok = ShellExecuteEx(&ShExecInfo);
-        if (!ok && GetLastError() == 0)
-            SetLastError(ERROR_FUNCTION_FAILED);
+        DWORD err = GetLastError();
+        if (!ok) {
+            if (err == 0)
+                err = ERROR_FUNCTION_FAILED;
+            SetLastError(err);
+        }
         return ok != 0;
     }, "WIN_loadProcessFromPath: ShellExecuteEx: ");
 
@@ -543,7 +552,7 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
     }
 
     if (ShExecInfo.hProcess) {
-        WaitForInputIdle(ShExecInfo.hProcess, 2000);
+        WaitForInputIdle(ShExecInfo.hProcess, 1500);
         DWORD pid = GetProcessId(ShExecInfo.hProcess);
         CloseHandle(ShExecInfo.hProcess);
         auto hwnd = WIN_FindMainWindow(pid);
@@ -580,15 +589,20 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
     }
 
     if (window.w <= 0 || window.h <= 0) {
-    return std::unexpected(DeskUp::Error(DeskUp::Level::Warning, DeskUp::ErrType::InvalidInput, 0,
-        "WIN_resizeWindow: non-positive width/height"));
-        }
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Warning, DeskUp::ErrType::InvalidInput, 0,
+            "WIN_resizeWindow: non-positive width/height"));
+    }
 
     auto status = retryOp([&] {
+        SetLastError(0);
         BOOL ok = SetWindowPos(data->hwnd, nullptr, window.x, window.y, window.w, window.h,
                         SWP_SHOWWINDOW | SWP_NOZORDER);
-        if (!ok && GetLastError() == 0)
-            SetLastError(ERROR_FUNCTION_FAILED);
+        DWORD err = GetLastError();
+        if (!ok) {
+            if (err == 0)
+                err = ERROR_FUNCTION_FAILED;
+            SetLastError(err);
+        }
         return ok != 0;
     }, "WIN_resizeWindow: SetWindowPos: ");
 
