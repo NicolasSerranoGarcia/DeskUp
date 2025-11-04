@@ -1,6 +1,6 @@
 /**
  * @file window_core.h
- * @brief A struct wrapper used in the DeskUp backend
+ * @brief Declares basic code to interact with Desk Up
  *
  * This file is part of DeskUp
  *
@@ -30,8 +30,7 @@
 
 #include <iostream>
 #include <vector>
-#include "window_desc.h"
-#include "desk_up_win.h"
+#include "desk_up_win.h" // This file should not need this
 #include "desk_up_window_device.h"
 #include "desk_up_window_bootstrap.h"
 

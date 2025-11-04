@@ -1,21 +1,36 @@
-#The window backend gets exported as a library created inside this CMakeLists.txt
-add_library(desk_up_win_library STATIC)
-target_sources(desk_up_win_library PUBLIC ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.cc 
-                                            ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.h)
+# ./source/desk_up_window_backend/window_backends/desk_up_win/CMakeLists.txt
 
-#Make backend directories visible for this library
-target_include_directories(desk_up_win_library PUBLIC ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend
-                                                        ${CMAKE_SOURCE_DIR}/include
-                                                        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc)
+# desk_up_win_library
 
-#Link against the abstract window_desc struct library located in ../window_desc from this file
-target_link_libraries(desk_up_win_library PUBLIC window_desc_library)
+    add_library(desk_up_win_library STATIC
+        ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.cc
+        ${CMAKE_CURRENT_LIST_DIR}/desk_up_win.h
+    )
 
-#Link against Win32 API dll libraries
-target_link_libraries(desk_up_win_library PUBLIC 
-    user32
-    gdi32
-    kernel32
-    advapi32
-    comdlg32
-    shell32)
+# Private dependencies
+
+    target_sources(desk_up_win_library PRIVATE
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/desk_up_window_device.h
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/desk_up_window_bootstrap.h
+    )
+
+# Include path
+
+    target_include_directories(desk_up_win_library PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/backend_utils
+        ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_desc
+        ${CMAKE_SOURCE_DIR}/source/desk_up_error
+    )
+
+# Dependencies
+
+    target_link_libraries(desk_up_win_library PRIVATE
+        config_compiler_flags_library
+        desk_up_win32_library
+
+        window_desc_library
+        backend_utils_library
+        desk_up_error_library
+    )

@@ -28,15 +28,17 @@
 #ifndef DESKUPWIN_H
 #define DESKUPWIN_H
 
-#include <Windows.h>
 #include <stdexcept>
 #include <vector>
 #include <filesystem>
-#include <stdlib.h>
 
-#include "window_desc.h"
+#include <stdlib.h>
+#include <Windows.h>
+
 #include "desk_up_window_bootstrap.h"
 #include "desk_up_window_device.h"
+#include "window_desc.h"
+#include "desk_up_error.h"
 
 /**
  * @brief Windows backend bootstrap descriptor.
@@ -60,7 +62,7 @@ extern DeskUpWindowBootStrap winWindowDevice;
  * @version 0.1.0
  * @date 2025
  */
-bool WIN_isAvailable();
+bool WIN_isAvailable() noexcept;
 
 /**
  * @brief Creates a Windows \c DeskUpWindowDevice.
@@ -81,67 +83,64 @@ DeskUpWindowDevice WIN_CreateDevice();
  *          The directory is ensured to exist (created if necessary).
  *
  * @return \c std::string with the absolute path to the DeskUp top-level folder.
- * @throws std::runtime_error If directory creation fails (message: "WIN_getDeskUpPath: <cause>").
+ * @errors
+ * - Level::Retry, ErrType::Io → Filesystem creation failed (non-fatal)
  * @version 0.1.0
  * @date 2025
  */
-std::string WIN_getDeskUpPath();
+DeskUp::Result<std::string> WIN_getDeskUpPath();
 
 /**
  * @brief Gets the X position (top-left corner) of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c int with the X coordinate of the window.
- * @throws std::invalid_argument If the internal \c HWND is null/invalid
- *         (message: "WIN_getWindowXPos: invalid HWND").
- * @throws std::runtime_error If a Windows API call fails
- *         (message e.g., "WIN_getWindowXPos: GetWindowInfo: <cause>").
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
+ * - Level::Retry, ErrType::Os → GetWindowInfo failed.
  * @version 0.1.0
  * @date 2025
  */
-int WIN_getWindowXPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the Y position (top-left corner) of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c int with the Y coordinate of the window.
- * @throws std::invalid_argument If the internal \c HWND is null/invalid
- *         (message: "WIN_getWindowYPos: invalid HWND").
- * @throws std::runtime_error If a Windows API call fails
- *         (message e.g., "WIN_getWindowYPos: GetWindowInfo: <cause>").
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
+ * - Level::Retry, ErrType::Os → GetWindowInfo failed.
  * @version 0.1.0
  * @date 2025
  */
-int WIN_getWindowYPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the width of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window width.
- * @throws std::invalid_argument If the internal \c HWND is null/invalid
- *         (message: "WIN_getWindowWidth: invalid HWND").
- * @throws std::runtime_error If a Windows API call fails
- *         (message e.g., "WIN_getWindowWidth: GetWindowInfo: <cause>").
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
+ * - Level::Retry, ErrType::Os → GetWindowInfo failed.
  * @version 0.1.0
  * @date 2025
  */
-unsigned int WIN_getWindowWidth(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the height of the active (client) window in the device.
  *
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window height.
- * @throws std::invalid_argument If the internal \c HWND is null/invalid
- *         (message: "WIN_getWindowHeight: invalid HWND").
- * @throws std::runtime_error If a Windows API call fails
- *         (message e.g., "WIN_getWindowHeight: GetWindowInfo: <cause>").
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
+ * - Level::Retry, ErrType::Os → GetWindowInfo failed.
  * @version 0.1.0
  * @date 2025
  */
-unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this);
 
 /**
  * @brief Gets the absolute path of the executable that owns the active window.
@@ -149,78 +148,87 @@ unsigned int WIN_getWindowHeight(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c std::string with the process image path. If access is denied
  *         (e.g., \c ERROR_ACCESS_DENIED), an empty string is returned.
- * @throws std::invalid_argument If the internal \c HWND is null/invalid
- *         (message: "WIN_getPathFromWindow: invalid HWND").
- * @throws std::runtime_error If a system call fails
- *         (messages like "WIN_getPathFromWindow: <ApiName>: <cause>").
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
+ * - Level::Retry, ErrType::Os → OpenProcess or QueryFullProcessImageName failed.
  * @version 0.1.0
  * @date 2025
  */
-std::string WIN_getPathFromWindow(DeskUpWindowDevice * _this);
+DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this);
 
 /**
  * @brief Enumerates all visible/non-minimized windows on the desktop.
  *
  * @param _this The same device instance.
  * @return \c std::vector<windowDesc> with the abstract description of each window.
- * @throws std::runtime_error If \c EnumDesktopWindows fails
- *         (message: "WIN_getAllOpenWindows: <cause>").
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Device invalid.
+ * - Level::Retry, ErrType::Os → EnumDesktopWindows failed.
  * @version 0.1.0
  * @date 2025
  */
-std::vector<windowDesc> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
+DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
 
 /**
- * @brief Enumerates all saved windows from a workspace path
+ * @brief Loads a window description from a saved workspace file.
  *
  * @param _this The same device instance.
- * @return \c std::vector<windowDesc> with the abstract description of each saved window.
- * @throws std::runtime_error If \c EnumDesktopWindows fails
- *         (message: "WIN_getAllSavedWindows: <cause>").
+ * @param path Path to the saved window description file.
+ * @return \c windowDesc with geometry and executable path.
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → File missing or incomplete.
+ * - Level::Retry, ErrType::Io → Filesystem or parse failure.
  * @version 0.2.0
  * @date 2025
  */
-windowDesc WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path);
+DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path) noexcept;
 
 /**
- * @brief Creates a process from the specified path. 
+ * @brief Creates a process from the specified path.
  *
  * @param _this The same device instance.
- * @param path a literal representing the path to the executable linked with the program
- * @return \c void
- * @throws std::runtime_error If \c ShellExecuteEx fails
- *         (message: "WIN_loadProcessFromPath: <cause>").
+ * @param path a literal representing the path to the executable linked with the program.
+ * @return \c DeskUp::Status indicating success or failure.
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Empty or invalid path/device.
+ * - Level::Retry, ErrType::NotFound → Process started but main HWND not found.
+ * - Level::Retry, ErrType::Os → ShellExecuteEx failed.
  * @version 0.2.0
  * @date 2025
  */
-void WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path);
+DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path) noexcept;
 
 /**
  * @brief Resizes a window according to the windowDesc parameter geometry.
- * 
- * @details Information about the window whose geometry is intended to modify must be specified inside the \c _this->internalData parameter
+ *
+ * @details Information about the window whose geometry is intended to modify must be specified inside the \c _this->internalData parameter.
  *
  * @param _this The same device instance.
- * @param window a windowDesc instance which geometry wants to be used to resize the window
- * @return \c void
- * @throws
+ * @param window a windowDesc instance whose geometry will be applied to resize the window.
+ * @return \c DeskUp::Status indicating success or failure.
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Invalid window device.
+ * - Level::Retry, ErrType::NotFound → HWND not found.
+ * - Level::Warning, ErrType::InvalidInput → Zero or negative width/height.
+ * - Level::Retry, ErrType::Os → SetWindowPos failed.
  * @version 0.2.0
  * @date 2025
  */
-void WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
+DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
 
 /**
  * @brief This function closes all the instances associated with an executable, specified by the \c path parameter.
- * 
  *
  * @param _this The same device instance.
- * @param path A \c std::string instance representing the path to check
- * @param allowForce Whether if the call should force the windows it finds to close
- * @return \c The number of associated windows closed in the process
- * @throws
+ * @param path A \c std::string instance representing the path to check.
+ * @param allowForce Whether if the call should force the windows it finds to close.
+ * @return \c The number of associated windows closed in the process.
+ * @errors
+ * - Level::Fatal, ErrType::InvalidInput → Empty path.
+ * - Level::Retry, ErrType::Os → Process enumeration or termination failure.
  * @version 0.2.0
  * @date 2025
  */
-unsigned int WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
 
 #endif

@@ -38,6 +38,9 @@
 #define WINDOWDESC_H
 
 #include <string>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 /**
  * @struct windowDesc
@@ -90,18 +93,40 @@ struct windowDesc {
      * @brief Saves the current window description to a file.
      *
      * @details
-     * The function writes the window’s executable path and geometry
-     * (x, y, width, height) to the given file, each on a new line.
+     * Writes the window’s executable path and geometry (x, y, width, height)
+     * to the specified file, each on a new line.  
+     *  
+     * This function returns a `SaveErrorCode` value to indicate whether the operation
+     * succeeded or failed, allowing fine-grained error handling. Positive values
+     * indicate success; negative values specify different failure modes.
+     *
+     * **Format written to file (one value per line):**
+     * 1. Path to executable (`pathToExec`)
+     * 2. X coordinate
+     * 3. Y coordinate
+     * 4. Width
+     * 5. Height
      *
      * @param path Absolute or relative path to the file where data will be stored.
-     * @return 1 if the file was successfully created and written, 0 otherwise.
+     * @return One of the following `SaveErrorCode` values:
+     *   - `SAVE_SUCCESS` (1): File successfully written.  
+     *   - `ERR_EMPTY_PATH` (-1): The path parameter is empty.  
+     *   - `ERR_FILE_NOT_OPEN` (-2): File could not be opened.  
+     *   - `ERR_NO_PERMISSION` (-3): Insufficient permissions to write the file.  
+     *   - `ERR_FILE_NOT_FOUND` (-4): Parent directory missing or invalid path.  
+     *   - `ERR_DISK_FULL` (-5): Disk out of space.  
+     *   - `ERR_UNKNOWN` (-6): Unexpected write failure.  
      *
-     * @note The function performs basic validation: it returns 0 if the path is empty
-     *       or if the file cannot be opened for writing.
+     * @note The function performs basic validation and never throws exceptions.
+     *       Callers are expected to check the return value and propagate or log
+     *       the appropriate error code using `DeskUp::Error::fromSaveError()`.
      *
      * @see windowDesc
+     * @see SaveErrorCode
+     * @version 0.2.0
+     * @date 2025
      */
-    int saveTo(std::string path);
+    int saveTo(fs::path path);
 
     /**
      * @brief Returns whether the window description is invalid or empty.
@@ -116,6 +141,67 @@ struct windowDesc {
         return !x && !y && !w && !h;
     }
 
+};
+
+/**
+ * @enum SaveErrorCode
+ * @brief Enumerates possible results and error codes for `windowDesc::saveTo()`.
+ *
+ * @details
+ * This enumeration defines all return codes used by `windowDesc::saveTo()` to
+ * indicate whether the save operation succeeded or failed, and if failed,
+ * what type of error occurred.
+ *
+ * Positive values indicate success; negative values indicate different
+ * failure modes, allowing callers (and the backend) to interpret the cause
+ * precisely and propagate appropriate `DeskUp::Error` levels.
+ *
+ * @see windowDesc::saveTo()
+ * @version 0.2.1
+ * @date 2025
+ */
+enum SaveErrorCode {
+    /**
+     * @brief File successfully written.
+     * @details Indicates that the window description was saved without issues.
+     */
+    SAVE_SUCCESS = 1,
+
+    /**
+     * @brief The provided file path is empty.
+     * @details Returned when `saveTo()` receives an empty path parameter.
+     */
+    ERR_EMPTY_PATH = -1,
+
+    /**
+     * @brief The target file could not be opened.
+     * @details The file may not exist or may be locked by another process.
+     */
+    ERR_FILE_NOT_OPEN = -2,
+
+    /**
+     * @brief Insufficient permissions to write the file.
+     * @details The current process lacks write access to the target directory.
+     */
+    ERR_NO_PERMISSION = -3,
+
+    /**
+     * @brief File not found or directory path invalid.
+     * @details Returned when the parent path of the target file does not exist.
+     */
+    ERR_FILE_NOT_FOUND = -4,
+
+    /**
+     * @brief Disk or storage device is full.
+     * @details The save operation could not complete because the disk ran out of space.
+     */
+    ERR_DISK_FULL = -5,
+
+    /**
+     * @brief Unknown or unexpected error during save.
+     * @details A generic failure when no specific condition above matches.
+     */
+    ERR_UNKNOWN = -6
 };
 
 #endif

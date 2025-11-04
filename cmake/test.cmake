@@ -4,7 +4,7 @@ if(BUILD_TESTS)
 
     include(CTest)
     
-    message(STATUS "Building tests is ENABLED")
+    message(STATUS "(DU) Building tests is ENABLED")
     enable_testing()
     #add support for tests. Inside the CMakeLists.txt
     #inside test/, there are all the test modules.
@@ -28,6 +28,6 @@ if(BUILD_TESTS)
     
 
 else()
-    message(STATUS "Building tests is DISABLED")
+    message(STATUS "(DU) Building tests is DISABLED")
 endif()
 

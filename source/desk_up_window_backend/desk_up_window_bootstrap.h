@@ -29,7 +29,6 @@
 #define DESKUPWINDOWBOOSTRAP_H
 
 #include "desk_up_window_device.h"
-#include <Windows.h>
 
 /**
  * @struct DeskUpWindowBootStrap

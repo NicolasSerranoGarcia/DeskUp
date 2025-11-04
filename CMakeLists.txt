@@ -1,141 +1,188 @@
-cmake_minimum_required(VERSION 3.5)
+# ./CMakeLists.txt
 
-cmake_policy(SET CMP0135 NEW)
-cmake_policy(SET CMP0077 NEW)
+# CMake config
 
-# --- Project ---
-file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
-project(DeskUp VERSION ${PROJECT_VERSION_STRING})
+    # --- CMake ---
 
-# --- Build output ---
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        cmake_minimum_required(VERSION 3.20...3.25)
 
-# --- Compiler flags ---
-add_library(DeskUp-compiler-flags INTERFACE)
-target_compile_features(DeskUp-compiler-flags INTERFACE cxx_std_17)
+        set(CMAKE_CXX_STANDARD 23)
+        set(CMAKE_CXX_STANDARD_REQUIRED ON)
+        set(CMAKE_CXX_EXTENSIONS OFF)
 
-# GCC/Clang flags
-target_compile_options(DeskUp-compiler-flags INTERFACE
-    "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang,ARMClang,LCC>:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>"
-    "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/W3>"
-)
+    # --- Project ---
 
-# Link flags
-target_link_options(DeskUp-compiler-flags INTERFACE
-    -static
-    -static-libgcc
-    -static-libstdc++
-)
+        file(READ "${CMAKE_SOURCE_DIR}/VERSION" PROJECT_VERSION_STRING)
+        project(
+            DeskUp
+            VERSION ${PROJECT_VERSION_STRING}
+            DESCRIPTION "DeskUp — Workspace automation for Windows"
+            HOMEPAGE_URL "https://github.com/NicolasSerranoGarcia/DeskUp"
+            LANGUAGES CXX RC
+        )
 
-# --- Executable ---
-add_executable(DeskUp WIN32 source/main.cc)
-enable_language(RC)
-target_sources(DeskUp PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
+    # --- Build output ---
 
-# --- wxWidgets static ---
+        set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+        set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 
-set(wxWidgets_USE_STATIC ON)
-find_package(wxWidgets REQUIRED COMPONENTS net core base)
+# config_compiler_flags_library library
 
-if(wxWidgets_USE_FILE)
-    include(${wxWidgets_USE_FILE})
-endif()
+    # --- Compiler flags ---
 
-message(STATUS "wx include dirs: ${wxWidgets_INCLUDE_DIRS}")
-message(STATUS "wx libraries: ${wxWidgets_LIBRARIES}")
+    add_library(config_compiler_flags_library INTERFACE)
+    target_compile_features(config_compiler_flags_library INTERFACE cxx_std_23)
 
-#Add flags for tests, benchmarks and other tools
+    # --- GCC/Clang flags ---
 
-include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
+    target_compile_options(config_compiler_flags_library INTERFACE
+        "$<$<COMPILE_LANG_AND_ID:CXX,GNU,Clang,AppleClang,ARMClang,LCC>:-Wall;-Wextra;-Wshadow;-Wformat=2;-Wunused>"
+        "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/W3>"
+    )
 
-add_library(wxWidgetsDeps INTERFACE)
-target_compile_definitions(wxWidgetsDeps INTERFACE wxWidgets_STATIC)
-target_include_directories(wxWidgetsDeps INTERFACE ${wxWidgets_INCLUDE_DIRS})
-target_link_libraries(wxWidgetsDeps INTERFACE ${wxWidgets_LIBRARIES})
-target_link_libraries(wxWidgetsDeps INTERFACE
-${wxWidgets_LIBRARIES})
+    # --- Link flags ---
 
-# --- Sub-libraries (without linking wxWidgets) ---
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
-add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
+    target_link_options(config_compiler_flags_library INTERFACE
+        -static
+        -static-libgcc
+        -static-libstdc++
+    )
 
-target_link_libraries(DeskUp PUBLIC wxWidgetsDeps
-shlwapi
-version
-ole32
-oleaut32
-uuid
-comctl32
-winmm
-ws2_32
-gdi32
-user32
-kernel32)
+# Executable
 
-# --- Compile definitions ---
-target_compile_definitions(DeskUp PRIVATE wxWidgets_STATIC)
-target_link_libraries(DeskUp PRIVATE DeskUp-compiler-flags)
+    # --- DeskUp ---
+    add_executable(${PROJECT_NAME} WIN32 source/main.cc)
 
-# --- Link sub-libraries ---
-target_link_libraries(DeskUp PRIVATE
-    desk_up_library
-    desk_up_frame_library
-    desk_up_window_library
-    ${wxWidgets_LIBRARIES}
-)
+    # --- Resources file (currently just for the windows icon) ---
+    enable_language(RC)
+    target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
 
-# --- Build type ---
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING
-        "Choose the type of build: Debug Release RelWithDebInfo MinSizeRel." FORCE)
-endif()
-message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+    target_link_libraries(${PROJECT_NAME} PRIVATE config_compiler_flags_library)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(DeskUp PRIVATE DEBUG_MODE)
-    target_link_options(DeskUp PRIVATE -mconsole)
-elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(DeskUp PRIVATE NDEBUG)
-    target_link_options(DeskUp PRIVATE -mwindows)
-endif()
+    # --- global preprocessor flag available when coding ---
+    add_compile_definitions(DESKUP_VERSION="${PROJECT_VERSION}")
 
-# --- Installation ---
-set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/install")
-install(TARGETS DeskUp DESTINATION bin)
+# wxWidgets
 
-# --- CPack ---
-set(CPACK_GENERATOR "ZIP")
+    # --- fetch wxWidgets ---
 
-include(InstallRequiredSystemLibraries)
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_PACKAGE_VERSION_MAJOR "${DeskUp_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${DeskUp_VERSION_MINOR}")
-include(CPack)
+    # This flag needs to be set on before fetching wxWidgets
+    # for the executable to find some symbols
+    set(wxWidgets_USE_STATIC ON)
+    find_package(wxWidgets REQUIRED COMPONENTS net core base)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    # --- Create an interface library representing wxWidgets. Any sub-library that uses wxWidgets should link against this one --- 
 
-#doxygen
+    add_library(desk_up_wxWidgets_library INTERFACE)
+    target_compile_definitions(desk_up_wxWidgets_library INTERFACE 
+        wxWidgets_STATIC
+        ${wxWidgets_DEFINITIONS}
+    )
 
-include(FetchContent)
-FetchContent_Declare(
-    doxygen-awesome-css
-    URL https://github.com/jothepro/doxygen-awesome-css/archive/refs/heads/main.zip
-)
-FetchContent_MakeAvailable(doxygen-awesome-css)
+    target_include_directories(desk_up_wxWidgets_library INTERFACE ${wxWidgets_INCLUDE_DIRS})
+    target_link_libraries(desk_up_wxWidgets_library INTERFACE ${wxWidgets_LIBRARIES})
 
-# Save the location the files were cloned into
-# This allows us to get the path to doxygen-awesome.css
-FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
+    # --- Link it with the executable ---
 
-message(STATUS "AWESOME_CSS_DIR = ${AWESOME_CSS_DIR}")
+    target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_wxWidgets_library)
 
-# Generate the Doxyfile
-set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
-set(DOXYFILE_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
-configure_file(${DOXYFILE_IN} ${DOXYFILE_OUT} @ONLY)
+    # --- Acknowledge ---
+
+    message(STATUS "(DU) wxWidgets include dirs: ${wxWidgets_INCLUDE_DIRS}")
+    message(STATUS "(DU) wxWidgets libraries: ${wxWidgets_LIBRARIES}")
+
+# Windows API 
+
+    # --- Create an interface library representing win32. Any sub-library that uses win32 should link against this one --- 
+
+        add_library(desk_up_win32_library INTERFACE)
+
+        target_compile_definitions(desk_up_win32_library INTERFACE
+            WIN32_LEAN_AND_MEAN
+            NOMINMAX
+            _UNICODE
+        )
+
+        target_link_libraries(desk_up_win32_library INTERFACE
+            shlwapi
+            version
+            ole32
+            oleaut32
+            uuid
+            advapi32
+            comdlg32
+            shell32
+            comctl32
+            winmm
+            ws2_32
+            gdi32
+            user32
+            kernel32
+        )
+
+    # --- Link it with the executable ---
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_win32_library)
+
+# Auxiliary modules
+
+    include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/benchmark.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/doxygen.cmake)
+
+# Sub-libraries
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error_gui_converter)
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
+
+# Link project libraries
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        desk_up_window_library
+        desk_up_frame_library
+        desk_up_library
+    )
+
+# Set build type
+
+    if(NOT CMAKE_BUILD_TYPE)
+        set(CMAKE_BUILD_TYPE Release CACHE STRING
+            "Choose the type of build: Debug Release RelWithDebInfo MinSizeRel." FORCE)
+    endif()
+    message(STATUS "(DU) Build type: ${CMAKE_BUILD_TYPE}")
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_MODE)
+        target_link_options(${PROJECT_NAME} PRIVATE -mconsole)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+        target_compile_definitions(${PROJECT_NAME} PRIVATE NDEBUG)
+        target_link_options(${PROJECT_NAME} PRIVATE -mwindows)
+    endif()
+
+# Installation
+
+    set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_LIST_DIR}/install")
+    install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+# CPack
+
+    set(CPACK_GENERATOR "ZIP")
+
+    include(InstallRequiredSystemLibraries)
+    set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+    set(CPACK_PACKAGE_VENDOR "Nicolás Serrano García")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} automates your Windows workspace layout and window management.")
+    set(CPACK_PACKAGE_CONTACT "serranogarcianicolas@gmail.com")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+    set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+    set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+    include(CPack)
+
+    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

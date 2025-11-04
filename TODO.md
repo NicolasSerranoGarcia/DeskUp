@@ -82,7 +82,7 @@
 
 ## 1. Clean up save-workspace PR
 
-[] (optional for this task) if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
+[X] (optional for this task) if there are two windows of the same app, DeskUp won't save them correctly. Add some identifier like a number
 
 [X] Clean up backend functions, document them and maybe change structure if something is not clear: missing desk_up_frame, desk_up and desk_up_window: desk_up_frame and desk_up may be volatile bc in the future DeskUp might migrate to Qt
 
@@ -98,7 +98,7 @@
 
 [X] Say in documentation of a function, which calls does it make to other functions: missing desk_up_win
 
-[] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
+[X] (Optional for this task) Create exceptions for things like: A window could not be saved because the path was changed; A window could not be saved because the program needs privileges...
 
 [X] As you dropped linux, you need to clean the README, the github page and maybe the X11 backend
 
@@ -106,7 +106,7 @@
 
 [X] Implement a function in the backend to open an executable
 
-[] (optional for this task) If the user introduces a workspace name that already exists, show option to replace or not
+[X] (optional for this task) If the user introduces a workspace name that already exists, show option to replace or not
 
 [] (optional for this task) show visually all the workspaces available and let user choose one
 
@@ -132,7 +132,22 @@
 
 This essentially means changing string types to wide ones and doing #define UNICODE before including windows.h
 
-## 7. Support for browsers: Create an extension to gather information about the tabs and windows.
+## 7. Create DeskUp Error system 
+
+[X] finish migrating the backend to use DeskUp:: namespace for errors
+
+[X] cleanup, show messages in the frontend
+
+[/] Restructure the project: create a library for each component, and create a correct namespace for each part of the project (DeskUp:: for globals, then create namespaces inside namespaces...)
+
+[X] (optional for this task) mingw gets saved as the default bash terminal, fix it
+
+[X] fix potential errors on the backend, document new code and do something with retry_op
+
+[] (optional for this task) when launching explorer, instead of executiing the full path to the explorer exe, just launch the path to the saved folder.
+For this, you will need to save the path where the file explorer was when saving it, instead of the actual path to the executable 
+
+## 8. Support for browsers: Create an extension to gather information about the tabs and windows.
 
 [] implement a pipeline with the extension that is able to recover the information of the tabs before saving the workspace.
 The resulting information in the file saved should be marked as being a browser, which, tabs, windows, visibility... and then when loading it, it should do kind of the same thing as the desk up backend: The recovered information should be the same regardless of the browser, but

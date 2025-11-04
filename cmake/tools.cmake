@@ -47,14 +47,14 @@ if(USE_SANITIZER OR USE_STATIC_ANALYZER)
   
   if(USE_SANITIZER)
     add_sanitizer_support(${USE_SANITIZER})
-    message(STATUS "building with SANITIZER is ON")
+    message(STATUS "(DU) building with SANITIZER is ON")
   endif()
   
   if(USE_STATIC_ANALYZER)
 
     include(${cmake-scripts_SOURCE_DIR}/tools.cmake)
 
-    message(STATUS "building with STATIC ANALYZER is ON")
+    message(STATUS "(DU) building with STATIC ANALYZER is ON")
     if("clang-tidy" IN_LIST USE_STATIC_ANALYZER)
       set(CLANG_TIDY
           ON
@@ -104,9 +104,9 @@ if(USE_SANITIZER OR USE_STATIC_ANALYZER)
 endif()
 
 if(NOT USE_SANITIZER)
-  message(STATUS "building with SANITIZER is OFF")
+  message(STATUS "(DU) building with SANITIZER is OFF")
 endif()
 
 if(NOT USE_STATIC_ANALYZER)
-  message(STATUS "building with STATIC_ANALYZER is OFF")
+  message(STATUS "(DU) building with STATIC_ANALYZER is OFF")
 endif()

@@ -1,8 +1,9 @@
 #include "backend_utils.h"
 
 #include <string>
-#include <windows.h>
 #include <algorithm>
+
+#include <windows.h>
 
 std::string WideStringToUTF8(LPCWCH wideString) {
     if (!wideString) return {};
@@ -23,7 +24,7 @@ std::string WideStringToUTF8(LPCWCH wideString) {
     return utf8;
 }
 
-std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[]) {
+std::string getSystemErrorMessageWindows(DWORD error, const std::string_view& contextMessage) {
     if (!error) return "unknown error passed as parameter!";
 
     LPWSTR messageBuffer = nullptr;
@@ -43,9 +44,10 @@ std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[
         0,
         nullptr
     );
-
+    
     std::string finalMessage;
-
+    
+    finalMessage = contextMessage;
     if (charsWritten && messageBuffer) {
         // Copy the wide string into std::wstring and trim trailing CR/LF.
         std::wstring wmsg(messageBuffer, charsWritten);
@@ -57,13 +59,9 @@ std::string getSystemErrorMessageWindows(DWORD error, const char contextMessage[
         LocalFree(messageBuffer);
 
         // Build the final message string: context text + translated system error.
-        if (contextMessage && *contextMessage) {
-            finalMessage = contextMessage;
-        }
         finalMessage += utf8.empty() ? "Unknown Windows error." : utf8;
     } else {
         // If FormatMessageW failed, fall back to a generic message.
-        finalMessage = contextMessage ? contextMessage : "";
         finalMessage += "Unknown Windows error.";
     }
 

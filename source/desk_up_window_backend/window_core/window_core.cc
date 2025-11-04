@@ -32,7 +32,11 @@ int DU_Init(){
         return 0;
     }
 
-    DESKUPDIR = dev.getDeskUpPath();
+    if(auto res = dev.getDeskUpPath(); res.has_value()){
+        DESKUPDIR = std::move(res.value());
+    } else{
+        return 0;
+    }
 
     std::cout << "DeskUp path: " << DESKUPDIR << std::endl; 
 
