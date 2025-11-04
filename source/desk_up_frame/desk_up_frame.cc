@@ -100,8 +100,12 @@ void DeskUpFrame::OnAdd(wxCommandEvent&)
     }
 
     if (!DeskUpWindow::existsWorkspace(workspaceName.ToStdString())){
-        DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString());
-        showSaveSuccessful();
+        
+        if(auto saveRes =DeskUpWindow::saveAllWindowsLocal(workspaceName.ToStdString()); !saveRes.has_value()){
+            DeskUp::UI::ErrorAdapter::showError(std::move(saveRes.error()));
+        } else{
+            showSaveSuccessful();
+        }
     } else{
         int response = wxMessageBox("The workspace already exists. Do you wish to rewrite it? ", "Workspace exists",
                                                                                 wxYES_NO | wxCANCEL | wxNO_DEFAULT | wxICON_QUESTION);
@@ -149,6 +153,8 @@ void DeskUpFrame::OnRestore(wxCommandEvent&)
 
         if(!res.has_value()){
             DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
+        } else{
+            showRestoreSuccessful();
         }
     } else{
         wxMessageBox("The workspace does not exist!", "Workspace does not exist", wxOK | wxICON_ERROR);
