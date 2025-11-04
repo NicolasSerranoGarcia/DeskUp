@@ -37,6 +37,9 @@ DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view cont
         case ERROR_IO_DEVICE:
             lvl = Level::Retry; typ = ErrType::Io; break;
 
+        case ERROR_FUNCTION_FAILED:
+            lvl = Level::Retry; typ = ErrType::Unexpected; break;
+
         default:
             lvl = Level::Default; typ = ErrType::Default; break;
     }
@@ -82,6 +85,10 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
         case ERROR_CRC:
         case ERROR_IO_DEVICE:
             lvl = Level::Retry; typ = ErrType::Io; break;
+
+        case ERROR_FUNCTION_FAILED:
+            lvl = Level::Retry; typ = ErrType::Unexpected; break;
+
 
         default:
             lvl = Level::Default; typ = ErrType::Default; break;
