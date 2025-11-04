@@ -30,8 +30,11 @@
 
 #include <string>
 #include <expected>
+#include <filesystem>
 
 #include "desk_up_error.h"
+
+namespace fs = std::filesystem;
 
 /**
  * @struct DeskUpWindow
@@ -188,6 +191,30 @@ struct DeskUpWindow{
      * @date 2025
      */
     static int removeWorkspace(const std::string& workspaceName);
+
+    /**
+     * @brief Checks whether a given file path exists on disk.
+     *
+     * @details
+     * Uses the C++17 `<filesystem>` library to test whether the file or directory
+     * specified by `filePath` exists in the current filesystem.
+     * Returns `true` if it exists, `false` otherwise.
+     *
+     * **Reads:**
+     * - Filesystem state at the given @p filePath.
+     *
+     * @param filePath The absolute or relative filesystem path to check.
+     * @return \c true if the file or directory exists, \c false otherwise.
+     *
+     * @note This function is typically used when generating unique file names
+     *       for saving window descriptors (to avoid overwriting files when multiple
+     *       windows share the same name).
+     *
+     * @version 0.1.1
+     * @date 2025
+     */
+    static bool existsFile(const fs::path& filePath);
+
 };
 
 #endif
