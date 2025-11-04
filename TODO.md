@@ -122,6 +122,8 @@
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
+Migrate the frontend to qt
+
 ## <3> <1> 4. Implement CI/CD for windows again
 
 ##  5. Add testing for the backend and benchmarks for the app
