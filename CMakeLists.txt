@@ -63,6 +63,30 @@
     # --- global preprocessor flag available when coding ---
     add_compile_definitions(DESKUP_VERSION="${PROJECT_VERSION}")
 
+# qt
+
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTORCC ON)
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_qt)
+
+    find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+
+    add_library(desk_up_qt_library INTERFACE)
+
+    target_link_libraries(desk_up_qt_library INTERFACE Qt6::Core Qt6::Widgets)
+    
+    add_executable(DeskUpQt)
+    target_sources(DeskUpQt PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
+
+    target_link_libraries(DeskUpQt PRIVATE 
+        desk_up_qt_library
+        config_compiler_flags_library
+
+        desk_up_qt_frontend_library
+    )
+
 # wxWidgets
 
     # --- fetch wxWidgets ---
