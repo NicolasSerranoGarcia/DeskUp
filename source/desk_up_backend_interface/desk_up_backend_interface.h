@@ -37,7 +37,7 @@
 namespace fs = std::filesystem;
 
 /**
- * @struct DeskUpWindow
+ * @struct DeskUpBackendInterface
  * @brief Convenience façade for workspace-level window operations.
  *
  * @details
@@ -62,7 +62,7 @@ namespace fs = std::filesystem;
  * @version 0.1.1
  * @date 2025
  */
-struct DeskUpWindow{
+struct DeskUpBackendInterface{
 
     /**
      * @brief Saves all currently enumerated windows to a local workspace folder.

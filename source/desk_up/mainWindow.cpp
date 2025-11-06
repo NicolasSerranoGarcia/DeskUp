@@ -88,7 +88,7 @@ void MainWindow::onAddWorkspace(){
             continue;
         }
 
-        if (!DeskUpWindow::isWorkspaceValid(workspaceName.toStdString())) {
+        if (!DeskUpBackendInterface::isWorkspaceValid(workspaceName.toStdString())) {
             QMessageBox::critical(this, "Workspace name not valid",
                                   "The workspace name is not valid! Blacklisted characters: \\/:?*\"<>|");
             continue;
@@ -98,8 +98,8 @@ void MainWindow::onAddWorkspace(){
 
     const std::string ws = workspaceName.toStdString();
 
-    if (!DeskUpWindow::existsWorkspace(ws)) {
-        if (auto saveRes = DeskUpWindow::saveAllWindowsLocal(ws); !saveRes.has_value()) {
+    if (!DeskUpBackendInterface::existsWorkspace(ws)) {
+        if (auto saveRes = DeskUpBackendInterface::saveAllWindowsLocal(ws); !saveRes.has_value()) {
             DeskUp::UI::ErrorAdapter::showError(std::move(saveRes.error()));
         } else {
             showSaveSuccessful();
@@ -112,9 +112,9 @@ void MainWindow::onAddWorkspace(){
             QMessageBox::No);
 
         if (response == QMessageBox::Yes) {
-            DeskUpWindow::removeWorkspace(ws);
+            DeskUpBackendInterface::removeWorkspace(ws);
 
-            if (auto res = DeskUpWindow::saveAllWindowsLocal(ws); !res.has_value()) {
+            if (auto res = DeskUpBackendInterface::saveAllWindowsLocal(ws); !res.has_value()) {
                 DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
             }
         }
@@ -138,7 +138,7 @@ void MainWindow::onRestoreWorkspace()
             continue;
         }
 
-        if (!DeskUpWindow::isWorkspaceValid(workspaceName.toStdString())) {
+        if (!DeskUpBackendInterface::isWorkspaceValid(workspaceName.toStdString())) {
             QMessageBox::critical(this, "Workspace name not valid",
                                   "The workspace name is not valid! Blacklisted characters: \\/:?*\"<>|");
             continue;
@@ -148,8 +148,8 @@ void MainWindow::onRestoreWorkspace()
 
     const std::string ws = workspaceName.toStdString();
 
-    if (DeskUpWindow::existsWorkspace(ws)) {
-        if (auto res = DeskUpWindow::restoreWindows(ws); !res.has_value()) {
+    if (DeskUpBackendInterface::existsWorkspace(ws)) {
+        if (auto res = DeskUpBackendInterface::restoreWindows(ws); !res.has_value()) {
             DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
         } else {
             showRestoreSuccessful();
