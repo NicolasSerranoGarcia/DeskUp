@@ -1,5 +1,5 @@
 /**
- * @file desk_up_window.h
+ * @file desk_up_backend_interface.h
  * @brief High-level window operations for DeskUp (frontend utilities over the backend device).
  *
  * This file is part of DeskUp
@@ -25,8 +25,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DESKUPWINDOW_H
-#define DESKUPWINDOW_H
+#ifndef DESKUPBACKENDINTERFACE_H
+#define DESKUPBACKENDINTERFACE_H
 
 #include <string>
 #include <expected>

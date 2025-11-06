@@ -10,8 +10,8 @@
 
 #include "desk_up_error.h"
 #include "window_core.h"
-#include "desk_up_window.h"
-// #include "desk_up_error_gui_converter.h"
+#include "desk_up_backend_interface.h"
+#include "desk_up_error_gui_converter.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -100,7 +100,7 @@ void MainWindow::onAddWorkspace(){
 
     if (!DeskUpWindow::existsWorkspace(ws)) {
         if (auto saveRes = DeskUpWindow::saveAllWindowsLocal(ws); !saveRes.has_value()) {
-            // DeskUp::UI::ErrorAdapter::showError(std::move(saveRes.error()));
+            DeskUp::UI::ErrorAdapter::showError(std::move(saveRes.error()));
         } else {
             showSaveSuccessful();
         }
@@ -115,7 +115,7 @@ void MainWindow::onAddWorkspace(){
             DeskUpWindow::removeWorkspace(ws);
 
             if (auto res = DeskUpWindow::saveAllWindowsLocal(ws); !res.has_value()) {
-                // DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
+                DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
             }
         }
     }
@@ -150,7 +150,7 @@ void MainWindow::onRestoreWorkspace()
 
     if (DeskUpWindow::existsWorkspace(ws)) {
         if (auto res = DeskUpWindow::restoreWindows(ws); !res.has_value()) {
-            // DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
+            DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
         } else {
             showRestoreSuccessful();
         }
