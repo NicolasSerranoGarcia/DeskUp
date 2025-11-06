@@ -122,7 +122,9 @@
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
-Migrate the frontend to qt
+[X] Migrate the frontend to qt
+
+[] (optional for this task) fix the icon from qt
 
 ## <3> <1> 4. Implement CI/CD for windows again
 
