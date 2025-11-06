@@ -36,16 +36,16 @@ If none is available, it returns `0`.
 
 ---
 
-## 2️. High-level operations — DeskUpWindow façade
+## 2️. High-level operations — DeskUpBackendInterface façade
 
-`DeskUpWindow` is defined in
-[`source/desk_up_window/desk_up_window.h`](./desk_up_window/desk_up_window.h)
+`DeskUpBackendInterface` is defined in
+[`source/desk_up_backend_interface/desk_up_backend_interface.h`](./desk_up_backend_interface/desk_up_backend_interface.h)
 and implemented in
-[`source/desk_up_window/desk_up_window.cc`](./desk_up_window/desk_up_window.cc).
+[`source/desk_up_backend_interface/desk_up_backend_interface.cc`](./desk_up_backend_interface/desk_up_backend_interface.cc).
 
 This class acts as the **frontend façade**, coordinating workspace-level operations with the backend.
 
-### 🔹 `DeskUpWindow::saveAllWindowsLocal(std::string workspaceName)`
+### 🔹 `DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName)`
 1. Builds `<DESKUPDIR>/<workspaceName>` using the global path set by `DU_Init()`.
 2. Ensures the directory exists (via `std::filesystem`).
 3. Requests the active backend to enumerate all windows through
@@ -98,7 +98,7 @@ DeskUpWindowBootStrap winWindowDevice = {
   - `getDeskUpPath`
   - ...
   
-All the common functions necessary for any platform to make deskUp work. If there are platfrom-specific calls, they won't appear in the API.
+All the common functions necessary for any platform to make DeskUp work. If there are platform-specific calls, they won't appear in the API.
 
 ### Enumerating windows
 `WIN_getAllWindows()` calls `EnumDesktopWindows`, which triggers a callback to:
@@ -126,7 +126,7 @@ DU_Init()
   |--> dev.getDeskUpPath() -> WIN_getDeskUpPath()
   \--> sets DESKUPDIR and current_window_backend
 
-DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
+DeskUpBackendInterface::saveAllWindowsLocal("WorkspaceName")
   |--> builds <DESKUPDIR>\WorkspaceName
   |--> current_window_backend->getAllWindows(...) -> WIN_getAllWindows()
   |     |--> EnumDesktopWindows -> WIN_createAndSaveWindow()
@@ -142,14 +142,15 @@ DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
 
 | Layer | Path | Description |
 |-------|------|--------------|
-| **Frontend** | `source/desk_up_window/desk_up_window.h` / `.cc` | Orchestrates workspace operations (uses backend). |
-| **Core** | `source/desk_up_window_backend/window_core.h` / `.cc` | Backend initialization (`DU_Init`) and global state. |
+| **Frontend** | `source/desk_up/mainWindow.h` / `.cpp` | Qt GUI layer orchestrating workspace operations. |
+| **Core (Backend interface)** | `source/desk_up_backend_interface/desk_up_backend_interface.h` / `.cc` | Backend communication façade (`DeskUpBackendInterface`). |
+| **Core (Initialization)** | `source/desk_up_window_backend/window_core.h` / `.cc` | Backend initialization (`DU_Init`) and global state. |
 | **Backend (Windows)** | `source/desk_up_window_backend/window_backends/desk_up_win/desk_up_win.h` / `.cc` | Implements Windows-specific logic. |
 | **Window record** | `source/desk_up_window_backend/window_desc/window_desc.h` / `.cc` | Data structure representing windows. |
-| **Backend utilities** | `source/desk_up_window_backend/backend_utils.cc` | Shared helper functions for backends. |
+| **Backend utilities** | `source/desk_up_window_backend/backend_utils/backend_utils.cc` | Shared helper functions for backends. |
 | **Interfaces** | `source/desk_up_window_backend/desk_up_window_device.h`, `desk_up_window_bootstrap.h` | Device and bootstrap definitions. |
-| **Other components** | `source/desk_up/`, `source/desk_up_frame/` | Higher-level modules (e.g., UI, frame handling). |
-| **Entry point** | `source/main.cc` | Program start. |
+| **Error system** | `source/desk_up_error/` and `source/desk_up_error_gui_converter/` | Error logic and GUI integration. |
+| **Entry point** | `source/desk_up/main.cpp` | Program start (Qt). |
 
 ---
 
