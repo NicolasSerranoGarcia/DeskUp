@@ -18,7 +18,7 @@
 
     target_link_libraries(desk_up_error_gui_converter_library PRIVATE 
         config_compiler_flags_library
-        desk_up_wxWidgets_library
+        desk_up_qt_library
 
         desk_up_error_library
     )
