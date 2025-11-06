@@ -1,5 +1,5 @@
 /**
- * @file desk_up_window.h
+ * @file desk_up_backend_interface.h
  * @brief High-level window operations for DeskUp (frontend utilities over the backend device).
  *
  * This file is part of DeskUp
@@ -25,8 +25,8 @@
  *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef DESKUPWINDOW_H
-#define DESKUPWINDOW_H
+#ifndef DESKUPBACKENDINTERFACE_H
+#define DESKUPBACKENDINTERFACE_H
 
 #include <string>
 #include <expected>
@@ -37,7 +37,7 @@
 namespace fs = std::filesystem;
 
 /**
- * @struct DeskUpWindow
+ * @struct DeskUpBackendInterface
  * @brief Convenience façade for workspace-level window operations.
  *
  * @details
@@ -62,7 +62,7 @@ namespace fs = std::filesystem;
  * @version 0.1.1
  * @date 2025
  */
-struct DeskUpWindow{
+struct DeskUpBackendInterface{
 
     /**
      * @brief Saves all currently enumerated windows to a local workspace folder.

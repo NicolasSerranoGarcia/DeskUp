@@ -21,6 +21,7 @@ pacman -S mingw-w64-x86_64-texlive-plain-generic
 pacman -S mingw-w64-x86_64-texlive-fonts-recommended
 pacman -S mingw-w64-x86_64-texlive-extra-utils \
           mingw-w64-x86_64-ghostscript
+pacman -S mingw-w64-x86_64-qt6
 ```
 
 ## 📁 Initial Setup

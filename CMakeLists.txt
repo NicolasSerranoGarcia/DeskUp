@@ -52,7 +52,7 @@
 # Executable
 
     # --- DeskUp ---
-    add_executable(${PROJECT_NAME} WIN32 source/main.cc)
+    add_executable(${PROJECT_NAME} WIN32 source/desk_up/main.cpp)
 
     # --- Resources file (currently just for the windows icon) ---
     enable_language(RC)
@@ -63,34 +63,36 @@
     # --- global preprocessor flag available when coding ---
     add_compile_definitions(DESKUP_VERSION="${PROJECT_VERSION}")
 
-# wxWidgets
+# qt
 
-    # --- fetch wxWidgets ---
+    # --- fetch qt ---
 
-    # This flag needs to be set on before fetching wxWidgets
-    # for the executable to find some symbols
-    set(wxWidgets_USE_STATIC ON)
-    find_package(wxWidgets REQUIRED COMPONENTS net core base)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTOUIC ON)
+    set(CMAKE_AUTORCC ON)
 
-    # --- Create an interface library representing wxWidgets. Any sub-library that uses wxWidgets should link against this one --- 
+    find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+    
+    # --- Create an interface library representing qt. Any sub-library that uses qt should link against this one --- 
 
-    add_library(desk_up_wxWidgets_library INTERFACE)
-    target_compile_definitions(desk_up_wxWidgets_library INTERFACE 
-        wxWidgets_STATIC
-        ${wxWidgets_DEFINITIONS}
-    )
-
-    target_include_directories(desk_up_wxWidgets_library INTERFACE ${wxWidgets_INCLUDE_DIRS})
-    target_link_libraries(desk_up_wxWidgets_library INTERFACE ${wxWidgets_LIBRARIES})
-
+    add_library(desk_up_qt_library INTERFACE)
+    target_link_libraries(desk_up_qt_library INTERFACE Qt6::Core Qt6::Widgets)
+    
     # --- Link it with the executable ---
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_wxWidgets_library)
+    target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_qt_library)
 
     # --- Acknowledge ---
 
-    message(STATUS "(DU) wxWidgets include dirs: ${wxWidgets_INCLUDE_DIRS}")
-    message(STATUS "(DU) wxWidgets libraries: ${wxWidgets_LIBRARIES}")
+    get_target_property(QT_CORE_INCLUDE_DIRS Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(QT_WIDGETS_INCLUDE_DIRS Qt6::Widgets INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(QT_CORE_LIBS Qt6::Core LOCATION)
+    get_target_property(QT_WIDGETS_LIBS Qt6::Widgets LOCATION)
+
+    message(STATUS "(DU) Qt6 Core include dirs: ${QT_CORE_INCLUDE_DIRS}")
+    message(STATUS "(DU) Qt6 Widgets include dirs: ${QT_WIDGETS_INCLUDE_DIRS}")
+    message(STATUS "(DU) Qt6 Core lib: ${QT_CORE_LIBS}")
+    message(STATUS "(DU) Qt6 Widgets lib: ${QT_WIDGETS_LIBS}")
 
 # Windows API 
 
@@ -138,16 +140,14 @@
     add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error)
     add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error_gui_converter)
 
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frame)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_backend_interface) # Includes the backend libraries
     add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
 
 # Link project libraries
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
-        desk_up_window_library
-        desk_up_frame_library
-        desk_up_library
+        desk_up_backend_interface_library
+        desk_up_frontend_library
     )
 
 # Set build type

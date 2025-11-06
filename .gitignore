@@ -6,3 +6,4 @@ docs/latex
 appimagetool-x86_64.AppImage
 source/desk_up_window_backend/window_backends/desk_up_x11
 setWindowsPackage.sh
+.qtcreator

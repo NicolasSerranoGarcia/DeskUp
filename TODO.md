@@ -122,7 +122,14 @@
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
+[X] Migrate the frontend to qt
+
+[] (optional for this task) fix the icon from qt
+
 ## <3> <1> 4. Implement CI/CD for windows again
+
+[] automate the workflow of development. In local, work with dynamic qt. Then, in the github workflows, setup the CD to pack everything into inno setup,
+including the qt dlls. 
 
 ##  5. Add testing for the backend and benchmarks for the app
 

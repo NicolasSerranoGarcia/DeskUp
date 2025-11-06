@@ -1,4 +1,4 @@
-#include "desk_up_window.h"
+#include "desk_up_backend_interface.h"
 
 #include <vector>
 #include <string>
@@ -10,7 +10,7 @@
 
 namespace fs = std::filesystem;
 
-DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
+DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName){
     
     fs::path workspacePath = DESKUPDIR;
     workspacePath /= workspaceName;
@@ -57,7 +57,7 @@ DeskUp::Status DeskUpWindow::saveAllWindowsLocal(std::string workspaceName){
     return std::unexpected(std::move(lastErr));
 }
 
-DeskUp::Status DeskUpWindow::restoreWindows(std::string workspaceName){
+DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName){
     //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace), 
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
@@ -117,7 +117,7 @@ DeskUp::Status DeskUpWindow::restoreWindows(std::string workspaceName){
     return {};
 };
 
-bool DeskUpWindow::isWorkspaceValid(const std::string& workspaceName){
+bool DeskUpBackendInterface::isWorkspaceValid(const std::string& workspaceName){
     if(workspaceName.empty()){
         return false;
     }
@@ -134,7 +134,7 @@ bool DeskUpWindow::isWorkspaceValid(const std::string& workspaceName){
     return true;
 }
 
-bool DeskUpWindow::existsWorkspace(const std::string& workspaceName){
+bool DeskUpBackendInterface::existsWorkspace(const std::string& workspaceName){
     if(workspaceName.empty()){
         return false;
     }
@@ -149,7 +149,7 @@ bool DeskUpWindow::existsWorkspace(const std::string& workspaceName){
     return true;
 }
 
-int DeskUpWindow::removeWorkspace(const std::string& workspaceName){
+int DeskUpBackendInterface::removeWorkspace(const std::string& workspaceName){
     if(!existsWorkspace(workspaceName)){
         return 0;
     }
@@ -169,7 +169,7 @@ int DeskUpWindow::removeWorkspace(const std::string& workspaceName){
     return 1;
 }
 
-bool DeskUpWindow::existsFile(const fs::path& filePath){
+bool DeskUpBackendInterface::existsFile(const fs::path& filePath){
     if(filePath.empty()){
         return false;
     }
