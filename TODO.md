@@ -128,6 +128,9 @@
 
 ## <3> <1> 4. Implement CI/CD for windows again
 
+[] automate the workflow of development. In local, work with dynamic qt. Then, in the github workflows, setup the CD to pack everything into inno setup,
+including the qt dlls. 
+
 ##  5. Add testing for the backend and benchmarks for the app
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
