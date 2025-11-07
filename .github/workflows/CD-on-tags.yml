@@ -112,7 +112,7 @@ jobs:
           NOTES=$(gh api repos/${{ github.repository }}/releases/generate-notes -f tag_name='${{ github.ref_name }}' --jq '.body')
           {
             echo 'RELEASE_BODY<<EOF'
-            cat <<'BODY'
+            cat <<'DOC'
             ### Windows Security Notice
 
             When running the DeskUp **installer** (`DeskUp-installer-*.exe`), Windows may display a **"Windows protected your PC"** warning.  
@@ -139,8 +139,8 @@ jobs:
             > The installer already includes all required Qt libraries.
 
             **Release notes**
-            BODY
-            echo "$NOTES"
+            DOC
+            printf '%s\n' "$NOTES"
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
         env:
