@@ -10,6 +10,8 @@
 
 ## Required installs
 
+Using MSYS2 MINGW64:
+
 ```bash
 pacman -S --needed mingw-w64-x86_64-graphviz
 pacman -Syu
@@ -181,6 +183,25 @@ cpack
 | `-DGENERATE_APPIMAGE=ON\|OFF` | Enables/disables the creation of an appImage | OFF |
 
 > Note: enabling `-DGENERATE_APPIMAGE` will have no effect on windows
+
+### Generate the DeskUp installer
+
+When developing, qt get's linked dynamically, so no there is no dependency problem. When shipping the executable, you must ship the all the qt environment too. For this, DeskUp uses an installer created with Inno Setup. 
+
+If you know how to work with Inno Setup, the `.iss` is inside `installation/`.
+
+If you don't, you first need to install [Inno Setup](https://jrsoftware.org/isinfo.php), then go into `build/` and run:
+
+```bash
+windeployqt6 DeskUp.exe --release --dir ../build_inno
+cd ..
+cd installation
+echo 'export PATH="$PATH:/c/Program Files (x86)/Inno Setup 6"' >> ~/.bashrc
+source ~/.bashrc
+ISCC.exe "DeskUp-installer.iss"
+```
+
+The `.exe` installer will be inside `build_inno/Output`
 
 ## 📚 Documentation with Doxygen
 
