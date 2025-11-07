@@ -205,6 +205,39 @@ source ~/.bashrc
 ISCC.exe "DeskUp-installer.iss"
 ```
 
+The final installable does not carry all the dependencies (some indirect dependencies do not get copied inside the installer). For this, you might need to run the following BEFORE compiling the `.iss` file (the command above). From the _root_ of the project:
+
+```bash
+cp /mingw64/bin/libgcc_s_seh-1.dll build_inno/
+cp /mingw64/bin/libstdc++-6.dll build_inno/
+cp /mingw64/bin/libwinpthread-1.dll build_inno/
+
+cp /mingw64/bin/libicuin77.dll build_inno/
+cp /mingw64/bin/libicuuc77.dll build_inno/
+cp /mingw64/bin/libicudt77.dll build_inno/
+
+cp /mingw64/bin/zlib1.dll build_inno/
+cp /mingw64/bin/libzstd.dll build_inno/
+cp /mingw64/bin/libbz2-1.dll build_inno/
+cp /mingw64/bin/libbrotlidec.dll build_inno/
+cp /mingw64/bin/libbrotlicommon.dll build_inno/
+
+cp /mingw64/bin/libfreetype-6.dll build_inno/
+cp /mingw64/bin/libharfbuzz-0.dll build_inno/
+cp /mingw64/bin/libpng16-16.dll build_inno/
+cp /mingw64/bin/libgraphite2.dll build_inno/
+
+cp /mingw64/bin/libpcre2-16-0.dll build_inno/
+cp /mingw64/bin/libpcre2-8-0.dll build_inno/
+cp /mingw64/bin/libb2-1.dll build_inno/
+cp /mingw64/bin/libdouble-conversion.dll build_inno/
+cp /mingw64/bin/libmd4c.dll build_inno/
+
+cp /mingw64/bin/libglib-2.0-0.dll build_inno/
+cp /mingw64/bin/libintl-8.dll build_inno/
+cp /mingw64/bin/libiconv-2.dll build_inno/
+```
+
 The `.exe` installer will be inside `build_inno/Output`
 
 ## 📚 Documentation with Doxygen
