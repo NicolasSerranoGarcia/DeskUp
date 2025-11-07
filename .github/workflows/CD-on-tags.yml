@@ -35,6 +35,13 @@ jobs:
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --config Release
+
+        shell: msys2 {0}
+
+      - name: Bundle Qt runtime
+        run: |
+          cd build
+          windeployqt6 DeskUp.exe --release --dir ../build_inno
           cd ..
           cp /mingw64/bin/libgcc_s_seh-1.dll build_inno/
           cp /mingw64/bin/libstdc++-6.dll build_inno/
@@ -64,13 +71,6 @@ jobs:
           cp /mingw64/bin/libglib-2.0-0.dll build_inno/
           cp /mingw64/bin/libintl-8.dll build_inno/
           cp /mingw64/bin/libiconv-2.dll build_inno/
-
-        shell: msys2 {0}
-
-      - name: Bundle Qt runtime
-        run: |
-          cd build
-          windeployqt6 DeskUp.exe --release --dir ../build_inno
         shell: msys2 {0}
 
       - name: Install Inno Setup
