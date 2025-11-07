@@ -64,6 +64,12 @@ jobs:
     needs: build-windows
 
     steps:
+      - name: Download built artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: DeskUp-Windows-Installer
+          path: installer_artifacts
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -125,6 +131,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           files: |
-            build_inno/Output/*.exe
+            installer_artifacts/*.exe
+          name: DeskUp Installer (${{ github.ref_name }})
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
