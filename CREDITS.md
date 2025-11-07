@@ -24,4 +24,6 @@ This project was made possible thanks to the following resources:
 
 ---
 
-Special thanks to [SDL](https://github.com/libsdl-org/SDL) for giving me inspiration on building this project!
+- Thanks to [Joe Glines](https://www.youtube.com/@JoeGlines-Automator) for the explanatory video on how to use Inno Setup
+
+- Special thanks to [SDL](https://github.com/libsdl-org/SDL) for giving me inspiration on building this project!
