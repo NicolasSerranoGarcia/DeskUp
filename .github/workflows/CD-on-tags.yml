@@ -35,6 +35,36 @@ jobs:
           cd build
           cmake -DCMAKE_BUILD_TYPE=Release ..
           cmake --build . --config Release
+          cd ..
+          cp /mingw64/bin/libgcc_s_seh-1.dll build_inno/
+          cp /mingw64/bin/libstdc++-6.dll build_inno/
+          cp /mingw64/bin/libwinpthread-1.dll build_inno/
+
+          cp /mingw64/bin/libicuin77.dll build_inno/
+          cp /mingw64/bin/libicuuc77.dll build_inno/
+          cp /mingw64/bin/libicudt77.dll build_inno/
+
+          cp /mingw64/bin/zlib1.dll build_inno/
+          cp /mingw64/bin/libzstd.dll build_inno/
+          cp /mingw64/bin/libbz2-1.dll build_inno/
+          cp /mingw64/bin/libbrotlidec.dll build_inno/
+          cp /mingw64/bin/libbrotlicommon.dll build_inno/
+
+          cp /mingw64/bin/libfreetype-6.dll build_inno/
+          cp /mingw64/bin/libharfbuzz-0.dll build_inno/
+          cp /mingw64/bin/libpng16-16.dll build_inno/
+          cp /mingw64/bin/libgraphite2.dll build_inno/
+
+          cp /mingw64/bin/libpcre2-16-0.dll build_inno/
+          cp /mingw64/bin/libpcre2-8-0.dll build_inno/
+          cp /mingw64/bin/libb2-1.dll build_inno/
+          cp /mingw64/bin/libdouble-conversion.dll build_inno/
+          cp /mingw64/bin/libmd4c.dll build_inno/
+
+          cp /mingw64/bin/libglib-2.0-0.dll build_inno/
+          cp /mingw64/bin/libintl-8.dll build_inno/
+          cp /mingw64/bin/libiconv-2.dll build_inno/
+
         shell: msys2 {0}
 
       - name: Bundle Qt runtime
@@ -68,7 +98,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: DeskUp-Windows-Installer
-          path: installer_artifacts
+          path: .
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -131,7 +161,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           files: |
-            installer_artifacts/DeskUp-Windows-Installer/*.exe
+            ./*.exe
           name: Release ${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
