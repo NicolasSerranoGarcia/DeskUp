@@ -1,99 +1,127 @@
-permissions:
-  contents: write
-  issues: read
-  pull-requests: read
-
-name: Release DeskUp with windows hook package
+name: CD on tag
 
 on:
   push:
-    tags:
-      - '*'
+    # tags:
+    #   - 'v*'
 
 jobs:
-  hook-windows:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-qt6
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-tools
+
+      - name: Configure and build DeskUp
+        run: |
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release ..
+          cmake --build . --config Release
+        shell: msys2 {0}
+
+      - name: Bundle Qt runtime
+        run: |
+          cd build
+          windeployqt6 DeskUp.exe --release --dir ../build_inno
+        shell: msys2 {0}
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+        shell: pwsh
+
+      - name: Build installer (Inno Setup)
+        run: |
+          cd installation
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "DeskUp-installer.iss"
+        shell: pwsh
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DeskUp-Windows-Installer
+          path: build_inno/Output/*.exe
 
   release:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    needs: build-windows
+
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Generate release notes from GitHub
-      id: notes
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const { data } = await github.rest.repos.generateReleaseNotes({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            tag_name: context.ref.replace('refs/tags/', '')
-          });
-          core.setOutput("notes", data.body);
+      - name: Generate release notes from GitHub
+        id: notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data } = await github.rest.repos.generateReleaseNotes({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: context.ref.replace('refs/tags/', '')
+            });
+            core.setOutput("notes", data.body);
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: Release ${{ github.ref_name }}
-        body: |
-          ### Windows Security Notice
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            ### Windows Security Notice
 
-          When running the `.exe` for the first time, Windows may display a **"Windows protected your PC"** warning. This is expected and happens because the file is not digitally signed (I don't have the resources to purchase a digital signature ;) )
+            When running the DeskUp **installer** (`DeskUp-installer-*.exe`), Windows may display a **"Windows protected your PC"** warning.  
+            This is expected and happens because the executable is not digitally signed (I don't have the resources to purchase a digital certificate :) ).
 
-          This application is safe to use and does **not** contain any malware. The warning appears simply because the executable is new and unsigned.
+            This application is completely safe to use and does **not** contain any malware.  
+            The warning appears simply because the installer is unsigned and new.
 
-          #### How to run the application on Windows:
+            #### How to install DeskUp on Windows
 
-          First, download the zip file and decompress it
+            1. Download the `.exe` installer from the **Assets** section below.
+            2. Double-click it to start the setup process.
+            3. If you see the blue *"Windows protected your PC"* screen:
+               - Click on **"More info"**
+               - Then click on **"Run anyway"**
+            4. Follow the installation wizard — DeskUp will be installed under **Program Files**.
+            5. After installation, you can find DeskUp in your **Start Menu** or on your **Desktop** (if you selected that option).
 
-          1. After launching the `.exe`, if you see the blue "Windows protected your PC" screen:
-            - Click on **"More info"**
-            - Then click on **"Run anyway"**
+            <p align="center">
+              <img width="367" height="323" alt="image" src="./assets/windows-security-screen.png" />
+            </p>
 
-          <p align="center">
-          <img width="367" height="323" alt="image" src="./assets/windows-security-screen.png" />
-          </p>
+            > **Note:** You do **not** need to install any additional dependencies.  
+            > The installer already includes all required Qt libraries.
 
-          2. Make sure all `.dll` files remain in the same folder as the `.exe`.
+            **Release notes**
 
-          3. Search for `DeskUp.exe` and run it!
-          
-          > Note: You do **not** need to install anything else — all dependencies are included.
+            ${{ steps.notes.outputs.notes }}
 
-          **Release notes**
+          draft: false
+          prerelease: false
 
-          ${{ steps.notes.outputs.notes }}
-
-        draft: false
-        prerelease: false
-
-    - name: Checkout Windows package repo
-      uses: actions/checkout@v4
-      with:
-        repository: NicolasSerranoGarcia/DeskUp-win-package
-        token: ${{ secrets.PAT_TOKEN }}
-        path: win-package
-
-    - name: Find Windows package file
-      id: find-windows-package
-      run: |
-        FILE=$(ls win-package/*.zip | head -n 1)
-        echo "package_path=$FILE" >> $GITHUB_OUTPUT
-
-    - name: Upload Windows asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.find-windows-package.outputs.package_path }}
-        asset_name: DeskUp-${{ github.ref_name }}-Windows.zip
-        asset_content_type: application/zip
+      - name: Upload installer to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            build_inno/Output/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
