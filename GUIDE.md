@@ -13,6 +13,11 @@
 Using MSYS2 MINGW64:
 
 ```bash
+pacman -S mingw-w64-x86_64-gcc
+pacman -S mingw-w64-x86_64-cmake
+pacman -S mingw-w64-x86_64-qt6
+pacman -S mingw-w64-x86_64-qt6-base
+pacman -S mingw-w64-x86_64-qt6-tools
 pacman -S --needed mingw-w64-x86_64-graphviz
 pacman -Syu
 pacman -S mingw-w64-x86_64-texlive-bin \
@@ -23,7 +28,6 @@ pacman -S mingw-w64-x86_64-texlive-plain-generic
 pacman -S mingw-w64-x86_64-texlive-fonts-recommended
 pacman -S mingw-w64-x86_64-texlive-extra-utils \
           mingw-w64-x86_64-ghostscript
-pacman -S mingw-w64-x86_64-qt6
 ```
 
 ## 📁 Initial Setup
