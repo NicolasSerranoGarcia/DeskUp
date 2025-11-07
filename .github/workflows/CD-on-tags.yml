@@ -110,38 +110,39 @@ jobs:
         id: body
         run: |
           NOTES=$(gh api repos/${{ github.repository }}/releases/generate-notes -f tag_name='${{ github.ref_name }}' --jq '.body')
-          printf "RELEASE_BODY<<'EOF'\n" >> $GITHUB_OUTPUT
-          cat <<'BODY' >> $GITHUB_OUTPUT
-          ### Windows Security Notice
+          {
+            echo 'RELEASE_BODY<<EOF'
+            cat <<'BODY'
+            ### Windows Security Notice
 
-          When running the DeskUp **installer** (`DeskUp-installer-*.exe`), Windows may display a **"Windows protected your PC"** warning.  
-          This is expected and happens because the executable is not digitally signed (I don't have the resources to purchase a digital certificate :) ).
+            When running the DeskUp **installer** (`DeskUp-installer-*.exe`), Windows may display a **"Windows protected your PC"** warning.  
+            This is expected and happens because the executable is not digitally signed (I don't have the resources to purchase a digital certificate :) ).
 
-          This application is completely safe to use and does **not** contain any malware.  
-          The warning appears simply because the installer is unsigned and new.
+            This application is completely safe to use and does **not** contain any malware.  
+            The warning appears simply because the installer is unsigned and new.
 
-          #### How to install DeskUp on Windows
+            #### How to install DeskUp on Windows
 
-          1. Download the `.exe` installer from the **Assets** section below.
-          2. Double-click it to start the setup process.
-          3. If you see the blue *"Windows protected your PC"* screen:
-             - Click on **"More info"**
-             - Then click on **"Run anyway"**
-          4. Follow the installation wizard — DeskUp will be installed under **Program Files**.
-          5. After installation, you can find DeskUp in your **Start Menu** or on your **Desktop** (if you selected that option).
+            1. Download the `.exe` installer from the **Assets** section below.
+            2. Double-click it to start the setup process.
+            3. If you see the blue *"Windows protected your PC"* screen:
+               - Click on **"More info"**
+               - Then click on **"Run anyway"**
+            4. Follow the installation wizard — DeskUp will be installed under **Program Files**.
+            5. After installation, you can find DeskUp in your **Start Menu** or on your **Desktop** (if you selected that option).
 
-          <p align="center">
-            <img width="367" height="323" alt="Windows security screen" src="./assets/windows-security-screen.png" />
-          </p>
+            <p align="center">
+              <img width="367" height="323" alt="Windows security screen" src="./assets/windows-security-screen.png" />
+            </p>
 
-          > **Note:** You do **not** need to install any additional dependencies.  
-          > The installer already includes all required Qt libraries.
+            > **Note:** You do **not** need to install any additional dependencies.  
+            > The installer already includes all required Qt libraries.
 
-          **Release notes**
-
-          $NOTES
-          BODY
-          printf "EOF\n" >> $GITHUB_OUTPUT
+            **Release notes**
+            BODY
+            echo "$NOTES"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ github.token }}
 
