@@ -21,6 +21,10 @@
             LANGUAGES CXX RC
         )
 
+        # --- Some tools prefer the Major.Minor verison of SEMVER ---
+
+        set(PROJECT_VERSION_SHORT "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+
     # --- Build output ---
 
         set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")

@@ -1,5 +1,6 @@
 if(GENERATE_DOCS)
     message(STATUS "(DU) Generating docs is ENABLED")
+    message(STATUS "(DU) Doxygen version short: ${PROJECT_VERSION_SHORT}")
 
     include(FetchContent)
     FetchContent_Declare(
