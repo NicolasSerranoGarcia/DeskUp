@@ -128,8 +128,12 @@
 
 ## <3> <1> 4. Implement CI/CD for windows again
 
-[] automate the workflow of development. In local, work with dynamic qt. Then, in the github workflows, setup the CD to pack everything into inno setup,
+[X] automate the workflow of development. In local, work with dynamic qt. Then, in the github workflows, setup the CD to pack everything into inno setup,
 including the qt dlls. 
+
+[] When creating the release, the executable does not get hooked. Te problem might be in the workspace where it gets put on (installer_artifacts)
+
+[] also, you need to see how to pack all the dependencies of the own qt dll libraries. 
 
 ##  5. Add testing for the backend and benchmarks for the app
 
