@@ -55,7 +55,7 @@
    
    [X] File/Folder structure for support of the backend needs to be added, for CMake and for the code itself.
    
-   [] create a simple diagram that explains the backend workflow using all the structs
+   [X] create a simple diagram that explains the backend workflow using all the structs
 
 
 ## <1> 2. Use backend inside the project: files and connecting the backend with them
@@ -131,9 +131,11 @@
 [X] automate the workflow of development. In local, work with dynamic qt. Then, in the github workflows, setup the CD to pack everything into inno setup,
 including the qt dlls. 
 
-[] When creating the release, the executable does not get hooked. Te problem might be in the workspace where it gets put on (installer_artifacts)
+[X] When creating the release, the executable does not get hooked. Te problem might be in the workspace where it gets put on (installer_artifacts)
 
-[] also, you need to see how to pack all the dependencies of the own qt dll libraries. 
+[X] also, you need to see how to pack all the dependencies of the own qt dll libraries. 
+
+[] <5> The CI workflow might need to be updated when you start generating the tests
 
 ##  5. Add testing for the backend and benchmarks for the app
 
@@ -155,7 +157,7 @@ This essentially means changing string types to wide ones and doing #define UNIC
 
 [X] fix potential errors on the backend, document new code and do something with retry_op
 
-[] (optional for this task) when launching explorer, instead of executiing the full path to the explorer exe, just launch the path to the saved folder.
+[] (optional for this task) when launching explorer, instead of executing the full path to the explorer exe, just launch the path to the saved folder.
 For this, you will need to save the path where the file explorer was when saving it, instead of the actual path to the executable 
 
 ## 8. Support for browsers: Create an extension to gather information about the tabs and windows.
@@ -163,5 +165,9 @@ For this, you will need to save the path where the file explorer was when saving
 [] implement a pipeline with the extension that is able to recover the information of the tabs before saving the workspace.
 The resulting information in the file saved should be marked as being a browser, which, tabs, windows, visibility... and then when loading it, it should do kind of the same thing as the desk up backend: The recovered information should be the same regardless of the browser, but
 when executing it in the terminal, you should change the command depending on the browser.
+
+## 9. refactor the GUI
+
+[] using the schema photo, make a refactor, and implement the basic features planned
 
 # MILESTONE 1.0.0 STABLE
