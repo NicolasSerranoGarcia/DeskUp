@@ -17,6 +17,7 @@
 #define AppCopyright "© 2025 Nicolas Serrano Garcia"
 #define AppDescription "DeskUp workspace manager"
 #define AppCompany "DeskUp Project"
+#define AppPath "..\build\DeskUp.exe"
 
 [Setup]
 AppId={{A3D21D63-7C43-4F5D-8AF5-4A31BBF708CE}}
@@ -47,8 +48,9 @@ AppModifyPath="{uninstallexe}"
 
 [FILES]
 ; BuildInno contains the exe, dll and plugins needed
-Source: "{#BuildInno}\*"; DestDir: "{app}";Flags: recursesubdirs; Excludes: "*.pdb;*.log;CMakeFiles\*"
+Source: "{#BuildInno}\*"; DestDir: "{app}"; Flags: recursesubdirs; Excludes: "*.pdb;*.log;CMakeFiles\*"
 Source: "{#ReadmeFile}"; DestDir: "{app}"; Flags: isreadme
+Source: "{#AppPath}"; DestDir: "{app}"; 
 
 [TASKS]
 Name: startmenu; Description: "Add to Start Menu"; GroupDescription: "Integration"
@@ -63,6 +65,7 @@ Name: "{group}\DeskUp"; FileName: "{app}\{#AppExeName}"; Tasks: startmenu
 Name: "{group}\{cm:ProgramOnTheWeb,DeskUp}"; FileName: "{#AppURL}"; Tasks: startmenu
 Name: "{group}\{cm:UninstallProgram,DeskUp}"; FileName: "{uninstallexe}"; Tasks:startmenu
 Name: "{group}\Workspaces"; FileName: "{#WorkspacesDir}"; Tasks: showWorkspaces
+Name: "{commondesktop}\DeskUp"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
 
 [RUN]
 Filename: "{app}\{#AppExeName}"; WorkingDir: "{#WorkspacesDir}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: postinstall
