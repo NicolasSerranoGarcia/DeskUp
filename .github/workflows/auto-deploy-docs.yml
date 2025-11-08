@@ -1,0 +1,72 @@
+name: Build and Deploy Doxygen Docs
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-doxygen
+            mingw-w64-x86_64-qt6
+            mingw-w64-x86_64-qt6-base
+            mingw-w64-x86_64-qt6-tools
+            mingw-w64-x86_64-graphviz
+            mingw-w64-x86_64-texlive-bin
+            mingw-w64-x86_64-texlive-core
+            mingw-w64-x86_64-texlive-latex-recommended
+            mingw-w64-x86_64-texlive-latex-extra
+            mingw-w64-x86_64-texlive-plain-generic
+            mingw-w64-x86_64-texlive-fonts-recommended
+            mingw-w64-x86_64-texlive-extra-utils
+            mingw-w64-x86_64-ghostscript
+
+      - name: Configure and build DeskUp
+        run: |
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=Release -DGENERATE_DOCS=ON ..
+          cmake --build . --config Release
+        shell: msys2 {0}
+
+      #   Right now i'm doing nothing with the pdf
+      - name: Build documentation (Doxygen)
+        run: |
+          cd build
+          doxygen -u Doxyfile
+          doxygen Doxyfile
+          if [ -d "../docs/latex" ]; then
+            cd ../docs/latex
+            pdflatex --shell-escape refman.tex
+            mkdir -p ../html/pdf
+            cp refman.pdf ../html/pdf/
+          fi
+
+        shell: msys2 {0}
+
+      - name: Deploy documentation to GitHub Pages
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/docs/html
+          publish_branch: gh-pages
+          force_orphan: true
