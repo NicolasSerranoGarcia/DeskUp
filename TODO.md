@@ -118,7 +118,7 @@
 
 [] (optional for this task) Some apps are linked with windows, because maybe the user downloaded them in the app store. This makes it so that they don't have an easy access when saving their info. Treat this in some way.(UWP)
 
-[] (optional for this task) look into github pages for the documentation, and link it to your main portfolio page
+[X] (optional for this task) look into github pages for the documentation, and link it to your main portfolio page
 
 ## <1> 3. Migrate to Qt - refactor/migrate-qt PR
 
@@ -140,10 +140,6 @@ including the qt dlls.
 ##  5. Add testing for the backend and benchmarks for the app
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
-
-## 6. Migrate to the wide (W suffix) version of the windows API
-
-This essentially means changing string types to wide ones and doing #define UNICODE before including windows.h
 
 ## 7. Create DeskUp Error system 
 
