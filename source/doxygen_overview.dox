@@ -1,18 +1,16 @@
-/*! \page deskup_overview DeskUp — Internal Architecture
-
-# DeskUp — Internal Architecture and Flow
+# DeskUp  Internal Architecture and Flow
 
 DeskUp is organized into three main layers:
 
 - **Frontend**: high-level orchestration of window and workspace operations.
 - **Core**: backend initialization and management logic.
-- **Backend**: platform-specific implementations for Windows and (future) X11.
+- **Backend**: platform-specific implementations for Windows
 
 This page mirrors the GitHub README but adds Doxygen cross-references for symbols.
 
 ---
 
-## 1. Initialization — Choosing and bootstrapping a backend
+## 1. Initialization  Choosing and bootstrapping a backend
 
 When DeskUp starts, the application calls **\ref DU_Init**
 (declared in [`source/desk_up_backend_interface_backend/window_core.h`](./desk_up_backend_interface_backend/window_core.h)
@@ -25,28 +23,28 @@ and implemented in [`source/desk_up_backend_interface_backend/window_core.cc`](.
      [`source/desk_up_backend_interface_backend/window_backends/desk_up_win/desk_up_win.h`](./desk_up_backend_interface_backend/window_backends/desk_up_win/desk_up_win.h).
 
 2. For each backend, it checks availability via
-   `DeskUpWindowBootStrap::isAvailable()` → **\ref WIN_isAvailable**.
+   `DeskUpWindowBootStrap::isAvailable()`  **\ref WIN_isAvailable**.
 
 3. Once it finds a working backend, it:
-   - Creates the device with `DeskUpWindowBootStrap::createDevice()` → **\ref WIN_CreateDevice**.
-   - Retrieves the base folder with `DeskUpWindowDevice::getDeskUpPath()` → **\ref WIN_getDeskUpPath**.
+   - Creates the device with `DeskUpWindowBootStrap::createDevice()`  **\ref WIN_CreateDevice**.
+   - Retrieves the base folder with `DeskUpWindowDevice::getDeskUpPath()`  **\ref WIN_getDeskUpPath**.
    - Sets the global variables:
-     - **DESKUPDIR** — base workspace directory.
-     - **current_window_backend** — active backend device.
+     - **DESKUPDIR**  base workspace directory.
+     - **current_window_backend**  active backend device.
 
 If initialization succeeds, \ref DU_Init logs the connected backend and returns `1`.
 If none is available, it returns `0`.
 
 ---
 
-## 2. High-level operations — DeskUpWindow façade
+## 2. High-level operations  DeskUpWindow faade
 
 The structure \ref DeskUpWindow is defined in
 [`source/desk_up_backend_interface/desk_up_backend_interface.h`](./desk_up_backend_interface/desk_up_backend_interface.h)
 and implemented in
 [`source/desk_up_backend_interface/desk_up_backend_interface.cc`](./desk_up_backend_interface/desk_up_backend_interface.cc).
 
-It acts as the **frontend façade**, coordinating workspace-level operations with the backend.
+It acts as the **frontend faade**, coordinating workspace-level operations with the backend.
 
 ### `DeskUpWindow::saveAllWindowsLocal(std::string workspaceName)`
 1. Builds `<DESKUPDIR>/<workspaceName>` using the global path set by \ref DU_Init.
@@ -60,7 +58,7 @@ If any backend or I/O operation fails, the function catches the exception and re
 
 ---
 
-## 3. Window representation — The `windowDesc` structure
+## 3. Window representation  The `windowDesc` structure
 
 Defined in [`source/desk_up_backend_interface_backend/window_desc/window_desc.h`](./desk_up_backend_interface_backend/window_desc/window_desc.h)
 and implemented in [`source/desk_up_backend_interface_backend/window_desc/window_desc.cc`](./desk_up_backend_interface_backend/window_desc/window_desc.cc).
@@ -68,9 +66,9 @@ and implemented in [`source/desk_up_backend_interface_backend/window_desc/window
 Each \ref windowDesc instance represents a window in an abstract, cross-platform way.
 
 **Fields:**
-- `name` — window or executable name.
-- `x`, `y`, `w`, `h` — position and size.
-- `pathToExec` — absolute path to the owning executable.
+- `name`  window or executable name.
+- `x`, `y`, `w`, `h`  position and size.
+- `pathToExec`  absolute path to the owning executable.
 
 **Behavior:**
 - \ref windowDesc::saveTo writes the above fields as plain text.
@@ -79,7 +77,7 @@ Each \ref windowDesc instance represents a window in an abstract, cross-platform
 
 ---
 
-## 4. Backend implementation — Windows
+## 4. Backend implementation  Windows
 
 The Windows backend lives in
 [`source/desk_up_backend_interface_backend/window_backends/desk_up_win/desk_up_win.h`](./desk_up_backend_interface_backend/window_backends/desk_up_win/desk_up_win.h)
@@ -104,9 +102,9 @@ DeskUpWindowBootStrap winWindowDevice = {
 \ref WIN_getAllWindows calls `EnumDesktopWindows`, which triggers a callback to:
 1. Skip invisible or zero-sized windows.
 2. Populate a \ref windowDesc using:
-   - \ref WIN_getWindowXPos, \ref WIN_getWindowYPos, \ref WIN_getWindowWidth, \ref WIN_getWindowHeight → `GetWindowInfo`.
-   - \ref WIN_getPathFromWindow → process path via
-     `GetWindowThreadProcessId` → `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)` → `QueryFullProcessImageNameW`.
+   - \ref WIN_getWindowXPos, \ref WIN_getWindowYPos, \ref WIN_getWindowWidth, \ref WIN_getWindowHeight  `GetWindowInfo`.
+   - \ref WIN_getPathFromWindow  process path via
+     `GetWindowThreadProcessId`  `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)`  `QueryFullProcessImageNameW`.
 3. Append each valid record to a `std::vector<windowDesc>`.
 
 ### Workspace path resolution
@@ -140,14 +138,14 @@ DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
 
 ## 6. File map (as in the repository)
 
-- `source/desk_up_backend_interface/desk_up_backend_interface.h` / `.cc` — frontend orchestration (uses backend).
-- `source/desk_up_backend_interface_backend/window_core.h` / `.cc` — backend initialization (DU_Init) and global state.
-- `source/desk_up_backend_interface_backend/window_backends/desk_up_win/desk_up_win.h` / `.cc` — Windows-specific backend.
-- `source/desk_up_backend_interface_backend/window_desc/window_desc.h` / `.cc` — window record + persistence.
-- `source/desk_up_backend_interface_backend/backend_utils.cc` — backend helpers.
-- `source/desk_up_backend_interface_backend/desk_up_backend_interface_device.h`, `desk_up_backend_interface_bootstrap.h` — device/bootstrap interfaces.
-- `source/desk_up/`, `source/desk_up/` — additional higher-level modules.
-- `source/main.cc` — entry point.
+- `source/desk_up_backend_interface/desk_up_backend_interface.h` / `.cc`  frontend orchestration (uses backend).
+- `source/desk_up_backend_interface_backend/window_core.h` / `.cc`  backend initialization (DU_Init) and global state.
+- `source/desk_up_backend_interface_backend/window_backends/desk_up_win/desk_up_win.h` / `.cc`  Windows-specific backend.
+- `source/desk_up_backend_interface_backend/window_desc/window_desc.h` / `.cc`  window record + persistence.
+- `source/desk_up_backend_interface_backend/backend_utils.cc`  backend helpers.
+- `source/desk_up_backend_interface_backend/desk_up_backend_interface_device.h`, `desk_up_backend_interface_bootstrap.h`  device/bootstrap interfaces.
+- `source/desk_up/`, `source/desk_up/`  additional higher-level modules.
+- `source/main.cc`  entry point.
 
 ---
 
@@ -156,7 +154,7 @@ DeskUpWindow::saveAllWindowsLocal("WorkspaceName")
 The folder
 [`source/desk_up_backend_interface_backend/window_backends/desk_up_x11`](./desk_up_backend_interface_backend/window_backends/desk_up_x11)
 scaffolds a future **X11/Linux backend**. Adding a new backend requires a new \ref DeskUpWindowBootStrap with:
-- `isAvailable()` — to detect platform support.
-- `createDevice()` — to provide the correct function pointers.
+- `isAvailable()`  to detect platform support.
+- `createDevice()`  to provide the correct function pointers.
 
 */

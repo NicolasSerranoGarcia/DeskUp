@@ -28,22 +28,22 @@ and implemented in [`source/desk_up_window_backend/window_core.cc`](./desk_up_wi
    - Creates the device with `DeskUpWindowBootStrap::createDevice()` (Windows maps to `WIN_CreateDevice`).
    - Retrieves the base folder with `DeskUpWindowDevice::getDeskUpPath()` (Windows maps to `WIN_getDeskUpPath`).
    - Sets the global variables:
-     - **DESKUPDIR** — base workspace directory.
-     - **current_window_backend** — active backend device.
+     - **DESKUPDIR**  base workspace directory.
+     - **current_window_backend**  active backend device.
 
 If initialization succeeds, `DU_Init()` logs the connected backend and returns `1`.
 If none is available, it returns `0`.
 
 ---
 
-## 2️. High-level operations — DeskUpBackendInterface façade
+## 2. High-level operations  DeskUpBackendInterface facade
 
 `DeskUpBackendInterface` is defined in
 [`source/desk_up_backend_interface/desk_up_backend_interface.h`](./desk_up_backend_interface/desk_up_backend_interface.h)
 and implemented in
 [`source/desk_up_backend_interface/desk_up_backend_interface.cc`](./desk_up_backend_interface/desk_up_backend_interface.cc).
 
-This class acts as the **frontend façade**, coordinating workspace-level operations with the backend.
+This class acts as the **frontend facade**, coordinating workspace-level operations with the backend.
 
 ### `DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName)`
 1. Builds `<DESKUPDIR>/<workspaceName>` using the global path set by `DU_Init()`.
@@ -57,7 +57,7 @@ If any backend or I/O operation fails, the function catches the exception and re
 
 ---
 
-## 3️. Window representation — The `windowDesc` structure
+## 3. Window representation  The `windowDesc` structure
 
 Defined in [`source/desk_up_window_backend/window_desc/window_desc.h`](./desk_up_window_backend/window_desc/window_desc.h)
 and implemented in [`source/desk_up_window_backend/window_desc/window_desc.cc`](./desk_up_window_backend/window_desc/window_desc.cc).
@@ -65,9 +65,9 @@ and implemented in [`source/desk_up_window_backend/window_desc/window_desc.cc`](
 Each `windowDesc` instance represents a window in an abstract, cross-platform way.
 
 **Fields:**
-- `name` — window or executable name.
-- `x`, `y`, `w`, `h` — position and size.
-- `pathToExec` — absolute path to the owning executable.
+- `name`  window or executable name.
+- `x`, `y`, `w`, `h`  position and size.
+- `pathToExec`  absolute path to the owning executable.
 
 **Behavior:**
 - `saveTo(path)` writes the above fields as plain text.
@@ -76,7 +76,7 @@ Each `windowDesc` instance represents a window in an abstract, cross-platform wa
 
 ---
 
-## 4. Backend implementation — Windows
+## 4. Backend implementation  Windows
 
 The Windows backend lives in
 [`source/desk_up_window_backend/window_backends/desk_up_win/desk_up_win.h`](./desk_up_window_backend/window_backends/desk_up_win/desk_up_win.h)
@@ -104,9 +104,9 @@ All the common functions necessary for any platform to make DeskUp work. If ther
 `WIN_getAllWindows()` calls `EnumDesktopWindows`, which triggers a callback to:
 1. Skip invisible or zero-sized windows.
 2. Populate a `windowDesc` using:
-   - `WIN_getWindowXPos`, `WIN_getWindowYPos`, `WIN_getWindowWidth`, `WIN_getWindowHeight` → `GetWindowInfo`.
-   - `WIN_getPathFromWindow` → process path via
-     `GetWindowThreadProcessId` → `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)` → `QueryFullProcessImageNameW`.
+   - `WIN_getWindowXPos`, `WIN_getWindowYPos`, `WIN_getWindowWidth`, `WIN_getWindowHeight`  `GetWindowInfo`.
+   - `WIN_getPathFromWindow`  process path via
+     `GetWindowThreadProcessId`  `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION)`  `QueryFullProcessImageNameW`.
 3. Append each valid record to a `std::vector<windowDesc>`.
 
 ### Workspace path resolution
@@ -117,7 +117,7 @@ All the common functions necessary for any platform to make DeskUp work. If ther
 
 ---
 
-## 5️. How everything connects — Flow summary
+## 5. How everything connects  Flow summary
 
 ```text
 DU_Init()
@@ -138,12 +138,12 @@ DeskUpBackendInterface::saveAllWindowsLocal("WorkspaceName")
 
 ---
 
-## 6️. File map
+## 6. File map
 
 | Layer | Path | Description |
 |-------|------|--------------|
 | **Frontend** | `source/desk_up/mainWindow.h` / `.cpp` | Qt GUI layer orchestrating workspace operations. |
-| **Core (Backend interface)** | `source/desk_up_backend_interface/desk_up_backend_interface.h` / `.cc` | Backend communication façade (`DeskUpBackendInterface`). |
+| **Core (Backend interface)** | `source/desk_up_backend_interface/desk_up_backend_interface.h` / `.cc` | Backend communication facade (`DeskUpBackendInterface`). |
 | **Core (Initialization)** | `source/desk_up_window_backend/window_core.h` / `.cc` | Backend initialization (`DU_Init`) and global state. |
 | **Backend (Windows)** | `source/desk_up_window_backend/window_backends/desk_up_win/desk_up_win.h` / `.cc` | Implements Windows-specific logic. |
 | **Window record** | `source/desk_up_window_backend/window_desc/window_desc.h` / `.cc` | Data structure representing windows. |
@@ -154,12 +154,12 @@ DeskUpBackendInterface::saveAllWindowsLocal("WorkspaceName")
 
 ---
 
-## 7️. Extensibility
+## 7. Extensibility
 
-DeskUp’s modular design allows adding new platforms easily.
+DeskUps modular design allows adding new platforms easily.
 
 Adding a new backend only requires implementing a `DeskUpWindowBootStrap` with:
-- `isAvailable()` → to detect platform support.
-- `createDevice()` → to provide the correct function pointers.
+- `isAvailable()`  to detect platform support.
+- `createDevice()`  to provide the correct function pointers.
 
 It also facilitates creating tests for the backend, as one can create a testing device, which includes predefined values for each function. Multiple devices can be connected, so as to test multiple functionalities.
