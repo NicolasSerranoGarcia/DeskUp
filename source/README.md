@@ -45,7 +45,7 @@ and implemented in
 
 This class acts as the **frontend façade**, coordinating workspace-level operations with the backend.
 
-### 🔹 `DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName)`
+### `DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName)`
 1. Builds `<DESKUPDIR>/<workspaceName>` using the global path set by `DU_Init()`.
 2. Ensures the directory exists (via `std::filesystem`).
 3. Requests the active backend to enumerate all windows through
