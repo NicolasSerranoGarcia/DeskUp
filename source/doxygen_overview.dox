@@ -1,3 +1,5 @@
+/*! \page deskup_overview DeskUp  Internal Architecture
+
 # DeskUp  Internal Architecture and Flow
 
 DeskUp is organized into three main layers:

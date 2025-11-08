@@ -13,7 +13,7 @@ if(GENERATE_DOCS)
     # This allows us to get the path to doxygen-awesome.css
     FetchContent_GetProperties(doxygen-awesome-css SOURCE_DIR AWESOME_CSS_DIR)
 
-    message(STATUS "AWESOME_CSS_DIR = ${AWESOME_CSS_DIR}")
+    message(STATUS "(DU) AWESOME_CSS_DIR = ${AWESOME_CSS_DIR}")
 
     # Generate the Doxyfile
     set(DOXYFILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
