@@ -143,7 +143,7 @@ including the qt dlls.
 
 ##  5. Add testing for the backend and benchmarks for the app
 
-[] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
+[] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats... Try also looking into testing the device itself, specially windows.
 
 ## 7. Create DeskUp Error system 
 
