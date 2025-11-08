@@ -27,7 +27,6 @@ jobs:
             mingw-w64-x86_64-qt6
             mingw-w64-x86_64-qt6-base
             mingw-w64-x86_64-qt6-tools
-
       - name: Configure and build DeskUp
         run: |
           mkdir -p build
@@ -44,28 +43,23 @@ jobs:
           cp /mingw64/bin/libgcc_s_seh-1.dll build_inno/
           cp /mingw64/bin/libstdc++-6.dll build_inno/
           cp /mingw64/bin/libwinpthread-1.dll build_inno/
-
           cp /mingw64/bin/libicuin77.dll build_inno/
           cp /mingw64/bin/libicuuc77.dll build_inno/
           cp /mingw64/bin/libicudt77.dll build_inno/
-
           cp /mingw64/bin/zlib1.dll build_inno/
           cp /mingw64/bin/libzstd.dll build_inno/
           cp /mingw64/bin/libbz2-1.dll build_inno/
           cp /mingw64/bin/libbrotlidec.dll build_inno/
           cp /mingw64/bin/libbrotlicommon.dll build_inno/
-
           cp /mingw64/bin/libfreetype-6.dll build_inno/
           cp /mingw64/bin/libharfbuzz-0.dll build_inno/
           cp /mingw64/bin/libpng16-16.dll build_inno/
           cp /mingw64/bin/libgraphite2.dll build_inno/
-
           cp /mingw64/bin/libpcre2-16-0.dll build_inno/
           cp /mingw64/bin/libpcre2-8-0.dll build_inno/
           cp /mingw64/bin/libb2-1.dll build_inno/
           cp /mingw64/bin/libdouble-conversion.dll build_inno/
           cp /mingw64/bin/libmd4c.dll build_inno/
-
           cp /mingw64/bin/libglib-2.0-0.dll build_inno/
           cp /mingw64/bin/libintl-8.dll build_inno/
           cp /mingw64/bin/libiconv-2.dll build_inno/
@@ -117,7 +111,6 @@ jobs:
               tag_name: context.ref.replace('refs/tags/', '')
             });
             core.setOutput('notes', data.body);
-
       - name: Publish release with asset
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
@@ -126,15 +119,11 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             ### Windows Security Notice
-
             When running the DeskUp **installer** (`DeskUp-installer-*.exe`), Windows may display a **"Windows protected your PC"** warning.  
             This is expected and happens because the executable is not digitally signed (I don't have the resources to purchase a digital certificate :) ).
-
             This application is completely safe to use and does **not** contain any malware.  
             The warning appears simply because the installer is unsigned and new.
-
             #### How to install DeskUp on Windows
-
             1. Download the `.exe` installer from the **Assets** section below.
             2. Double-click it to start the setup process.
             3. If you see the blue *"Windows protected your PC"* screen:
@@ -142,16 +131,12 @@ jobs:
                - Then click on **"Run anyway"**
             4. Follow the installation wizard — DeskUp will be installed under **Program Files**.
             5. After installation, you can find DeskUp in your **Start Menu** or on your **Desktop** (if you selected that option).
-
             <p align="center">
               <img width="367" height="323" alt="Windows security screen" src="./assets/windows-security-screen.png" />
             </p>
-
             > **Note:** You do **not** need to install any additional dependencies.  
             > The installer already includes all required Qt libraries.
-
             **Release notes**
-
             ${{ steps.notes.outputs.notes }}
           files: |
             dist/**/*.exe

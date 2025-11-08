@@ -62,6 +62,9 @@ jobs:
 
         shell: msys2 {0}
 
+      - name: Add CNAME
+        run: echo "DeskUp-docs.nicolasserranogarcia.com" > build/docs/html/CNAME
+
       - name: Deploy documentation to GitHub Pages
         if: startsWith(github.ref, 'refs/tags/')
         uses: peaceiris/actions-gh-pages@v3
