@@ -18,6 +18,7 @@ pacman -S mingw-w64-x86_64-cmake
 pacman -S mingw-w64-x86_64-qt6
 pacman -S mingw-w64-x86_64-qt6-base
 pacman -S mingw-w64-x86_64-qt6-tools
+pacman -S mingw-w64-x86_64-doxygen
 pacman -S --needed mingw-w64-x86_64-graphviz
 pacman -Syu
 pacman -S mingw-w64-x86_64-texlive-bin \
