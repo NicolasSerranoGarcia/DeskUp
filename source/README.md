@@ -10,7 +10,7 @@ This document is here for anyone to have a clear understanding of how DeskUp ope
 
 ---
 
-## 1️. Initialization — Choosing and bootstrapping a backend
+# 1. Initialization - Choosing and bootstrapping a backend
 
 When DeskUp starts, the application calls `DU_Init`
 (declared in [`source/desk_up_window_backend/window_core.h`](./desk_up_window_backend/window_core.h)
