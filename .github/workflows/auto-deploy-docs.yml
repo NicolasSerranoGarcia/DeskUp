@@ -62,12 +62,6 @@ jobs:
 
         shell: msys2 {0}
 
-      - name: Add CNAME
-        run: |
-          mkdir -p build/docs/html
-          echo "deskup-docs.nicolasserranogarcia.com" > build/docs/html/CNAME
-        shell: msys2 {0}
-
       - name: Deploy documentation to GitHub Pages
         if: startsWith(github.ref, 'refs/tags/')
         uses: peaceiris/actions-gh-pages@v3
@@ -75,4 +69,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/docs/html
           publish_branch: gh-pages
+          cname: deskup-docs.nicolasserranogarcia.com
           force_orphan: true
