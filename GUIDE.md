@@ -213,9 +213,7 @@ cp /mingw64/bin/libgcc_s_seh-1.dll build_inno/
 cp /mingw64/bin/libstdc++-6.dll build_inno/
 cp /mingw64/bin/libwinpthread-1.dll build_inno/
 
-cp /mingw64/bin/libicuin77.dll build_inno/
-cp /mingw64/bin/libicuuc77.dll build_inno/
-cp /mingw64/bin/libicudt77.dll build_inno/
+cp /mingw64/bin/libicuin*.dll
 
 cp /mingw64/bin/zlib1.dll build_inno/
 cp /mingw64/bin/libzstd.dll build_inno/
