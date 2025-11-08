@@ -137,6 +137,10 @@ including the qt dlls.
 
 [] <5> The CI workflow might need to be updated when you start generating the tests
 
+[] (optional for this task) include the option to download the pdf 
+
+[] (optional for this task) downloads page using javascript and fetching from the releases
+
 ##  5. Add testing for the backend and benchmarks for the app
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats...
@@ -167,3 +171,5 @@ when executing it in the terminal, you should change the command depending on th
 [] using the schema photo, make a refactor, and implement the basic features planned
 
 # MILESTONE 1.0.0 STABLE
+
+## 1. Maintenance, cleanup, implementation of features, boost product...
