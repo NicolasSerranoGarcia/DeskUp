@@ -26,7 +26,7 @@
 
 # Dependencies
 
-    target_link_libraries(desk_up_win_library PRIVATE
+    target_link_libraries(desk_up_win_library PUBLIC
         config_compiler_flags_library
         desk_up_win32_library
 

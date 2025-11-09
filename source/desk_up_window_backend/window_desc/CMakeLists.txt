@@ -15,6 +15,6 @@
 
 # Dependencies
 
-    target_link_libraries(window_desc_library PRIVATE 
+    target_link_libraries(window_desc_library PUBLIC 
         config_compiler_flags_library
     )

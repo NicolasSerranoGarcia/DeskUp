@@ -6,11 +6,7 @@ if(BUILD_TESTS)
     
     message(STATUS "(DU) Building tests is ENABLED")
     enable_testing()
-    #add support for tests. Inside the CMakeLists.txt
-    #inside test/, there are all the test modules.
-    #using this structure, different flags can be defined
-    #to only import certain tests to be run.
-    
+
     #---add google tests with CPM---#
     
     include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
@@ -23,9 +19,18 @@ if(BUILD_TESTS)
         OPTIONS "BENCHMARK_DOWNLOAD_DEPENDENCIES=ON"
     )
 
-    add_subdirectory(${CMAKE_SOURCE_DIR}/test)
+    find_package(Threads REQUIRED)
 
-    
+    add_library(google_test_library)
+
+    target_link_libraries(google_test_library INTERFACE 
+        Threads::Threads
+        gtest_main
+    )
+
+    include(GoogleTest)
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/test)
 
 else()
     message(STATUS "(DU) Building tests is DISABLED")

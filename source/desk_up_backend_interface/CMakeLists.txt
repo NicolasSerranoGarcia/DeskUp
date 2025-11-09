@@ -15,7 +15,7 @@
 
 # Include path
 
-    target_include_directories(desk_up_backend_interface_library PRIVATE
+    target_include_directories(desk_up_backend_interface_library PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/source/desk_up_error
         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_core
@@ -23,7 +23,7 @@
 
 # Dependencies
 
-    target_link_libraries(desk_up_backend_interface_library PRIVATE
+    target_link_libraries(desk_up_backend_interface_library PUBLIC
         config_compiler_flags_library
         
         desk_up_error_library

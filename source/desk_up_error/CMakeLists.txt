@@ -27,7 +27,7 @@
 
 # Dependencies
 
-    target_link_libraries(desk_up_error_library PRIVATE 
+    target_link_libraries(desk_up_error_library PUBLIC 
         config_compiler_flags_library
 
         window_desc_library

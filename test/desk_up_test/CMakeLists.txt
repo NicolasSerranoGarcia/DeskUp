@@ -1,5 +1,25 @@
-#pack all the test executables inside a discoverable project
-#This file is just like saying "Here are all the tests (ready to be run)
-#that belong to my_class". When including the directory where this CMakeLists.txt
-#is, all the executables will be available
-add_subdirectory(desk_up_test_loading)
+# ./test/desk_up_test/CMakeLists.txt
+
+# desk_up_test
+
+    add_executable(desk_up_test desk_up_test.cc)
+
+# Include path
+
+    target_include_directories(desk_up_test PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_SOURCE_DIR}/source/desk_up_frontend
+    )
+
+# Dependencies
+
+    target_link_libraries(desk_up_test PUBLIC
+        config_compiler_flags_library
+        google_test_library
+
+        desk_up_frontend_library
+    )
+
+# Add to the test suite
+
+    gtest_discover_tests(desk_up_test)
