@@ -47,16 +47,16 @@ namespace DeskUp {
      *
      * @details
      * This enumeration provides a consistent way to classify errors by their
-     * impact and intended handling behavior.  
-     * 
-     * - **Fatal** → unrecoverable; execution must stop.  
-     * - **Error** → serious failure; operation aborted.  
-     * - **Warning** → non-critical issue; user notification recommended.  
-     * - **Retry** → recoverable error that may succeed upon retry.  
-     * - **Info** → informational message, not an error.  
-     * - **Debug** → debug-only diagnostic message.  
-     * - **Default** → unspecified severity.  
-     * - **None** → represents the absence of error.  
+     * impact and intended handling behavior.
+     *
+     * - **Fatal** → unrecoverable; execution must stop.
+     * - **Error** → serious failure; operation aborted.
+     * - **Warning** → non-critical issue; user notification recommended.
+     * - **Retry** → recoverable error that may succeed upon retry.
+     * - **Info** → informational message, not an error.
+     * - **Debug** → debug-only diagnostic message.
+     * - **Default** → unspecified severity.
+     * - **None** → represents the absence of error.
      *
      * @see DeskUp::Error
      * @version 0.2.1
@@ -220,7 +220,7 @@ namespace DeskUp {
          * @date 2025
          */
         static Error fromLastWinError(std::string_view context = "", std::optional<unsigned int> tries = std::nullopt);
-
+		
         #endif
 
         /**
