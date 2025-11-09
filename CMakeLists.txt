@@ -56,80 +56,50 @@
 # Executable
 
     # --- DeskUp ---
-    add_executable(${PROJECT_NAME} WIN32 source/desk_up/main.cpp)
+    
+    add_executable(${PROJECT_NAME} WIN32 source/desk_up_frontend/main.cpp)
 
     # --- Resources file (currently just for the windows icon) ---
+
     enable_language(RC)
     target_sources(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/resources.rc)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE config_compiler_flags_library)
 
     # --- global preprocessor flag available when coding ---
+
     add_compile_definitions(DESKUP_VERSION="${PROJECT_VERSION}")
 
 # qt
 
-    # --- fetch qt ---
+    include(${CMAKE_SOURCE_DIR}/cmake/qt.cmake)
 
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTOUIC ON)
-    set(CMAKE_AUTORCC ON)
-
-    find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
-    
-    # --- Create an interface library representing qt. Any sub-library that uses qt should link against this one --- 
-
-    add_library(desk_up_qt_library INTERFACE)
-    target_link_libraries(desk_up_qt_library INTERFACE Qt6::Core Qt6::Widgets)
-    
     # --- Link it with the executable ---
 
     target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_qt_library)
 
-    # --- Acknowledge ---
-
-    get_target_property(QT_CORE_INCLUDE_DIRS Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(QT_WIDGETS_INCLUDE_DIRS Qt6::Widgets INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(QT_CORE_LIBS Qt6::Core LOCATION)
-    get_target_property(QT_WIDGETS_LIBS Qt6::Widgets LOCATION)
-
-    message(STATUS "(DU) Qt6 Core include dirs: ${QT_CORE_INCLUDE_DIRS}")
-    message(STATUS "(DU) Qt6 Widgets include dirs: ${QT_WIDGETS_INCLUDE_DIRS}")
-    message(STATUS "(DU) Qt6 Core lib: ${QT_CORE_LIBS}")
-    message(STATUS "(DU) Qt6 Widgets lib: ${QT_WIDGETS_LIBS}")
-
 # Windows API 
 
-    # --- Create an interface library representing win32. Any sub-library that uses win32 should link against this one --- 
-
-        add_library(desk_up_win32_library INTERFACE)
-
-        target_compile_definitions(desk_up_win32_library INTERFACE
-            WIN32_LEAN_AND_MEAN
-            NOMINMAX
-            _UNICODE
-        )
-
-        target_link_libraries(desk_up_win32_library INTERFACE
-            shlwapi
-            version
-            ole32
-            oleaut32
-            uuid
-            advapi32
-            comdlg32
-            shell32
-            comctl32
-            winmm
-            ws2_32
-            gdi32
-            user32
-            kernel32
-        )
+    include(${CMAKE_SOURCE_DIR}/cmake/win32.cmake)
 
     # --- Link it with the executable ---
 
     target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_win32_library)
+
+# Sub-libraries
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error_gui_converter)
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_backend_interface) # Includes the backend libraries
+    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_frontend)
+
+# Link project libraries
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+        desk_up_backend_interface_library
+        desk_up_frontend_library
+    )
 
 # Auxiliary modules
 
@@ -138,21 +108,6 @@
     include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
     include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
     include(${CMAKE_SOURCE_DIR}/cmake/doxygen.cmake)
-
-# Sub-libraries
-
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_error_gui_converter)
-
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_backend_interface) # Includes the backend libraries
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up)
-
-# Link project libraries
-
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-        desk_up_backend_interface_library
-        desk_up_frontend_library
-    )
 
 # Set build type
 
