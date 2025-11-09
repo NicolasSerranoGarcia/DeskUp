@@ -2,6 +2,6 @@
 
 #include "mainWindow.h"
 
-TEST(DeskUpTest, test){
+TEST(DeskUpFrontendTest, test){
     int i = 2;
 }

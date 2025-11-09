@@ -1,5 +1,5 @@
 add_subdirectory(desk_up_error_test)
 add_subdirectory(desk_up_error_gui_converter_test)
-add_subdirectory(desk_up_backend_interface_test)
 add_subdirectory(desk_up_window_backend_test)
+add_subdirectory(desk_up_backend_interface_test)
 # add_subdirectory(desk_up_frontend_test)
