@@ -58,6 +58,24 @@ namespace fs = std::filesystem;
  * @see WIN_getAllOpenWindows()
  */
 struct windowDesc {
+
+	/**
+	 * @brief Constructs a window descriptor with default parameters (integers to 0 and strings empty)
+	 */
+	windowDesc();
+
+	/**
+	 * @brief Constructs a window descriptor with explicit name, geometry, and executable path.
+	 * @param n window name.
+	 * @param x X coordinate (top-left) in pixels.
+	 * @param y Y coordinate (top-left) in pixels.
+	 * @param w Width in pixels.
+	 * @param h Height in pixels.
+	 * @param p Absolute path to the owning executable.
+	 */
+	windowDesc(std::string n, int xPos, int yPos, int width, int height, std::string p) : name(n), x(xPos), y(yPos), w(width), h(height), pathToExec(p) {}
+
+
     /**
      * @brief The window name.
      * @details Usually derived from the executable name or window title.
@@ -94,8 +112,8 @@ struct windowDesc {
      *
      * @details
      * Writes the window’s executable path and geometry (x, y, width, height)
-     * to the specified file, each on a new line.  
-     *  
+     * to the specified file, each on a new line.
+     *
      * This function returns a `SaveErrorCode` value to indicate whether the operation
      * succeeded or failed, allowing fine-grained error handling. Positive values
      * indicate success; negative values specify different failure modes.
@@ -109,13 +127,13 @@ struct windowDesc {
      *
      * @param path Absolute or relative path to the file where data will be stored.
      * @return One of the following `SaveErrorCode` values:
-     *   - `SAVE_SUCCESS` (1): File successfully written.  
-     *   - `ERR_EMPTY_PATH` (-1): The path parameter is empty.  
-     *   - `ERR_FILE_NOT_OPEN` (-2): File could not be opened.  
-     *   - `ERR_NO_PERMISSION` (-3): Insufficient permissions to write the file.  
-     *   - `ERR_FILE_NOT_FOUND` (-4): Parent directory missing or invalid path.  
-     *   - `ERR_DISK_FULL` (-5): Disk out of space.  
-     *   - `ERR_UNKNOWN` (-6): Unexpected write failure.  
+     *   - `SAVE_SUCCESS` (1): File successfully written.
+     *   - `ERR_EMPTY_PATH` (-1): The path parameter is empty.
+     *   - `ERR_FILE_NOT_OPEN` (-2): File could not be opened.
+     *   - `ERR_NO_PERMISSION` (-3): Insufficient permissions to write the file.
+     *   - `ERR_FILE_NOT_FOUND` (-4): Parent directory missing or invalid path.
+     *   - `ERR_DISK_FULL` (-5): Disk out of space.
+     *   - `ERR_UNKNOWN` (-6): Unexpected write failure.
      *
      * @note The function performs basic validation and never throws exceptions.
      *       Callers are expected to check the return value and propagate or log
