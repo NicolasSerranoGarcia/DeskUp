@@ -8,7 +8,7 @@
 
 # Include path
 
-    target_include_directories(desk_up_frontend_library PRIVATE
+    target_include_directories(desk_up_frontend_library PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/source/desk_up_backend_interface
         ${CMAKE_SOURCE_DIR}/source/desk_up_error

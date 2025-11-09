@@ -1,0 +1,2 @@
+inside this directory maybe mirror the source structure, or instead just add all the tests (regardless if it is from the window_core or from the window_desc). 
+Choose in the future
