@@ -17,5 +17,10 @@
 
     target_link_libraries(backend_utils_library PUBLIC
         config_compiler_flags_library
-        desk_up_win32_library # This file should not need this
     )
+
+    if(WIN32)
+        target_link_libraries(backend_utils_library PUBLIC
+            desk_up_win32_library
+        )
+    endif()

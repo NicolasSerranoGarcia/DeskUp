@@ -30,7 +30,8 @@
 
 #include <string>
 
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
 
 /**
  * @brief A function to convert from any wide char type to UTF-8. Used as a helper for getSystemErrorMessageWindows()
@@ -52,6 +53,8 @@ std::string WideStringToUTF8(LPCWCH wideString);
  * @date 2025
  */
 std::string getSystemErrorMessageWindows(DWORD error, const std::string_view& contextMessage = ""); 
+
+#endif
 
 /**
  * @brief A function to convert a string to its lowercase version. Note that it does not alter the original string

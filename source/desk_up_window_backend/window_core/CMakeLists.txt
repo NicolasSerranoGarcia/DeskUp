@@ -14,9 +14,11 @@
         ${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/desk_up_window_bootstrap.h
     )
 
-    add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_backends/desk_up_win
-        ${CMAKE_BINARY_DIR}/source/desk_up_window_backend/window_backends/desk_up_win
-    )
+    if(WIN32)
+        add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_window_backend/window_backends/desk_up_win
+            ${CMAKE_BINARY_DIR}/source/desk_up_window_backend/window_backends/desk_up_win
+        )
+    endif()
 
 # Include path
 
@@ -30,5 +32,10 @@
 
     target_link_libraries(window_core_library PUBLIC
         config_compiler_flags_library
-        desk_up_win_library #This file should not need this
-    )
+        )
+
+    if(WIN32)
+        target_link_libraries(window_core_library PUBLIC
+            desk_up_win_library
+        )
+    endif()

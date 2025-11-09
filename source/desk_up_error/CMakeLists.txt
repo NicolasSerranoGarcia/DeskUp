@@ -34,3 +34,9 @@
         backend_utils_library
     )
 
+    if(WIN32)
+        target_link_libraries(desk_up_error_library PUBLIC 
+            desk_up_win32_library
+        )
+    endif()
+

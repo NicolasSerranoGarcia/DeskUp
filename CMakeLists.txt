@@ -80,11 +80,15 @@
 
 # Windows API 
 
-    include(${CMAKE_SOURCE_DIR}/cmake/win32.cmake)
+    if(WIN32)
 
-    # --- Link it with the executable ---
+        include(${CMAKE_SOURCE_DIR}/cmake/win32.cmake)
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_win32_library)
+        # --- Link it with the executable ---
+
+        target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_win32_library)
+        
+    endif()
 
 # Sub-libraries
 

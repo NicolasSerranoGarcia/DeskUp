@@ -32,7 +32,9 @@
 #include <stdexcept>
 #include <optional>
 #include <expected>
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
 
 #include "window_desc.h"
 #include "backend_utils.h"
@@ -187,6 +189,8 @@ namespace DeskUp {
         /// @brief Converts to `true` if this instance represents an actual error.
         explicit operator bool() const noexcept { return lvl != Level::None; }
 
+        #ifdef _WIN32
+
         /**
          * @brief Builds an error from a raw Windows error code.
          *
@@ -216,6 +220,8 @@ namespace DeskUp {
          * @date 2025
          */
         static Error fromLastWinError(std::string_view context = "", std::optional<unsigned int> tries = std::nullopt);
+
+        #endif
 
         /**
          * @brief Converts a `SaveErrorCode` (from `window_desc.cc`) into a structured error.
