@@ -1,26 +1,28 @@
+# ./cmake/benchmark.cmake
 
 if(BUILD_BENCHMARK)
     message(STATUS "(DU) Building benchmark is ENABLED")
-    #add support for tests. Inside the CMakeLists.txt
-    #inside test/, there are all the test modules.
-    #using this structure, different flags can be defined
-    #to only import certain tests to be run.
-    
 
-    #---Add google benchmark with CPM---#
+    # --- fetch google benchmarks
 
-    include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
+        include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
 
-    CPMAddPackage(
-        NAME benchmark
-        GITHUB_REPOSITORY google/benchmark
-        GIT_TAG v1.9.4
-        OPTIONS "BENCHMARK_ENABLE_TESTING OFF"
-    )
+        CPMAddPackage(
+            NAME benchmark
+            GITHUB_REPOSITORY google/benchmark
+            GIT_TAG v1.9.4
+            OPTIONS "BENCHMARK_ENABLE_TESTING OFF"
+        )
 
-    add_subdirectory(${CMAKE_SOURCE_DIR}/benchmark)
+    # --- Create an interface library for google_benchmarks dependencies ---
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error")
+        add_library(google_benchmark_library INTERFACE)
+
+        target_link_libraries(google_benchmark_library INTERFACE benchmark::benchmark)
+
+    # --- Include all the benchmarks
+
+        add_subdirectory(${CMAKE_SOURCE_DIR}/benchmark)
 
 else()
     message(STATUS "(DU) Building benchmark is DISABLED")
