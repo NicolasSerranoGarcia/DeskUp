@@ -60,9 +60,9 @@ namespace DeskUp::UI {
          */
         static int showError(const DeskUp::Error& err);
 
-    private:
         static QString getUserMessage(const DeskUp::Error& err);
         static std::pair<QString, QMessageBox::Icon> mapLevel(Level lvl);
+
     };
 }
 
