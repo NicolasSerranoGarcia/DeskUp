@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <expected> 
+#include <expected>
 #include <shlobj.h>
 
 #include <tlhelp32.h>
@@ -25,7 +25,7 @@ static DeskUp::Status retryOp(F&& f, std::string_view ctx, int maxAttempts = 3, 
     for (int i = 0; i < maxAttempts; ++i) {
         if (f()){
             return {};
-        } 
+        }
         DeskUp::Error e = DeskUp::Error::fromLastWinError(ctx, i+1);
         if (e.isFatal()) {
             return std::unexpected(std::move(e));
@@ -55,7 +55,7 @@ bool WIN_isAvailable() noexcept {
     #ifdef _WIN32
         return true;
     #endif
-    
+
     return false;
 }
 
@@ -106,7 +106,7 @@ DeskUpWindowDevice WIN_CreateDevice(){
     device.closeProcessFromPath = WIN_closeProcessFromPath;
 
     device.internalData = (void *) new windowData();
-    
+
     return device;
 }
 
@@ -136,7 +136,7 @@ DeskUp::Result<std::string> WIN_getDeskUpPath(){
     }
 
     std::filesystem::path p = std::filesystem::path(base) / "DeskUp";
-    std::error_code ec; 
+    std::error_code ec;
     std::filesystem::create_directories(p, ec);
     return p.string();
 }
@@ -366,9 +366,9 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
     return windows;
 }
 
-static inline void stripChars(std::string& s){ 
-    if(!s.empty() && s.back() == '\r') 
-        s.pop_back(); 
+static inline void stripChars(std::string& s){
+    if(!s.empty() && s.back() == '\r')
+        s.pop_back();
 }
 
 DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::filesystem::path path) noexcept{
@@ -523,6 +523,14 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
         ));
     }
 
+	if(!fs::exists(path)){
+        return std::unexpected(DeskUp::Error(
+            DeskUp::Level::Error,
+            DeskUp::ErrType::FileNotFound,
+            0,
+            "WIN_loadProcessFromPath: invalid path passed, it does not exist"
+        ));
+	}
 
     SHELLEXECUTEINFO ShExecInfo{};
     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -677,7 +685,7 @@ static std::vector<HWND> WIN_GetTopLevelWindowsByPid(DWORD pid){
         DWORD wpid = 0;
         GetWindowThreadProcessId(hwnd, &wpid);
         if(wpid == c->pid /*the window is part of the current app*/ &&
-            GetWindow(hwnd, GW_OWNER) == nullptr /*The window does not have a father (top-level)*/ && 
+            GetWindow(hwnd, GW_OWNER) == nullptr /*The window does not have a father (top-level)*/ &&
             IsWindowVisible(hwnd) /*The window is visible*/)
         {
             c->out->push_back(hwnd);
@@ -742,4 +750,10 @@ DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const
     }
 
     return n;
+}
+
+void WIN_TEST_setHWND(DeskUpWindowDevice* _this, HWND hwnd) {
+    if (_this && _this->internalData) {
+        reinterpret_cast<windowData*>(_this->internalData)->hwnd = hwnd;
+    }
 }

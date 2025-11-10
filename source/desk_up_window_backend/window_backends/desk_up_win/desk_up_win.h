@@ -231,4 +231,12 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
  */
 DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
 
+/**
+ * @brief Test-only helper to set the internal HWND for the device.
+ * @param _this The device instance.
+ * @param hwnd The HWND to assign.
+ * @note Only available when DESKUP_ENABLE_WIN32_TEST_HOOKS is defined.
+ */
+void WIN_TEST_setHWND(DeskUpWindowDevice* _this, HWND hwnd);
+
 #endif

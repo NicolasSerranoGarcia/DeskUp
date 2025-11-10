@@ -7,7 +7,7 @@ if(BUILD_TESTS)
 
         include(CTest)
         enable_testing()
-    
+
     # --- Fetch google test
 
         include(${CMAKE_SOURCE_DIR}/cmake/CPM.cmake)
@@ -28,7 +28,7 @@ if(BUILD_TESTS)
 
         add_library(google_test_library INTERFACE)
 
-        target_link_libraries(google_test_library INTERFACE 
+        target_link_libraries(google_test_library INTERFACE
             Threads::Threads
             gtest_main
         )
