@@ -1,0 +1,59 @@
+:root {
+  --du-watermark: url("DeskUp-96x96.png");
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: center / 45vmax no-repeat var(--du-watermark);
+  opacity: 0.03;            /* subtle */
+  filter: grayscale(100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Keep content above the watermark */
+#doc-content, .contents, body > .PageDoc {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Hero ---- */
+.du-hero { text-align: center; margin: 2rem 0 1rem; }
+.du-hero h1 { margin: 0 0 .25rem 0; font-size: clamp(1.8rem, 2.2vw + 1rem, 3rem); }
+.du-sub { opacity: .8; margin: 0 auto 1rem auto; max-width: 60ch; }
+
+/* --- Buttons --- */
+.du-cta { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; margin-top: .75rem; }
+.du-btn {
+  display: inline-block; padding: .55rem .9rem; border-radius: 10px;
+  text-decoration: none; border: 1px solid rgba(127,127,127,.3);
+  background: rgba(127,127,127,.08);
+}
+.du-btn:hover { transform: translateY(-1px); }
+
+/* --- Cards --- */
+.du-grid {
+  display: grid; gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  margin: 1.5rem 0;
+}
+.du-card {
+  display: block; padding: 1rem 1.1rem; border-radius: 14px;
+  text-decoration: none; border: 1px solid rgba(127,127,127,.25);
+  background: rgba(127,127,127,.06);
+}
+.du-card h3 { margin: .15rem 0 .35rem 0; }
+.du-card p { margin: 0 0 .35rem 0; }
+.du-card code { opacity: .9; }
+.du-card:hover { transform: translateY(-1px); }
+
+/* --- Chips / inline links --- */
+.du-inline { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding-left: 1rem; }
+.du-chip {
+  display: inline-block; padding: .35rem .6rem; border-radius: 999px;
+  border: 1px solid rgba(127,127,127,.25); text-decoration: none;
+  background: rgba(127,127,127,.06); font-size: .95rem;
+}
+.du-link { text-decoration: none; border-bottom: 1px dashed currentColor; }
