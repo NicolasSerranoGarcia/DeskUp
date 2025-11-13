@@ -1,6 +1,6 @@
 > Conventions:
 > \# is used for BIG stages: going from MVP to stable should have a change in title.
-> \#\# is used for tasks. tasks can carry an arbitrary number of chores, marked with []. chores can also appear inside a single # title. 
+> \#\# is used for tasks. tasks can carry an arbitrary number of chores, marked with []. chores can also appear inside a single # title.
 > tasks that depend on other tasks being completed are marked with a <previous-task> tag at the beginning of the title
 
 
@@ -8,7 +8,7 @@
 
 [] Add previous documentation of Cmake-test for information about flags
 
-[X] Add support for tests using the CMake-test ones.  
+[X] Add support for tests using the CMake-test ones.
 
 [X] Adapt workflows from CMake-test to work: needs to download wxWidgets
 
@@ -20,7 +20,7 @@
 
 [X] Create icon images with distinct sizes
 
-[X] AppImage does not open when double clicking it 
+[X] AppImage does not open when double clicking it
 
 [] (Later in project) Add metadata to Appimage:
     [] The template for the file is already inside appImage.cmake -> sign the appImage, add screenshots...
@@ -51,10 +51,10 @@
 
 ## 1. Windowing backend structure:
 
-   [X] X11 and WIN32 API need to be used inside the project. 
-   
+   [X] X11 and WIN32 API need to be used inside the project.
+
    [X] File/Folder structure for support of the backend needs to be added, for CMake and for the code itself.
-   
+
    [X] create a simple diagram that explains the backend workflow using all the structs
 
 
@@ -110,9 +110,9 @@
 
 [] (optional for this task) show visually all the workspaces available and let user choose one
 
-[] (optional for this task) give an option to delete all the workspaces. 
+[] (optional for this task) give an option to delete all the workspaces.
 
-[] (optional for this task) add an option to run deskUp on windows startup 
+[] (optional for this task) add an option to run deskUp on windows startup
 
 [] (optional for this task) give an option to clear all the tabs when opening a workspace or not.
 
@@ -129,15 +129,15 @@
 ## <3> <1> 4. Implement CI/CD for windows again
 
 [X] automate the workflow of development. In local, work with dynamic qt. Then, in the github workflows, setup the CD to pack everything into inno setup,
-including the qt dlls. 
+including the qt dlls.
 
 [X] When creating the release, the executable does not get hooked. Te problem might be in the workspace where it gets put on (installer_artifacts)
 
-[X] also, you need to see how to pack all the dependencies of the own qt dll libraries. 
+[X] also, you need to see how to pack all the dependencies of the own qt dll libraries.
 
 [] <5> The CI workflow might need to be updated when you start generating the tests
 
-[] (optional for this task) include the option to download the pdf 
+[] (optional for this task) include the option to download the pdf
 
 [] (optional for this task) downloads page using javascript and fetching from the releases
 
@@ -145,7 +145,9 @@ including the qt dlls.
 
 [] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats... Try also looking into testing the device itself, specially windows.
 
-## 7. Create DeskUp Error system 
+[] Refactor the workflow of the backend operations. Make sure the errors are significant and that the functions d not fail unless there is a real error. Operations that retry should reflect it, consistency in param checking... With these changes, the already created tests should also be changed to reflect these changes, and they should adjust to the contracts of each function
+
+## 7. Create DeskUp Error system
 
 [X] finish migrating the backend to use DeskUp:: namespace for errors
 
@@ -158,7 +160,7 @@ including the qt dlls.
 [X] fix potential errors on the backend, document new code and do something with retry_op
 
 [] (optional for this task) when launching explorer, instead of executing the full path to the explorer exe, just launch the path to the saved folder.
-For this, you will need to save the path where the file explorer was when saving it, instead of the actual path to the executable 
+For this, you will need to save the path where the file explorer was when saving it, instead of the actual path to the executable
 
 ## 8. Support for browsers: Create an extension to gather information about the tabs and windows.
 
