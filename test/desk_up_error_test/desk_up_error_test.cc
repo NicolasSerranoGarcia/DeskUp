@@ -89,19 +89,19 @@ TEST(DeskUpErrorTest, whichWindowDefault){
     EXPECT_TRUE(wd.pathToExec.empty());
 }
 
-// isFatal() and isRetriable() positive and negative cases.
+// isFatal() and isRetryable() positive and negative cases.
 TEST(DeskUpErrorTest, isFatalAndRetriable){
     Error fatalErr(Level::Fatal, ErrType::Unexpected, 0, "fatal");
     EXPECT_TRUE(fatalErr.isFatal());
-    EXPECT_FALSE(fatalErr.isRetriable());
+    EXPECT_FALSE(fatalErr.isRetryable());
 
     Error retryErr(Level::Retry, ErrType::Io, 2, "retry");
-    EXPECT_TRUE(retryErr.isRetriable());
+    EXPECT_TRUE(retryErr.isRetryable());
     EXPECT_FALSE(retryErr.isFatal());
 
     Error normalErr(Level::Error, ErrType::Default, 0, "error");
     EXPECT_FALSE(normalErr.isFatal());
-    EXPECT_FALSE(normalErr.isRetriable());
+    EXPECT_FALSE(normalErr.isRetryable());
 }
 
 // bool operator should be false only for Level::None.

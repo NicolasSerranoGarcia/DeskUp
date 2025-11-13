@@ -39,12 +39,15 @@ DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view cont
         case ERROR_IO_DEVICE:
             lvl = Level::Retry; typ = ErrType::Io; break;
 
+		case ERROR_ACCESS_DISABLED_BY_POLICY:
+            lvl = Level::Skip; typ = ErrType::AccessDenied; break;
+
         case ERROR_FUNCTION_FAILED:
             lvl = Level::Retry; typ = ErrType::Unexpected; break;
 
         default:
             lvl = Level::Default; typ = ErrType::Default; break;
-    }	
+    }
 
     std::string msg = getSystemErrorMessageWindows(code, context);
     unsigned int t = tries.value_or(0);
@@ -90,6 +93,9 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
 
         case ERROR_FUNCTION_FAILED:
             lvl = Level::Retry; typ = ErrType::Unexpected; break;
+
+		case ERROR_INVALID_HANDLE:
+            lvl = Level::Skip; typ = ErrType::ConnectionRefused; break;
 
         default:
             lvl = Level::Default; typ = ErrType::Default; break;

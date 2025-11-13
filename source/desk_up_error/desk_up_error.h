@@ -184,8 +184,11 @@ namespace DeskUp {
         /// @brief Whether the error is fatal.
         bool isFatal() const noexcept { return lvl == Level::Fatal; }
 
+		/// @brief Whether the error is skipable.
+		bool isSkippable() const noexcept { return lvl == Level::Skip; }
+
         /// @brief Whether the error can be retried.
-        bool isRetriable() const noexcept { return lvl == Level::Retry; }
+        bool isRetryable() const noexcept { return lvl == Level::Retry; }
 
         /// @brief Converts to `true` if this instance represents an actual error.
         explicit operator bool() const noexcept { return lvl != Level::None; }

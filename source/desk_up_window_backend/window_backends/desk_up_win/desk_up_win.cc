@@ -28,7 +28,7 @@ static DeskUp::Status retryOp(F&& f, std::string_view ctx, unsigned int maxAttem
         }
 
         DeskUp::Error e = DeskUp::Error::fromLastWinError(ctx, i+1);
-        if (e.isFatal()) {
+        if (e.isFatal() || e.isSkippable()) {
             return std::unexpected(std::move(e));
         }
 
@@ -221,18 +221,18 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
     const auto* data = getWindowData(_this);
 
 	if(!data){
-		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowWidth|no_device"));
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowHeight|no_device"));
 	}
 
     if(!IsWindow(data->hwnd)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowWidth|no_hwnd"));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowHeight|no_hwnd"));
     }
 
 	//brackets necessary to initialize the struct (memset 0)
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
 
-    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; }, "WIN_getWindowWidth>GetWindowInfo|");
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; }, "WIN_getWindowHeight>GetWindowInfo|");
     if (!r){
 		return std::unexpected(std::move(r.error()));
 	}
@@ -242,33 +242,62 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
 
 
 DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
-    const auto* data = static_cast<const windowData*>(_this->internalData);
-    if (!data || !IsWindow(data->hwnd)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-                                             "WIN_getPathFromWindow: invalid HWND"));
+	const auto* data = getWindowData(_this);
+
+	if(!data){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowWidth|no_device"));
+	}
+
+    if(!IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowWidth|no_hwnd"));
     }
 
     DWORD pid = 0;
 
-    auto r = retryOp([&]{
-        return GetWindowThreadProcessId(data->hwnd, &pid) != 0 && pid != 0;
-    }, "WIN_getPathFromWindow: GetWindowThreadProcessId: ");
-    if (!r) return std::unexpected(std::move(r.error()));
+    auto r = retryOp([&]{ return (GetWindowThreadProcessId(data->hwnd, &pid) != 0) && (pid != 0); }, "WIN_getPathFromWindow>GetWindowThreadProcessId|");
+    if (!r){
+		return std::unexpected(std::move(r.error()));
+	}
 
     HANDLE processHandle = nullptr;
     r = retryOp([&]{
-        processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
-        if(!processHandle && GetLastError()==ERROR_ACCESS_DENIED) return true;
-        return processHandle != nullptr;
-    }, "WIN_getPathFromWindow: OpenProcess: ");
-    if (!r) return std::unexpected(std::move(r.error()));
-    if (!processHandle) return std::string{};
+			processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_QUERY_INFORMATION, FALSE, pid);
+			//TODO: even though the ERROR_ACCESS_DENIED is always returned when the program doesn't have enough priviledges or the destination
+			//window is WUP (windows apps), it can also return it because DeskUp isn't given priviledges, even though it might be able to access
+			//the information of the window. For this, you might check permissions when DeskUp starts, and alert the user to give it permissions,
+			//or it might malfunction. Supposing this, the function openProcess can only return access denied if the window is inaccessible (regardless
+			//of the permissions)
+			auto err = GetLastError();
+			if(!processHandle && (err == ERROR_ACCESS_DENIED)){
+				SetLastError(ERROR_ACCESS_DISABLED_BY_POLICY);
+				return false;
+			}
+
+			DWORD exitCode = 0;
+			//if failed, will set INVALID_HANDLE and return false
+			if (GetExitCodeProcess(processHandle, &exitCode)) {
+    			if (exitCode == STILL_ACTIVE) {
+					return true;
+				} else {
+					SetLastError(ERROR_INVALID_HANDLE);
+					return false;
+    			}
+			}
+
+			return false;
+
+		},
+		"WIN_getPathFromWindow>OpenProcess|");
+
+	if (!r){
+		return std::unexpected(std::move(r.error()));
+	}
 
     std::string result;
     DWORD capacity = 512;
     std::vector<wchar_t> wbuf(capacity);
 
-    for (;;) {
+    while(true) {
         DWORD size = capacity;
         if (QueryFullProcessImageNameW(processHandle, 0, wbuf.data(), &size)) {
             result = WideStringToUTF8(wbuf.data());
@@ -282,7 +311,7 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
         } else {
             CloseHandle(processHandle);
             return std::unexpected(DeskUp::Error::fromLastWinError(
-                err, "WIN_getPathFromWindow: QueryFullProcessImageNameW: "));
+                err, "WIN_getPathFromWindow>QueryFullProcessImageNameW|"));
         }
     }
 
@@ -310,19 +339,28 @@ struct params {
 
 static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
 
-    if (!IsWindowVisible(hwnd)) return TRUE;
+    if (!IsWindowVisible(hwnd)){
+		return TRUE;
+	}
 
+	//brackets necessary to initialize the struct (memset 0)
     RECT r{};
-    if (!GetWindowRect(hwnd, &r)) return TRUE;
-    if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0) return TRUE;
+    if (!GetWindowRect(hwnd, &r)){
+		return TRUE;
+	}
+
+    if ((r.right - r.left) == 0 || (r.bottom - r.top) == 0){
+		return TRUE;
+	}
 
     char title[256];
     GetWindowTextA(hwnd, title, sizeof(title));
-    if (strlen(title) == 0) return TRUE;
+    if (strlen(title) == 0){
+		return TRUE;
+	}
 
     auto* parameters = reinterpret_cast<params*>(lparam);
     if (!parameters || !parameters->res || !parameters->dev || !parameters->dev->internalData) {
-        std::cout << "Invalid parameters passed to callback\n";
         return FALSE;
     }
 

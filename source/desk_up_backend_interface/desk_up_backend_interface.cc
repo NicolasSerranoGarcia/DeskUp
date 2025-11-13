@@ -11,11 +11,11 @@
 namespace fs = std::filesystem;
 
 DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName){
-    
+
     fs::path workspacePath = DESKUPDIR;
     workspacePath /= workspaceName;
     fs::create_directory(workspacePath);
-    
+
     auto windows = current_window_backend.get()->getAllOpenWindows(current_window_backend.get());
 
     if(!windows.has_value()){
@@ -27,7 +27,7 @@ DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspace
     int id = 0;
 
     for(unsigned int i = 0; i < windows.value().size(); i++){
-        
+
         //create path
         fs::path p(workspacePath);
         p /= windows.value()[i].name;
@@ -35,9 +35,9 @@ DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspace
         if(existsFile(p)){
             p += std::to_string(id++);
         }
-        
+
         if(int res = windows.value()[i].saveTo(p); res < 0){
-            
+
             auto err = DeskUp::Error::fromSaveError(res);
 
             if(err.isFatal()){
@@ -58,7 +58,7 @@ DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspace
 }
 
 DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName){
-    //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace), 
+    //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace),
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
     fs::path p(DESKUPDIR);
@@ -78,7 +78,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
         if (!res.has_value()){
             if(res.error().isFatal()){
                 return std::unexpected(std::move(res.error()));
-            } 
+            }
 
             std::cout << "Unrecovered window: " << res.error().what();
         }
@@ -98,13 +98,13 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
         if (!loadRes.has_value()){
             if(loadRes.error().isFatal()){
                 return std::unexpected(std::move(loadRes.error()));
-            } 
+            }
 
             std::cout << "Unopened window: " << loadRes.error().what();
         }
 
         auto resizeRes = current_window_backend->resizeWindow(current_window_backend.get(), *res);
-        if (!resizeRes.has_value() && resizeRes.error().isFatal()) 
+        if (!resizeRes.has_value() && resizeRes.error().isFatal())
         if (!resizeRes.has_value()){
             if(resizeRes.error().isFatal()){
                 return std::unexpected(std::move(resizeRes.error()));
@@ -125,7 +125,7 @@ bool DeskUpBackendInterface::isWorkspaceValid(const std::string& workspaceName){
     std::string blackList = {"\\/:?*\"<>|"};
 
     for(const char c : blackList){
-        
+
         if(workspaceName.find(c) != std::string::npos){
             return false;
         }

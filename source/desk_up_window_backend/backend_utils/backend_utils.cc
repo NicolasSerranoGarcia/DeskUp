@@ -60,10 +60,10 @@ std::string getSystemErrorMessageWindows(DWORD error, const std::string_view& co
         LocalFree(messageBuffer);
 
         // Build the final message string: context text + translated system error.
-        finalMessage += utf8.empty() ? "|no_error" : (std::string)("|") + utf8;
+        finalMessage += utf8.empty() ? "no_error" : (std::string)("") + utf8;
     } else {
         // If FormatMessageW failed, fall back to a generic message.
-        finalMessage += "|no_error";
+        finalMessage += "no_error";
     }
 
     return finalMessage;
