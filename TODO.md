@@ -135,15 +135,15 @@ including the qt dlls.
 
 [X] also, you need to see how to pack all the dependencies of the own qt dll libraries.
 
-[] <5> The CI workflow might need to be updated when you start generating the tests
+[X] <5> The CI workflow might need to be updated when you start generating the tests
 
-[] (optional for this task) include the option to download the pdf
+[X] (optional for this task) include the option to download the pdf
 
 [] (optional for this task) downloads page using javascript and fetching from the releases
 
 ##  5. Add testing for the backend and benchmarks for the app
 
-[] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats... Try also looking into testing the device itself, specially windows.
+[X] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats... Try also looking into testing the device itself, specially windows.
 
 [] Refactor the workflow of the backend operations. Make sure the errors are significant and that the functions d not fail unless there is a real error. Operations that retry should reflect it, consistency in param checking... With these changes, the already created tests should also be changed to reflect these changes, and they should adjust to the contracts of each function
 
