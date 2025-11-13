@@ -19,13 +19,14 @@ namespace fs = std::filesystem;
 using namespace std::chrono_literals;
 
 template<typename F>
-static DeskUp::Status retryOp(F&& f, std::string_view ctx, int maxAttempts = 3, std::chrono::milliseconds firstDelay = 50ms)
+static DeskUp::Status retryOp(F&& f, std::string_view ctx, unsigned int maxAttempts = 3, std::chrono::milliseconds firstDelay = 50ms)
 {
     auto delay = firstDelay;
-    for (int i = 0; i < maxAttempts; ++i) {
+    for (unsigned int i = 0; i < maxAttempts; i++) {
         if (f()){
             return {};
         }
+
         DeskUp::Error e = DeskUp::Error::fromLastWinError(ctx, i+1);
         if (e.isFatal()) {
             return std::unexpected(std::move(e));
@@ -57,6 +58,11 @@ bool WIN_isAvailable() noexcept {
     #endif
 
     return false;
+}
+
+static windowData * getWindowData(DeskUpWindowDevice * dev){
+    auto* data = static_cast<windowData*>(dev->internalData);
+	return data;
 }
 
 static HWND WIN_getDeskUpHWND(){
@@ -143,63 +149,95 @@ DeskUp::Result<std::string> WIN_getDeskUpPath(){
 
 
 DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) {
-    const auto* data = static_cast<const windowData*>(_this->internalData);
-    if (!data || !IsWindow(data->hwnd)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-                                             "WIN_getWindowXPos: invalid HWND"));
+    const auto* data = getWindowData(_this);
+
+	if(!data){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowXPos|no_device"));
+	}
+
+    if(!IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowXPos|no_hwnd"));
     }
 
+	//brackets necessary to initialize the struct (memset 0)
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
-                      "WIN_getWindowXPos: GetWindowInfo: ");
-    if (!r) return std::unexpected(std::move(r.error()));
+
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; }, "WIN_getWindowXPos>GetWindowInfo|");
+    if (!r){
+		return std::unexpected(std::move(r.error()));
+	}
+
     return static_cast<int>(wi.rcWindow.left);
 }
 
 DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice* _this) {
-    const auto* data = static_cast<const windowData*>(_this->internalData);
-    if (!data || !IsWindow(data->hwnd)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-                                             "WIN_getWindowYPos: invalid HWND"));
+    const auto* data = getWindowData(_this);
+
+	if(!data){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowYPos|no_device"));
+	}
+
+    if(!IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowYPos|no_hwnd"));
     }
 
+	//brackets necessary to initialize the struct (memset 0)
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
-                      "WIN_getWindowYPos: GetWindowInfo: ");
-    if (!r) return std::unexpected(std::move(r.error()));
+
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; }, "WIN_getWindowYPos>GetWindowInfo|");
+    if (!r){
+		return std::unexpected(std::move(r.error()));
+	}
+
     return static_cast<int>(wi.rcWindow.top);
 }
 
 DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) {
-    const auto* data = static_cast<const windowData*>(_this->internalData);
-    if (!data || !IsWindow(data->hwnd)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-                                             "WIN_getWindowWidth: invalid HWND"));
+    const auto* data = getWindowData(_this);
+
+	if(!data){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowWidth|no_device"));
+	}
+
+    if(!IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowWidth|no_hwnd"));
     }
 
+	//brackets necessary to initialize the struct (memset 0)
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
-                      "WIN_getWindowWidth: GetWindowInfo: ");
-    if (!r) return std::unexpected(std::move(r.error()));
-    return static_cast<unsigned>(wi.rcWindow.right - wi.rcWindow.left);
+
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; }, "WIN_getWindowWidth>GetWindowInfo|");
+    if (!r){
+		return std::unexpected(std::move(r.error()));
+	}
+
+    return static_cast<unsigned int>(wi.rcWindow.left - wi.rcWindow.right);
 }
 
 DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
-    const auto* data = static_cast<const windowData*>(_this->internalData);
-    if (!data || !IsWindow(data->hwnd)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-                                             "WIN_getWindowHeight: invalid HWND"));
+    const auto* data = getWindowData(_this);
+
+	if(!data){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_getWindowWidth|no_device"));
+	}
+
+    if(!IsWindow(data->hwnd)) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_getWindowWidth|no_hwnd"));
     }
 
+	//brackets necessary to initialize the struct (memset 0)
     WINDOWINFO wi{};
     wi.cbSize = sizeof(wi);
-    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; },
-                      "WIN_getWindowHeight: GetWindowInfo: ");
-    if (!r) return std::unexpected(std::move(r.error()));
-    return static_cast<unsigned>(wi.rcWindow.bottom - wi.rcWindow.top);
+
+    auto r = retryOp([&]{ return GetWindowInfo(data->hwnd, &wi) != 0; }, "WIN_getWindowWidth>GetWindowInfo|");
+    if (!r){
+		return std::unexpected(std::move(r.error()));
+	}
+
+    return static_cast<unsigned int>(wi.rcWindow.top - wi.rcWindow.bottom);
 }
 
 
