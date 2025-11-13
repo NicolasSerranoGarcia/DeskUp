@@ -4,6 +4,8 @@
 
     add_executable(desk_up_backend_interface_test desk_up_backend_interface_test.cc)
 
+	target_sources(desk_up_backend_interface_test PUBLIC desk_up_dummy_device.h)
+
 # Include path
 
     target_include_directories(desk_up_backend_interface_test PUBLIC
