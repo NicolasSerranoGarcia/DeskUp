@@ -24,11 +24,11 @@ DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view cont
         case ERROR_INVALID_PARAMETER:
         case ERROR_INVALID_NAME:
         case ERROR_FILENAME_EXCED_RANGE:
-            lvl = Level::Fatal; typ = ErrType::InvalidInput; break;
+            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
 
         case ERROR_FILE_NOT_FOUND:
         case ERROR_PATH_NOT_FOUND:
-            lvl = Level::Default; typ = ErrType::InvalidInput; break;
+            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
 
         case ERROR_DISK_FULL:
             lvl = Level::Fatal; typ = ErrType::Io; break;
@@ -44,7 +44,7 @@ DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view cont
 
         default:
             lvl = Level::Default; typ = ErrType::Default; break;
-    }
+    }	
 
     std::string msg = getSystemErrorMessageWindows(code, context);
     unsigned int t = tries.value_or(0);
@@ -73,11 +73,11 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
         case ERROR_INVALID_PARAMETER:
         case ERROR_INVALID_NAME:
         case ERROR_FILENAME_EXCED_RANGE:
-            lvl = Level::Fatal; typ = ErrType::InvalidInput; break;
+            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
 
         case ERROR_FILE_NOT_FOUND:
         case ERROR_PATH_NOT_FOUND:
-            lvl = Level::Default; typ = ErrType::InvalidInput; break;
+            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
 
         case ERROR_DISK_FULL:
             lvl = Level::Fatal; typ = ErrType::Io; break;
@@ -90,7 +90,6 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
 
         case ERROR_FUNCTION_FAILED:
             lvl = Level::Retry; typ = ErrType::Unexpected; break;
-
 
         default:
             lvl = Level::Default; typ = ErrType::Default; break;
