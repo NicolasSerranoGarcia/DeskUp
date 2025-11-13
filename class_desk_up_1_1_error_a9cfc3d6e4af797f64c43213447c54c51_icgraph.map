@@ -1,0 +1,5 @@
+<map id="DeskUp::Error::fromSaveError" name="DeskUp::Error::fromSaveError">
+<area shape="rect" id="Node000001" title="Converts a SaveErrorCode (from window_desc.cc) into a structured error." alt="" coords="225,13,422,40"/>
+<area shape="rect" id="Node000002" href="$struct_desk_up_backend_interface.html#a765857a4e3cc2d6bdae655162c357030" title="Saves all currently enumerated windows to a local workspace folder." alt="" coords="5,5,177,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,29,177,29,177,24,209,24"/>
+</map>

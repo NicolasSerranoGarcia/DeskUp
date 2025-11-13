@@ -1,0 +1,24 @@
+<map id="desk_up_backend_interface.h" name="desk_up_backend_interface.h">
+<area shape="rect" id="Node000001" title="High&#45;level window operations for DeskUp (frontend utilities over the backend device)." alt="" coords="345,5,539,32"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="20,229,73,256"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="368,35,271,55,164,82,70,117,36,136,14,156,8,170,10,186,27,216,23,219,5,187,3,170,9,153,33,132,68,112,163,77,270,50,367,30"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="501,155,575,181"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="453,31,524,140,520,143,448,34"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="380,229,462,256"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="471,30,518,56,566,92,585,113,597,135,600,159,590,183,567,206,539,223,508,234,478,240,477,235,506,228,536,218,564,202,585,180,594,158,592,137,581,116,563,96,515,60,468,35"/>
+<area shape="rect" id="Node000005" href="$desk__up__error_8h.html" title="Error management system for DeskUp (centralized error representation and conversion utilities)." alt="" coords="290,80,405,107"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="427,35,378,73,374,68,424,30"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="290,100,218,105,139,115,69,132,44,143,27,156,21,170,21,184,32,215,27,217,15,185,16,168,23,153,41,139,68,127,138,110,218,100,290,94"/>
+<area shape="poly" id="edge8_Node000005_Node000003" title=" " alt="" coords="382,105,492,146,490,151,380,110"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="308,155,387,181"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="350,107,350,139,345,139,345,107"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="410,155,477,181"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="366,105,416,143,413,147,363,109"/>
+<area shape="rect" id="Node000008" href="$window__desc_8h.html" title="Defines the abstract data structure used to represent a window in DeskUp." alt="" coords="173,155,285,181"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="328,109,264,149,261,144,326,105"/>
+<area shape="rect" id="Node000009" href="$backend__utils_8h.html" title="Defines basic tools to easen the interaction with the Desk Up backend." alt="" coords="37,155,149,181"/>
+<area shape="poly" id="edge12_Node000005_Node000009" title=" " alt="" coords="304,110,153,153,151,147,303,105"/>
+<area shape="poly" id="edge10_Node000008_Node000002" title=" " alt="" coords="198,184,89,227,87,222,196,179"/>
+<area shape="poly" id="edge11_Node000008_Node000004" title=" " alt="" coords="263,179,374,221,372,226,261,184"/>
+<area shape="poly" id="edge13_Node000009_Node000002" title=" " alt="" coords="87,183,65,218,60,215,83,180"/>
+</map>

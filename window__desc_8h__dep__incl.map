@@ -1,0 +1,16 @@
+<map id="window_desc.h" name="window_desc.h">
+<area shape="rect" id="Node000001" title="Defines the abstract data structure used to represent a window in DeskUp." alt="" coords="532,5,644,32"/>
+<area shape="rect" id="Node000002" href="$desk__up__error_8h.html" title="Error management system for DeskUp (centralized error representation and conversion utilities)." alt="" coords="404,80,518,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="554,42,485,82,482,77,552,38"/>
+<area shape="rect" id="Node000005" href="$desk__up__win_8h.html" title="Bootstrap and functions for the Windows window backend (DeskUp)." alt="" coords="534,229,642,256"/>
+<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="615,41,657,90,677,120,692,154,695,168,692,183,679,199,663,212,629,231,626,226,660,208,675,195,687,180,690,168,687,156,672,123,652,93,611,45"/>
+<area shape="rect" id="Node000006" href="$desk__up__window__device_8h.html" title="The struct descriptor of a window backend." alt="" coords="499,155,676,181"/>
+<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="590,48,590,154,585,154,585,48"/>
+<area shape="rect" id="Node000003" href="$desk__up__backend__interface_8h.html" title="High&#45;level window operations for DeskUp (frontend utilities over the backend device)." alt="" coords="5,155,200,181"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="389,112,166,157,165,151,388,107"/>
+<area shape="rect" id="Node000004" href="$desk__up__error__gui__converter_8h_source.html" title=" " alt="" coords="224,155,424,181"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="425,117,349,156,347,152,423,112"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="466,121,474,151,489,180,520,208,555,226,552,231,517,212,484,183,469,153,461,123"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="497,112,567,152,564,156,495,117"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="590,197,590,229,585,229,585,197"/>
+</map>
