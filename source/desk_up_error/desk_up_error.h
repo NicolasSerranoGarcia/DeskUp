@@ -70,6 +70,7 @@ namespace DeskUp {
         Info,
         Debug,
         Default,
+		Skip,
         None
     };
 
@@ -220,7 +221,7 @@ namespace DeskUp {
          * @date 2025
          */
         static Error fromLastWinError(std::string_view context = "", std::optional<unsigned int> tries = std::nullopt);
-		
+
         #endif
 
         /**
