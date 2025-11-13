@@ -1,4 +1,4 @@
-# ./source/desk_up/CMakeLists.txt
+# ./source/desk_up_frontend/CMakeLists.txt
 
     add_library(desk_up_frontend_library STATIC
         main.cpp
@@ -8,7 +8,7 @@
 
 # Include path
 
-    target_include_directories(desk_up_frontend_library PRIVATE
+    target_include_directories(desk_up_frontend_library PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/source/desk_up_backend_interface
         ${CMAKE_SOURCE_DIR}/source/desk_up_error
@@ -18,7 +18,7 @@
 
 # Dependencies
 
-    target_link_libraries(desk_up_frontend_library PRIVATE 
+    target_link_libraries(desk_up_frontend_library PUBLIC
         config_compiler_flags_library
         desk_up_qt_library
 

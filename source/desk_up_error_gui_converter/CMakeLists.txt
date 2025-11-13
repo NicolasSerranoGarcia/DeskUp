@@ -9,14 +9,14 @@
 
 # Include path
 
-    target_include_directories(desk_up_error_gui_converter_library PRIVATE
+    target_include_directories(desk_up_error_gui_converter_library PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/source/desk_up_error
     )
 
 # Dependencies
 
-    target_link_libraries(desk_up_error_gui_converter_library PRIVATE 
+    target_link_libraries(desk_up_error_gui_converter_library PUBLIC
         config_compiler_flags_library
         desk_up_qt_library
 

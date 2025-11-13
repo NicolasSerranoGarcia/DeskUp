@@ -1,8 +1,12 @@
 #include "window_core.h"
 
-static DeskUpWindowBootStrap devices[] = { winWindowDevice };
+#include <vector>
 
-static int numDevices = 1;
+#ifdef _WIN32
+    #include "desk_up_win.h"
+#endif
+
+std::vector<DeskUpWindowBootStrap> devices;
 
 std::string DESKUPDIR;
 
@@ -10,12 +14,16 @@ std::unique_ptr<DeskUpWindowDevice> current_window_backend = nullptr;
 
 int DU_Init(){
 
+    #ifdef _WIN32
+        devices.push_back(winWindowDevice);
+    #endif
+
     DeskUpWindowDevice dev;
     
     std::string devName;
 
     bool assigned = false;
-    for(int i = 0; i < numDevices; i++){
+    for(unsigned int i = 0; i < devices.size(); i++){
         
         if(!devices[i].isAvailable()){
             std::cout << devices[i].name << " is not an available backend on this system: Exiting" << std::endl;

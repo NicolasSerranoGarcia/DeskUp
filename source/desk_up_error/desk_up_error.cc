@@ -1,5 +1,7 @@
 #include "desk_up_error.h"
 
+#ifdef _WIN32
+
 DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view context, std::optional<unsigned int> tries){
     Level   lvl = Level::Default;
     ErrType typ = ErrType::Unexpected;
@@ -98,6 +100,8 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
     unsigned int t = tries.value_or(0);
     return Error(lvl, typ, t, std::move(msg));
 }
+
+#endif
 
 DeskUp::Error DeskUp::Error::fromSaveError(int e){
      switch (e) {

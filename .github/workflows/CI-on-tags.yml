@@ -46,3 +46,9 @@ jobs:
           cd build
           ctest --output-on-failure
         shell: msys2 {0}
+
+      - name: Run benchmarks
+        run: |
+          cd build
+          ./desk_up_benchmark
+        shell: msys2 {0}

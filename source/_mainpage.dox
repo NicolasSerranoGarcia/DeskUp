@@ -1,0 +1,71 @@
+/*!
+\mainpage notitle
+
+\htmlonly
+<div class="du-hero">
+  <h1>DeskUp Documentation</h1>
+  <p class="du-sub">A minimal desktop app to keep your workspace organized and productive.</p>
+
+  <div class="du-cta">
+    <a href="classes.html" class="du-btn">API by Classes</a>
+    <a href="files.html" class="du-btn">Files</a>
+    <a href="functions.html" class="du-btn">Functions</a>
+    <a href="pages.html" class="du-btn">Guides / Pages</a>
+	<a  href="pdf/refman.pdf" class="du-btn" download="DeskUp-pdf.pdf">Download User Guide (PDF)</a>
+  </div>
+</div>
+
+<div class="du-grid">
+  <a class="du-card" href="structDeskUpBackendInterface.html">
+    <h3>High-Level Backend Facade</h3>
+    <p>Save/restore windows, workspace utilities, and validation helpers.</p>
+    <code>DeskUpBackendInterface</code>
+  </a>
+
+  <a class="du-card" href="window__core_8h.html">
+    <h3>Core & Bootstrapping</h3>
+    <p>Backend selection, working directory, and initialization.</p>
+    <ul>
+      <li>DU_Init</li>
+      <li>DESKUPDIR</li>
+      <li>current_window_backend</li>
+    </ul>
+  </a>
+
+  <a class="du-card" href="desk__up__error_8h.html">
+    <h3>Error Handling</h3>
+    <p>Typed errors, levels, and <code>std::expected</code>-style returns.</p>
+    <code>DeskUp::Error</code>
+  </a>
+
+  <a class="du-card" href="annotated.html">
+    <h3>Type Map</h3>
+    <p>Browse all documented structs and classes.</p>
+  </a>
+</div>
+
+<div class="du-sections">
+  <h2>How to Navigate This Documentation</h2>
+  <ol>
+    <li><b>Start with the <a href="structDeskUpBackendInterface.html">facade</a></b> to understand the high-level flow (\ref DeskUpBackendInterface).</li>
+    <li><b>Open the <a href="window__core_8h.html">core module</a></b> for backend selection and working directory details (\ref DU_Init, \ref DESKUPDIR).</li>
+    <li><b>Review <a href="desk__up__error_8h.html">error handling</a></b> to learn the semantics of <code>Level</code>/<code>ErrType</code> and propagation (\ref DeskUp::Error).</li>
+    <li>For backend-specific details, check <code>DeskUpWindowDevice</code> and its implementations.</li>
+  </ol>
+
+  <h2>Quick Shortcuts</h2>
+  <ul class="du-inline">
+    <li><a class="du-chip" href="search.html">Search (S)</a></li>
+    <li><a class="du-chip" href="files.html">File List</a></li>
+    <li><a class="du-chip" href="globals.html">Global Functions/Vars</a></li>
+    <li><a class="du-chip" href="namespacemembers.html">Namespace Members</a></li>
+  </ul>
+
+  <h2>External Resources</h2>
+  <p>
+    <a class="du-link" href="https://github.com/NicolasSerranoGarcia/DeskUp">GitHub Repository</a>
+  </p>
+</div>
+\endhtmlonly
+
+*/

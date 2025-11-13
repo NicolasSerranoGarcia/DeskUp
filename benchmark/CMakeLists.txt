@@ -1,23 +1,55 @@
-#create the executable for the benchmarks
-add_executable(this_benchmark benchmark_main.cc)
+# ./benchmark/CMakeLists.txt
 
-target_link_libraries(this_benchmark PUBLIC wxWidgets_link)
+# desk_up_benchmark
 
-#---Once: link google benchmarks with the executable. The rest of the benchmarks get the library from here---#
+    add_executable(desk_up_benchmark benchmark_main.cc)
 
-target_link_libraries(this_benchmark PUBLIC benchmark::benchmark)
+# Include path
 
-#---Once for each benchmark folder (e.g. desk_up_benchmarks/)---#
+    target_include_directories(desk_up_benchmark PUBLIC
+        ${CMAKE_CURRENT_LIST_DIR}   
+    )
 
-#---1. desk_up_benchmarks---#
+# Benchmarks
 
-#link with benchmarks for desk_up
-target_sources(this_benchmark PRIVATE desk_up_benchmarks/desk_up_benchmarks.cc)
+    # --- desk_up_error_benchmarks ---
 
-#Make the folder where the desk_up_library is defined
-target_include_directories(this_benchmark PRIVATE ${CMAKE_SOURCE_DIR}/source/desk_up)
+        add_subdirectory(desk_up_error_benchmark)
+        target_link_libraries(desk_up_benchmark PUBLIC $<TARGET_OBJECTS:desk_up_error_benchmark_library>)
 
-#Link the library for the class
-target_link_libraries(this_benchmark PRIVATE desk_up_library)
+        target_link_libraries(desk_up_benchmark PUBLIC desk_up_error_benchmark_library)
 
-#---2. ...---#
+    # --- desk_up_error_gui_converter_benchmarks ---
+
+        add_subdirectory(desk_up_error_gui_converter_benchmark)
+        target_link_libraries(desk_up_benchmark PUBLIC $<TARGET_OBJECTS:desk_up_error_gui_converter_benchmark_library>)
+
+        target_link_libraries(desk_up_benchmark PUBLIC desk_up_error_gui_converter_benchmark_library)
+
+    # --- desk_up_window_backend_benchmarks ---
+
+        add_subdirectory(desk_up_window_backend_benchmark)
+        target_link_libraries(desk_up_benchmark PUBLIC $<TARGET_OBJECTS:desk_up_window_backend_benchmark_library>)
+
+        target_link_libraries(desk_up_benchmark PUBLIC desk_up_window_backend_benchmark_library)
+
+    # --- desk_up_backend_interface_benchmarks ---
+
+        add_subdirectory(desk_up_backend_interface_benchmark)
+        target_link_libraries(desk_up_benchmark PUBLIC $<TARGET_OBJECTS:desk_up_backend_interface_benchmark_library>)
+
+        target_link_libraries(desk_up_benchmark PUBLIC desk_up_backend_interface_benchmark_library)
+
+    # --- desk_up_frontend_benchmarks ---
+
+        add_subdirectory(desk_up_frontend_benchmark)
+        target_link_libraries(desk_up_benchmark PUBLIC $<TARGET_OBJECTS:desk_up_frontend_benchmark_library>)
+
+        target_link_libraries(desk_up_benchmark PUBLIC desk_up_frontend_benchmark_library)
+
+# Dependencies
+
+    target_link_libraries(desk_up_benchmark PUBLIC
+        config_compiler_flags_library
+        google_benchmark_library
+    )

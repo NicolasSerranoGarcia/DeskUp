@@ -32,7 +32,9 @@
 #include <stdexcept>
 #include <optional>
 #include <expected>
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
 
 #include "window_desc.h"
 #include "backend_utils.h"
@@ -45,16 +47,16 @@ namespace DeskUp {
      *
      * @details
      * This enumeration provides a consistent way to classify errors by their
-     * impact and intended handling behavior.  
-     * 
-     * - **Fatal** → unrecoverable; execution must stop.  
-     * - **Error** → serious failure; operation aborted.  
-     * - **Warning** → non-critical issue; user notification recommended.  
-     * - **Retry** → recoverable error that may succeed upon retry.  
-     * - **Info** → informational message, not an error.  
-     * - **Debug** → debug-only diagnostic message.  
-     * - **Default** → unspecified severity.  
-     * - **None** → represents the absence of error.  
+     * impact and intended handling behavior.
+     *
+     * - **Fatal** → unrecoverable; execution must stop.
+     * - **Error** → serious failure; operation aborted.
+     * - **Warning** → non-critical issue; user notification recommended.
+     * - **Retry** → recoverable error that may succeed upon retry.
+     * - **Info** → informational message, not an error.
+     * - **Debug** → debug-only diagnostic message.
+     * - **Default** → unspecified severity.
+     * - **None** → represents the absence of error.
      *
      * @see DeskUp::Error
      * @version 0.2.1
@@ -187,6 +189,8 @@ namespace DeskUp {
         /// @brief Converts to `true` if this instance represents an actual error.
         explicit operator bool() const noexcept { return lvl != Level::None; }
 
+        #ifdef _WIN32
+
         /**
          * @brief Builds an error from a raw Windows error code.
          *
@@ -216,6 +220,8 @@ namespace DeskUp {
          * @date 2025
          */
         static Error fromLastWinError(std::string_view context = "", std::optional<unsigned int> tries = std::nullopt);
+		
+        #endif
 
         /**
          * @brief Converts a `SaveErrorCode` (from `window_desc.cc`) into a structured error.

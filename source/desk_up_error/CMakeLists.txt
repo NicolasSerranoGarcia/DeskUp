@@ -27,10 +27,16 @@
 
 # Dependencies
 
-    target_link_libraries(desk_up_error_library PRIVATE 
+    target_link_libraries(desk_up_error_library PUBLIC 
         config_compiler_flags_library
 
         window_desc_library
         backend_utils_library
     )
+
+    if(WIN32)
+        target_link_libraries(desk_up_error_library PUBLIC 
+            desk_up_win32_library
+        )
+    endif()
 

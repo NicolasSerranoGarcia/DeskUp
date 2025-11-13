@@ -9,8 +9,17 @@
 
 namespace fs = std::filesystem;
 
+windowDesc::windowDesc(){
+	x = 0;
+	y = 0;
+	w = 0;
+	h = 0;
+	pathToExec = "";
+	name = "";
+}
+
 int windowDesc::saveTo(fs::path path){
-    
+
     if(path.empty()){
         std::cerr << "SaveTo: error: file path empty" << std::endl;
         return ERR_EMPTY_PATH;
@@ -34,10 +43,10 @@ int windowDesc::saveTo(fs::path path){
         }
     }
 
-    windowFile << this->pathToExec 
-               << std::endl << this->x 
-               << std::endl << this->y 
-               << std::endl << this->w 
+    windowFile << this->pathToExec
+               << std::endl << this->x
+               << std::endl << this->y
+               << std::endl << this->w
                << std::endl << this->h;
 
     if(!windowFile.good()){

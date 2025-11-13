@@ -9,13 +9,18 @@
 
 # Include path
 
-    target_include_directories(backend_utils_library PRIVATE
+    target_include_directories(backend_utils_library PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
     )
 
 # Dependencies
 
-    target_link_libraries(backend_utils_library PRIVATE 
+    target_link_libraries(backend_utils_library PUBLIC
         config_compiler_flags_library
-        desk_up_win32_library # This file should not need this
     )
+
+    if(WIN32)
+        target_link_libraries(backend_utils_library PUBLIC
+            desk_up_win32_library
+        )
+    endif()
