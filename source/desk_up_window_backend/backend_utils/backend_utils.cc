@@ -45,9 +45,9 @@ std::string getSystemErrorMessageWindows(DWORD error, const std::string_view& co
         0,
         nullptr
     );
-    
+
     std::string finalMessage;
-    
+
     finalMessage = contextMessage;
     if (charsWritten && messageBuffer) {
         // Copy the wide string into std::wstring and trim trailing CR/LF.
@@ -60,10 +60,10 @@ std::string getSystemErrorMessageWindows(DWORD error, const std::string_view& co
         LocalFree(messageBuffer);
 
         // Build the final message string: context text + translated system error.
-        finalMessage += utf8.empty() ? "Unknown Windows error." : utf8;
+        finalMessage += utf8.empty() ? "|no_error" : (std::string)("|") + utf8;
     } else {
         // If FormatMessageW failed, fall back to a generic message.
-        finalMessage += "Unknown Windows error.";
+        finalMessage += "|no_error";
     }
 
     return finalMessage;
@@ -86,7 +86,7 @@ std::wstring UTF8ToWide(const std::string& s){
 #endif
 
 std::string toLowerStr(const std::string& s){
-    
+
     std::string res;
     res.reserve(s.size());
     for (unsigned char c : s) {
