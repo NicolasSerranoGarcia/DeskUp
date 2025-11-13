@@ -187,6 +187,9 @@ namespace DeskUp {
 		/// @brief Whether the error is skipable.
 		bool isSkippable() const noexcept { return lvl == Level::Skip; }
 
+		/// @brief Whether the error is skipable.
+		bool isWarning() const noexcept { return lvl == Level::Warning; }
+
         /// @brief Whether the error can be retried.
         bool isRetryable() const noexcept { return lvl == Level::Retry; }
 

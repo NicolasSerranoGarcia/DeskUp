@@ -28,7 +28,7 @@ static DeskUp::Status retryOp(F&& f, std::string_view ctx, unsigned int maxAttem
         }
 
         DeskUp::Error e = DeskUp::Error::fromLastWinError(ctx, i+1);
-        if (e.isFatal() || e.isSkippable()) {
+        if (e.isFatal() || e.isSkippable() || e.isWarning()) {
             return std::unexpected(std::move(e));
         }
 
@@ -284,6 +284,14 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
     			}
 			}
 
+			auto error = GetLastError();
+
+			if(error == ERROR_ACCESS_DENIED){
+				SetLastError(ERROR_ACCESS_DISABLED_BY_POLICY);
+				return false;
+			}
+
+			SetLastError(error);
 			return false;
 
 		},
@@ -319,8 +327,7 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
     return result;
 }
 
-
-std::string WIN_getNameFromPath(const std::string& path) {
+static std::string WIN_getNameFromPath(const std::string& path) {
     static int unnamedWindowNum = 0;
     if (path.empty()) {
         return "window" + std::to_string(unnamedWindowNum++);
@@ -328,8 +335,11 @@ std::string WIN_getNameFromPath(const std::string& path) {
 
     try {
         return std::filesystem::path(path).stem().string();
-    } catch (...) { return "window" + std::to_string(unnamedWindowNum++); }
+    } catch (...) {
+		return "window" + std::to_string(unnamedWindowNum++);
+	}
 }
+
 
 struct params {
         DeskUpWindowDevice* dev;

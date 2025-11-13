@@ -2,104 +2,74 @@
 
 #ifdef _WIN32
 
-DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view context, std::optional<unsigned int> tries){
-    Level   lvl = Level::Default;
-    ErrType typ = ErrType::Unexpected;
+static std::pair<DeskUp::Level, DeskUp::ErrType> getErrType(const DWORD code) {
 
-    DWORD code = error;
+	DeskUp::Level lvl;
+	DeskUp::ErrType typ;
 
-    switch (code) {
+	switch (code) {
         case ERROR_ACCESS_DENIED:
         case ERROR_PRIVILEGE_NOT_HELD:
-            lvl = Level::Fatal; typ = ErrType::AccessDenied; break;
+            lvl = DeskUp::Level::Fatal; typ = DeskUp::ErrType::AccessDenied; break;
 
         case ERROR_NOT_ENOUGH_MEMORY:
         case ERROR_OUTOFMEMORY:
-            lvl = Level::Fatal; typ = ErrType::InsufficientMemory; break;
+            lvl = DeskUp::Level::Fatal; typ = DeskUp::ErrType::InsufficientMemory; break;
 
         case ERROR_SHARING_VIOLATION:
         case ERROR_LOCK_VIOLATION:
-            lvl = Level::Retry; typ = ErrType::SharingViolation; break;
+            lvl = DeskUp::Level::Retry; typ = DeskUp::ErrType::SharingViolation; break;
 
         case ERROR_INVALID_PARAMETER:
         case ERROR_INVALID_NAME:
         case ERROR_FILENAME_EXCED_RANGE:
-            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
+            lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::InvalidInput; break;
 
         case ERROR_FILE_NOT_FOUND:
         case ERROR_PATH_NOT_FOUND:
-            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
+            lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::InvalidInput; break;
 
         case ERROR_DISK_FULL:
-            lvl = Level::Fatal; typ = ErrType::Io; break;
+            lvl = DeskUp::Level::Fatal; typ = DeskUp::ErrType::Io; break;
         case ERROR_WRITE_PROTECT:
         case ERROR_WRITE_FAULT:
         case ERROR_READ_FAULT:
         case ERROR_CRC:
         case ERROR_IO_DEVICE:
-            lvl = Level::Retry; typ = ErrType::Io; break;
-
-		case ERROR_ACCESS_DISABLED_BY_POLICY:
-            lvl = Level::Skip; typ = ErrType::AccessDenied; break;
+            lvl = DeskUp::Level::Retry; typ = DeskUp::ErrType::Io; break;
 
         case ERROR_FUNCTION_FAILED:
-            lvl = Level::Retry; typ = ErrType::Unexpected; break;
+            lvl = DeskUp::Level::Retry; typ = DeskUp::ErrType::Unexpected; break;
+
+		case ERROR_ACCESS_DISABLED_BY_POLICY:
+            lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::Default; break;
+
+
+		case ERROR_INVALID_HANDLE:
+            lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::ConnectionRefused; break;
 
         default:
-            lvl = Level::Default; typ = ErrType::Default; break;
+            lvl = DeskUp::Level::Default; typ = DeskUp::ErrType::Default; break;
     }
 
-    std::string msg = getSystemErrorMessageWindows(code, context);
+	return {lvl, typ};
+}
+
+DeskUp::Error DeskUp::Error::fromLastWinError(DWORD error, std::string_view context, std::optional<unsigned int> tries){
+
+
+	auto [lvl, typ] = getErrType(error);
+
+    std::string msg = getSystemErrorMessageWindows(error, context);
     unsigned int t = tries.value_or(0);
     return Error(lvl, typ, t, std::move(msg));
 }
 
 DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::optional<unsigned int> tries){
-    Level   lvl = Level::Default;
-    ErrType typ = ErrType::Unexpected;
 
-    DWORD code = GetLastError();
+	auto code = GetLastError();
 
-    switch (code) {
-        case ERROR_ACCESS_DENIED:
-        case ERROR_PRIVILEGE_NOT_HELD:
-            lvl = Level::Fatal; typ = ErrType::AccessDenied; break;
-
-        case ERROR_NOT_ENOUGH_MEMORY:
-        case ERROR_OUTOFMEMORY:
-            lvl = Level::Fatal; typ = ErrType::InsufficientMemory; break;
-
-        case ERROR_SHARING_VIOLATION:
-        case ERROR_LOCK_VIOLATION:
-            lvl = Level::Retry; typ = ErrType::SharingViolation; break;
-
-        case ERROR_INVALID_PARAMETER:
-        case ERROR_INVALID_NAME:
-        case ERROR_FILENAME_EXCED_RANGE:
-            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
-
-        case ERROR_FILE_NOT_FOUND:
-        case ERROR_PATH_NOT_FOUND:
-            lvl = Level::Skip; typ = ErrType::InvalidInput; break;
-
-        case ERROR_DISK_FULL:
-            lvl = Level::Fatal; typ = ErrType::Io; break;
-        case ERROR_WRITE_PROTECT:
-        case ERROR_WRITE_FAULT:
-        case ERROR_READ_FAULT:
-        case ERROR_CRC:
-        case ERROR_IO_DEVICE:
-            lvl = Level::Retry; typ = ErrType::Io; break;
-
-        case ERROR_FUNCTION_FAILED:
-            lvl = Level::Retry; typ = ErrType::Unexpected; break;
-
-		case ERROR_INVALID_HANDLE:
-            lvl = Level::Skip; typ = ErrType::ConnectionRefused; break;
-
-        default:
-            lvl = Level::Default; typ = ErrType::Default; break;
-    }
+	auto [lvl, typ] = getErrType(GetLastError());
 
     std::string msg = getSystemErrorMessageWindows(code, context);
     unsigned int t = tries.value_or(0);
