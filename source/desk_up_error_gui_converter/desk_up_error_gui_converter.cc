@@ -28,6 +28,7 @@ std::pair<QString, QMessageBox::Icon> ErrorAdapter::mapLevel(Level lvl)
     }
 }
 
+//todo: append the message of the error to the dialog
 QString ErrorAdapter::getUserMessage(const DeskUp::Error& err)
 {
     switch (err.type()) {

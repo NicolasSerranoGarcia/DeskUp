@@ -6,7 +6,7 @@
 #include <QInputDialog>
 #include <QString>
 #include <QAction>
-#include <QStatusBar> 
+#include <QStatusBar>
 
 #include "desk_up_error.h"
 #include "window_core.h"
@@ -100,7 +100,18 @@ void MainWindow::onAddWorkspace(){
 
     if (!DeskUpBackendInterface::existsWorkspace(ws)) {
         if (auto saveRes = DeskUpBackendInterface::saveAllWindowsLocal(ws); !saveRes.has_value()) {
-            DeskUp::UI::ErrorAdapter::showError(std::move(saveRes.error()));
+
+			//this should take care of showing the message depending on the severity, and then outside the function close the program if needed
+			DeskUp::UI::ErrorAdapter::showError(std::move(saveRes.error()));
+
+			auto saveErr = saveRes.error();
+			if(saveErr.isFatal()){
+				//for now just close the program
+				
+				// QApplication::exit();
+				exit(1);
+			}
+
         } else {
             showSaveSuccessful();
         }

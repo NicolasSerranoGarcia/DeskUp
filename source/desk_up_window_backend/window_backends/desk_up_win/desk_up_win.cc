@@ -90,7 +90,7 @@ static HWND WIN_getDeskUpHWND(){
     return deskUpWindow;
 }
 
-DeskUpWindowDevice WIN_CreateDevice(){
+DeskUpWindowDevice WIN_CreateDevice() noexcept{
 
     //Initialize COM (Object Component Model), which may be used by the shell when recovering the windows from the files.
     CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
@@ -116,7 +116,7 @@ DeskUpWindowDevice WIN_CreateDevice(){
     return device;
 }
 
-DeskUp::Result<std::string> WIN_getDeskUpPath(){
+DeskUp::Result<std::string> WIN_getDeskUpPath() noexcept{
     PWSTR wpath = nullptr;
     std::string base;
     if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, nullptr, &wpath)) && wpath){
@@ -148,7 +148,7 @@ DeskUp::Result<std::string> WIN_getDeskUpPath(){
 }
 
 
-DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) {
+DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) noexcept {
     const auto* data = getWindowData(_this);
 
 	if(!data){
@@ -171,7 +171,7 @@ DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice* _this) {
     return static_cast<int>(wi.rcWindow.left);
 }
 
-DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice* _this) {
+DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice* _this) noexcept {
     const auto* data = getWindowData(_this);
 
 	if(!data){
@@ -194,7 +194,7 @@ DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice* _this) {
     return static_cast<int>(wi.rcWindow.top);
 }
 
-DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) {
+DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) noexcept{
     const auto* data = getWindowData(_this);
 
 	if(!data){
@@ -217,7 +217,7 @@ DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) {
     return static_cast<unsigned int>(wi.rcWindow.left - wi.rcWindow.right);
 }
 
-DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
+DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) noexcept {
     const auto* data = getWindowData(_this);
 
 	if(!data){
@@ -241,7 +241,7 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) {
 }
 
 
-DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
+DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) noexcept{
 	const auto* data = getWindowData(_this);
 
 	if(!data){
@@ -327,7 +327,7 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) {
     return result;
 }
 
-static std::string WIN_getNameFromPath(const std::string& path) {
+static std::string WIN_getNameFromPath(const std::string& path) noexcept{
     static int unnamedWindowNum = 0;
     if (path.empty()) {
         return "window" + std::to_string(unnamedWindowNum++);
@@ -341,13 +341,13 @@ static std::string WIN_getNameFromPath(const std::string& path) {
 }
 
 
-struct params {
+struct saveWindowParams {
         DeskUpWindowDevice* dev;
         std::vector<windowDesc>* res;
         DeskUp::Error* err;
 };
 
-static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
+static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam) noexcept{
 
     if (!IsWindowVisible(hwnd)){
 		return TRUE;
@@ -369,84 +369,237 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam){
 		return TRUE;
 	}
 
-    auto* parameters = reinterpret_cast<params*>(lparam);
-    if (!parameters || !parameters->res || !parameters->dev || !parameters->dev->internalData) {
-        return FALSE;
-    }
-
-    auto& windows = *parameters->res;
-    auto& err     = *parameters->err;
-    DeskUpWindowDevice* dev = parameters->dev;
-
-    if (*desk_up_hwnd.get() == hwnd) {
+	if (*desk_up_hwnd.get() == hwnd) {
         return TRUE;
     }
 
-    reinterpret_cast<windowData*>(dev->internalData)->hwnd = hwnd;
+    auto* parameters = reinterpret_cast<saveWindowParams*>(lparam);
+    if (!parameters || !parameters->err){
+		//if the parameters didn't get passed, we can't set the error inside to inform, so just return. This is very improbable
+		return FALSE;
+	}
+
+    auto& err = *parameters->err;
+
+	if(!parameters->res){
+		err = DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_CreateAndSaveWindowProc|no_parameter");
+		return FALSE;
+	}
+
+    auto& windows = *parameters->res;
+
+	if(!parameters->dev || !parameters->dev->internalData) {
+		err = DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_CreateAndSaveWindowProc|no_device");
+        return FALSE;
+    }
+
+    DeskUpWindowDevice* dev = parameters->dev;
+
+	windowData * data = getWindowData(dev);
+    data->hwnd = hwnd;
 
     windowDesc window;
+
+	static bool levelErrorHappened = false;
+
+	if (auto res = WIN_getPathFromWindow(dev); res.has_value()) {
+        window.pathToExec = std::move(res.value());
+    } else {
+		err = std::move(res.error());
+
+		if(err.isFatal()){
+			data->hwnd = nullptr;
+			return FALSE;
+		}
+
+		//hwnd might have gone invalid
+		if(err.isSkippable() && !IsWindow(data->hwnd)){
+			//can't know the name of the window if it failed
+			std::cout << "Window Skipped" << std::endl;
+			data->hwnd = nullptr;
+			return TRUE;
+		}
+
+		//The data is corrupt or invalid. Skip the window
+		if(err.isError()){
+			data->hwnd = nullptr;
+
+			if(levelErrorHappened){
+				levelErrorHappened = false;
+				return FALSE;
+			}
+
+			levelErrorHappened = true;
+			return TRUE;
+		}
+
+		return TRUE;
+    }
+
+	//can't fail
+    window.name = WIN_getNameFromPath(window.pathToExec);
+
 
     if (auto res = WIN_getWindowXPos(dev); res.has_value()) {
         window.x = std::move(res.value());
     } else {
         err = std::move(res.error());
-        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
-        return err.isFatal() ? FALSE : TRUE;
+
+		if(err.isFatal()){
+			data->hwnd = nullptr;
+			return FALSE;
+		}
+
+		//hwnd might have gone invalid
+		if(err.isSkippable() && !IsWindow(data->hwnd)){
+			std::cout << "Window Skipped: " << window.name << std::endl;
+			data->hwnd = nullptr;
+			return TRUE;
+		}
+
+		//The data is corrupt or invalid. Skip the window
+		if(err.isError()){
+			data->hwnd = nullptr;
+
+			if(levelErrorHappened){
+				levelErrorHappened = false;
+				return FALSE;
+			}
+
+			levelErrorHappened = true;
+			return TRUE;
+		}
+
+		return TRUE;
     }
 
     if (auto res = WIN_getWindowYPos(dev); res.has_value()) {
         window.y = std::move(res.value());
     } else {
         err = std::move(res.error());
-        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
-        return err.isFatal() ? FALSE : TRUE;
+
+		if(err.isFatal()){
+			data->hwnd = nullptr;
+			return FALSE;
+		}
+
+		//hwnd might have gone invalid
+		if(err.isSkippable() && !IsWindow(data->hwnd)){
+			std::cout << "Window Skipped: " << window.name << std::endl;
+			data->hwnd = nullptr;
+			return TRUE;
+		}
+
+		//The data is corrupt or invalid. Skip the window
+		if(err.isError()){
+			data->hwnd = nullptr;
+
+			if(levelErrorHappened){
+				levelErrorHappened = false;
+				return FALSE;
+			}
+
+			levelErrorHappened = true;
+			return TRUE;
+		}
+
+		return TRUE;
     }
 
     if (auto res = WIN_getWindowWidth(dev); res.has_value()) {
         window.w = std::move(res.value());
     } else {
         err = std::move(res.error());
-        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
-        return err.isFatal() ? FALSE : TRUE;
+
+		if(err.isFatal()){
+			data->hwnd = nullptr;
+			return FALSE;
+		}
+
+		//hwnd might have gone invalid
+		if(err.isSkippable() && !IsWindow(data->hwnd)){
+			std::cout << "Window Skipped: " << window.name << std::endl;
+			data->hwnd = nullptr;
+			return TRUE;
+		}
+
+		//The data is corrupt or invalid. Skip the window
+		if(err.isError()){
+			data->hwnd = nullptr;
+
+			if(levelErrorHappened){
+				levelErrorHappened = false;
+				return FALSE;
+			}
+
+			levelErrorHappened = true;
+			return TRUE;
+		}
+
+		return TRUE;
     }
 
     if (auto res = WIN_getWindowHeight(dev); res.has_value()) {
         window.h = std::move(res.value());
     } else {
         err = std::move(res.error());
-        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
-        return err.isFatal() ? FALSE : TRUE;
+
+		if(err.isFatal()){
+			data->hwnd = nullptr;
+			return FALSE;
+		}
+
+		//hwnd might have gone invalid
+		if(err.isSkippable() && !IsWindow(data->hwnd)){
+			std::cout << "Window Skipped: " << window.name << std::endl;
+			data->hwnd = nullptr;
+			return TRUE;
+		}
+
+		//The data is corrupt or invalid. Skip the window
+		if(err.isError()){
+			data->hwnd = nullptr;
+
+			if(levelErrorHappened){
+				levelErrorHappened = false;
+				return FALSE;
+			}
+
+			levelErrorHappened = true;
+			return TRUE;
+		}
+
+		return TRUE;
     }
 
-    if (auto res = WIN_getPathFromWindow(dev); res.has_value()) {
-        window.pathToExec = std::move(res.value());
-    } else {
-        err = std::move(res.error());
-        reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
-        return err.isFatal() ? FALSE : TRUE;
-    }
-
-    std::cout << window.pathToExec << std::endl;
-    window.name = WIN_getNameFromPath(window.pathToExec);
-
-    reinterpret_cast<windowData*>(dev->internalData)->hwnd = nullptr;
+    data->hwnd = nullptr;
 
     windows.push_back(std::move(window));
     return TRUE;
 }
 
-DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice* _this){
+DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice* _this) noexcept{
     std::vector<windowDesc> windows;
     DeskUp::Error error{};
 
 
-    params p{ _this, &windows, &error };
+    saveWindowParams p{ _this, &windows, &error };
 
     HDESK desktop = NULL;
 
     if (!EnumDesktopWindows(desktop, WIN_CreateAndSaveWindowProc, reinterpret_cast<LPARAM>(&p))) {
-        if (error.level() != DeskUp::Level::None) return std::unexpected(std::move(error));
-        return std::unexpected(DeskUp::Error::fromLastWinError("WIN_getAllOpenWindows: EnumDesktopWindows"));
+        if (error.level() == DeskUp::Level::Fatal){
+			return std::unexpected(std::move(error));
+		}
+
+		if(error.level() == DeskUp::Level::Error){
+			//this only happens when something happened to the device or the windowData. For this, return an unexpected error
+			return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::Unexpected, 0u, "WIN_getAllOpenWindows>EnumDesktopWindows|device_corrupt"));
+		}
+
+		//Skippable errors should not get there. Anything else besides fatal and error will get bubbled up as a warning for the user
+
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Warning, DeskUp::ErrType::Unexpected, 0u, "WIN_getAllOpenWindows>EnumDesktopWindows|"));
     }
 
     return windows;
@@ -660,7 +813,7 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
 }
 
 
-DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window){
+DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window) noexcept{
 
     if(!_this || !_this->internalData){
         return std::unexpected(DeskUp::Error(
@@ -707,7 +860,7 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
     return {};
 }
 
-static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out){
+static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out) noexcept{
     HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
     if(!h) return false;
 
@@ -733,7 +886,7 @@ static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out){
     return converted;
 }
 
-static std::vector<DWORD> WIN_getPidsByPath(const std::string& path){
+static std::vector<DWORD> WIN_getPidsByPath(const std::string& path) noexcept{
     std::vector<DWORD> pids;
     if(path.empty()) return pids;
 
@@ -761,7 +914,7 @@ static std::vector<DWORD> WIN_getPidsByPath(const std::string& path){
     return pids;
 }
 
-static std::vector<HWND> WIN_GetTopLevelWindowsByPid(DWORD pid){
+static std::vector<HWND> WIN_GetTopLevelWindowsByPid(DWORD pid) noexcept{
     std::vector<HWND> out;
 
     struct Ctx{ DWORD pid; std::vector<HWND>* out; };
@@ -782,7 +935,7 @@ static std::vector<HWND> WIN_GetTopLevelWindowsByPid(DWORD pid){
     return out;
 }
 
-static bool WIN_closeProcessByPid(DWORD pid, DWORD timeoutMs, bool allowForce){
+static bool WIN_closeProcessByPid(DWORD pid, DWORD timeoutMs, bool allowForce) noexcept{
     //open a handle to the pid
     HANDLE h = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, pid);
     if(!h) return false;
@@ -810,7 +963,7 @@ static bool WIN_closeProcessByPid(DWORD pid, DWORD timeoutMs, bool allowForce){
     return false;
 }
 
-static int WIN_closeProcessesByPath(const std::string& path, DWORD timeoutMs, bool allowForce){
+static int WIN_closeProcessesByPath(const std::string& path, DWORD timeoutMs, bool allowForce) noexcept{
     int closed = 0;
     for(DWORD pid : WIN_getPidsByPath(path)){
         if(WIN_closeProcessByPid(pid, timeoutMs, allowForce)){
@@ -820,7 +973,7 @@ static int WIN_closeProcessesByPath(const std::string& path, DWORD timeoutMs, bo
     return closed;
 }
 
-DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce){
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce) noexcept{
     if(path.empty()){
         return std::unexpected(DeskUp::Error(
             DeskUp::Level::Fatal,

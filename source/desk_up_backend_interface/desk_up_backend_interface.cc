@@ -3,19 +3,25 @@
 #include <vector>
 #include <string>
 #include <filesystem>
-
 #include <cctype>
 
 #include "window_core.h"
 
 namespace fs = std::filesystem;
 
-DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName){
-
-    fs::path workspacePath = DESKUPDIR;
-    workspacePath /= workspaceName;
+static fs::path createDirFromWs(std::string workspace){
+	fs::path workspacePath = DESKUPDIR;
+    workspacePath /= workspace;
     fs::create_directory(workspacePath);
 
+	return workspacePath;
+}
+
+DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName){
+
+	fs::path workspacePath = createDirFromWs(workspaceName);
+
+	//get all the open windows
     auto windows = current_window_backend.get()->getAllOpenWindows(current_window_backend.get());
 
     if(!windows.has_value()){
@@ -24,33 +30,37 @@ DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspace
 
     DeskUp::Error lastErr;
 
-    int id = 0;
+	//used to assign different names to windows of the same instance
+	int id = 0;
 
     for(unsigned int i = 0; i < windows.value().size(); i++){
 
-        //create path
-        fs::path p(workspacePath);
-        p /= windows.value()[i].name;
+		//make a copy of the workspaceDir
+		fs::path copyWs(workspacePath);
 
-        if(existsFile(p)){
-            p += std::to_string(id++);
+		//add the file name
+        copyWs /= windows.value()[i].name;
+
+        if(existsFile(copyWs)){
+            copyWs += std::to_string(id++);
         }
 
-        if(int res = windows.value()[i].saveTo(p); res < 0){
+        if(int res = windows.value()[i].saveTo(copyWs); res < 0){
 
             auto err = DeskUp::Error::fromSaveError(res);
 
+			//can only happen if the disk is full
             if(err.isFatal()){
                 return std::unexpected(std::move(err));
             }
 
+			//any other error is not fatal, so save the last one and continue
             lastErr = err;
-
-            continue;
         }
     }
 
-    if(lastErr.level() == DeskUp::Level::None){
+	//if no error was set inside the loop, the error gets default initialized to no error
+    if(!lastErr){
         return {};
     }
 

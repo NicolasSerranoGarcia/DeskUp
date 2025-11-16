@@ -74,7 +74,7 @@ bool WIN_isAvailable() noexcept;
  * @version 0.1.0
  * @date 2025
  */
-DeskUpWindowDevice WIN_CreateDevice();
+DeskUpWindowDevice WIN_CreateDevice() noexcept;
 
 /**
  * @brief Returns the base DeskUp working path on the system.
@@ -88,7 +88,7 @@ DeskUpWindowDevice WIN_CreateDevice();
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<std::string> WIN_getDeskUpPath();
+DeskUp::Result<std::string> WIN_getDeskUpPath() noexcept;
 
 /**
  * @brief Gets the X position (top-left corner) of the active (client) window in the device.
@@ -101,7 +101,7 @@ DeskUp::Result<std::string> WIN_getDeskUpPath();
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the Y position (top-left corner) of the active (client) window in the device.
@@ -114,7 +114,7 @@ DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the width of the active (client) window in the device.
@@ -127,7 +127,7 @@ DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the height of the active (client) window in the device.
@@ -140,7 +140,7 @@ DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the absolute path of the executable that owns the active window.
@@ -154,7 +154,7 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this);
+DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Enumerates all visible/non-minimized windows on the desktop.
@@ -167,7 +167,7 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this);
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
+DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Loads a window description from a saved workspace file.
@@ -214,7 +214,7 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string p
  * @version 0.2.0
  * @date 2025
  */
-DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
+DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window) noexcept;
 
 /**
  * @brief This function closes all the instances associated with an executable, specified by the \c path parameter.
@@ -229,7 +229,7 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
  * @version 0.2.0
  * @date 2025
  */
-DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce) noexcept;
 
 /**
  * @brief Test-only helper to set the internal HWND for the device.

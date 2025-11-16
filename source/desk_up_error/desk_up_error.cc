@@ -79,29 +79,30 @@ DeskUp::Error DeskUp::Error::fromLastWinError(std::string_view context, std::opt
 #endif
 
 DeskUp::Error DeskUp::Error::fromSaveError(int e){
-     switch (e) {
-        case 1:
-            return Error(Level::Info, ErrType::None, e, "windowDesc::saveTo: operation successful");
+    switch (e) {
 
-        case -1:
-            return Error(Level::Error, ErrType::InvalidInput, e, "windowDesc::saveTo: file path is empty");
+        case 1: // SaveErrorCode::SAVE_SUCCESS
+            return Error(Level::Info, ErrType::None, e, "saveTo|success");
 
-        case -2:
-            return Error(Level::Error, ErrType::Io, e, "windowDesc::saveTo: could not open file");
+        case -1: // SaveErrorCode::ERR_EMPTY_PATH
+            return Error(Level::Error, ErrType::InvalidInput, e, "saveTo|path_empty");
 
-        case -3:
-            return Error(Level::Error, ErrType::AccessDenied, e, "windowDesc::saveTo: permission denied");
+        case -2: // SaveErrorCode::ERR_FILE_NOT_OPEN
+            return Error(Level::Error, ErrType::Io, e, "saveTo|file_unopened");
 
-        case -4:
-            return Error(Level::Error, ErrType::FileNotFound, e, "windowDesc::saveTo: file or directory not found");
+        case -3: // SaveErrorCode::ERR_NO_PERMISSION
+            return Error(Level::Error, ErrType::AccessDenied, e, "saveTo|permission_denied");
 
-        case -5:
-            return Error(Level::Fatal, ErrType::DiskFull, e, "windowDesc::saveTo: disk full or no space left");
+        case -4: // SaveErrorCode::ERR_FILE_NOT_FOUND
+            return Error(Level::Error, ErrType::FileNotFound, e, "saveTo|not_found");
 
-        case -6:
-            return Error(Level::Error, ErrType::Unexpected, e, "windowDesc::saveTo: unknown I/O error");
+        case -5: // SaveErrorCode::ERR_DISK_FULL
+            return Error(Level::Fatal, ErrType::DiskFull, e, "saveTo|no_space_left");
 
-        default:
-            return Error(Level::Warning, ErrType::Default, e, "windowDesc::saveTo: unrecognized error code");
+        case -6: // SaveErrorCode::ERR_UNKNOWN
+            return Error(Level::Error, ErrType::Unexpected, e, "saveTo|unknown_error");
+
+        default: // other
+            return Error(Level::Warning, ErrType::Default, e, "saveTo|unrecognized_error");
     }
 }
