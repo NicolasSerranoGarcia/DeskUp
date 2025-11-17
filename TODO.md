@@ -145,7 +145,10 @@ including the qt dlls.
 
 [X] Create a dummy device which is used to check the deskUp backend. Note that it does not check the window device, but rather the structure associated with deskUp. Tests for each windowDevice function, with things like empty paths, negative dimensions, non valid pats... Try also looking into testing the device itself, specially windows.
 
-[] Refactor the workflow of the backend operations. Make sure the errors are significant and that the functions d not fail unless there is a real error. Operations that retry should reflect it, consistency in param checking... With these changes, the already created tests should also be changed to reflect these changes, and they should adjust to the contracts of each function
+[] (optional for this task) Refactor the workflow of the backend operations. Make sure the errors are significant and that the functions d not fail unless there is a real error. Operations that retry should reflect it, consistency in param checking... With these changes, the already created tests should also be changed to reflect these changes, and they should adjust to the contracts of each function
+
+[] (optional for this task) when deskup starts, check the privileges it was given, and show a message warning saying that deskup may not work properly
+if it is not given the correct permissions
 
 ## 7. Create DeskUp Error system
 
