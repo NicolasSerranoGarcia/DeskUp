@@ -14,16 +14,19 @@ static std::pair<DeskUp::Level, DeskUp::ErrType> getErrType(const DWORD code) {
 
         case ERROR_NOT_ENOUGH_MEMORY:
         case ERROR_OUTOFMEMORY:
+		case ERROR_TOO_MANY_OPEN_FILES:
             lvl = DeskUp::Level::Fatal; typ = DeskUp::ErrType::InsufficientMemory; break;
 
         case ERROR_SHARING_VIOLATION:
         case ERROR_LOCK_VIOLATION:
-            lvl = DeskUp::Level::Retry; typ = DeskUp::ErrType::SharingViolation; break;
-
         case ERROR_INVALID_PARAMETER:
         case ERROR_INVALID_NAME:
         case ERROR_FILENAME_EXCED_RANGE:
+		case ERROR_BAD_FORMAT:
             lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::InvalidInput; break;
+
+		case ERROR_DLL_NOT_FOUND:
+            lvl = DeskUp::Level::Warning; typ = DeskUp::ErrType::PolicyUpdated; break;
 
         case ERROR_FILE_NOT_FOUND:
         case ERROR_PATH_NOT_FOUND:

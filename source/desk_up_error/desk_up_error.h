@@ -107,6 +107,7 @@ namespace DeskUp {
         ProtocolError,        /**< Violation of expected protocol behavior. */
         Unexpected,           /**< Unexpected runtime condition. */
         NotImplemented,       /**< Feature not yet implemented. */
+		PolicyUpdated,
         Default,              /**< Unspecified error type. */
         None                  /**< Represents no error. */
     };

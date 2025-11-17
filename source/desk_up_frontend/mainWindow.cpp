@@ -107,7 +107,7 @@ void MainWindow::onAddWorkspace(){
 			auto saveErr = saveRes.error();
 			if(saveErr.isFatal()){
 				//for now just close the program
-				
+
 				// QApplication::exit();
 				exit(1);
 			}
@@ -162,6 +162,14 @@ void MainWindow::onRestoreWorkspace()
     if (DeskUpBackendInterface::existsWorkspace(ws)) {
         if (auto res = DeskUpBackendInterface::restoreWindows(ws); !res.has_value()) {
             DeskUp::UI::ErrorAdapter::showError(std::move(res.error()));
+
+			auto restoreErr = res.error();
+			if(restoreErr.isFatal()){
+				//for now just close the program
+
+				// QApplication::exit();
+				exit(1);
+			}
         } else {
             showRestoreSuccessful();
         }

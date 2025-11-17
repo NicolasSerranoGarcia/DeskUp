@@ -605,61 +605,60 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
     return windows;
 }
 
-static inline void stripChars(std::string& s){
+static inline void stripEndlChars(std::string& s){
     if(!s.empty() && s.back() == '\r')
         s.pop_back();
 }
 
 DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::filesystem::path path) noexcept{
-
+	//this function expects to receive the path from DeskUpWindow::restoreWindows, which already checks the validity of the path. Still, do it here
     std::error_code fec;
     if (!fs::exists(path, fec) || !fs::is_regular_file(path, fec)) {
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-            "WIN_recoverSavedWindow: path is not a regular file: " + path.string()
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|no_file_" + path.string()));
     }
     if (fec) {
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Retry, DeskUp::ErrType::Io, 0,
-            "WIN_recoverSavedWindow: filesystem error: " + fec.message()
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::Io, 0, "WIN_recoverSavedWindow|fs_error_" + fec.message()));
     }
 
     constexpr int kMaxAttempts = 3;
-    std::chrono::milliseconds delay{100};
+    std::chrono::milliseconds delay{50};
     std::ifstream f;
 
-    for (int attempt = 1; attempt <= kMaxAttempts; ++attempt) {
+	//try reopening the file if it is not opened
+    for (int attempt = 1; attempt <= kMaxAttempts; attempt++) {
         f.open(path, std::ios::in);
-        if (f.is_open()) break;
+        if (f.is_open()){
+			break;
+		}
 
         if (attempt == kMaxAttempts) {
-            return std::unexpected(DeskUp::Error(
-                DeskUp::Level::Retry, DeskUp::ErrType::Io, attempt,
-                "WIN_recoverSavedWindow: could not open file: " + path.string()
-            ));
+            return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::Io, attempt,"WIN_recoverSavedWindow|file_unopen_" + path.string()));
         }
         std::this_thread::sleep_for(delay);
         delay *= 2;
     }
 
-    windowDesc w = {"", 0, 0, 0, 0, ""};
-
     std::string s;
-    int i = 0;
 
     auto parse_int = [](const std::string& str, const char*) -> std::optional<int> {
         try {
             size_t pos = 0;
             int val = std::stoi(str, &pos);
-            if (pos != str.size()) return std::nullopt;
+            if (pos != str.size()){
+				return std::nullopt;
+			}
             return val;
-        } catch (...) { return std::nullopt; }
+        } catch (...) {
+			//this only happens if stoi failed
+			return std::nullopt;
+		}
     };
 
+	//calls default constructor
+    windowDesc w;
+	int i = 0;
     while (std::getline(f, s)) {
-        stripChars(s);
+        stripEndlChars(s);
         switch (i) {
             case 0:
                 w.pathToExec = s;
@@ -667,37 +666,33 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
                 break;
             case 1: {
                 auto v = parse_int(s, "x");
-                if (!v) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
-                    "WIN_recoverSavedWindow: invalid X coordinate"
-                ));
+                if (!v) {
+					return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|invalid_read_x"));
+				}
                 w.x = *v;
                 break;
             }
             case 2: {
                 auto v = parse_int(s, "y");
-                if (!v) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
-                    "WIN_recoverSavedWindow: invalid Y coordinate"
-                ));
+                if (!v){
+					return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|invalid_read_y"));
+				}
                 w.y = *v;
                 break;
             }
             case 3: {
                 auto v = parse_int(s, "w");
-                if (!v || *v < 0) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
-                    "WIN_recoverSavedWindow: invalid width"
-                ));
+                if (!v || *v < 0){
+					return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|invalid_read_w"));
+				}
                 w.w = *v;
                 break;
             }
             case 4: {
                 auto v = parse_int(s, "h");
-                if (!v || *v < 0) return std::unexpected(DeskUp::Error(
-                    DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0,
-                    "WIN_recoverSavedWindow: invalid height"
-                ));
+                if (!v || *v < 0) {
+					return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|invalid_read_h"));
+				}
                 w.h = *v;
                 break;
             }
@@ -708,10 +703,10 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
     }
 
     if (i < 5) {
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0,
-            "WIN_recoverSavedWindow: file content incomplete (need 5 lines)"
-        ));
+		//if there is less than 5 lines, this is an i/o error, not a read error, because when the file was being written was done wrongly.
+		//This is very rare, but it might identify with a write error on a specific value of any of the windowDesc info that was written.
+		//For now, just return an error
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::Io, 0, "WIN_recoverSavedWindow|previous_write_failed"));
     }
 
     return w;
@@ -719,13 +714,32 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
 
 //Helper for WIN_loadProcessFromPath. It just returns the specified handle for the pid. It is used to get the hwnd of the launched window
 //to resize it later
-static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 500) {
+//It is useful to understand how windows organizes windows:
+//Process (PID=4321) -> this is what is returned in the second parameter of getWindowThreadProcessId
+// │
+// ├── Thread A (TID=100) -> this is the return of getWindowThreadProcessId
+// │     ├── Window #1 (HWND=A1) -> this is what you pass to getWindowThreadProcessId
+// │     └── Window #2 (HWND=A2)
+// │
+// ├── Thread B (TID=200)
+// │     └── Window #3 (HWND=B1)
+// │
+// └── Thread C (TID=300)
+//       └── No windows
+static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 300) {
     HWND hwndFound = nullptr;
     auto enumCallback = [](HWND hwnd, LPARAM lParam) -> BOOL {
         auto data = reinterpret_cast<std::pair<DWORD, HWND*>*>(lParam);
         DWORD winPid;
+		//get the process pid of the handle of the window (the general pid of that window)
         GetWindowThreadProcessId(hwnd, &winPid);
-        if (winPid == data->first && GetWindow(hwnd, GW_OWNER) == nullptr && IsWindowVisible(hwnd)) {
+
+		//it might be possible that this check give false positives, because there might be a window that we want to search
+		//which happens to: be part of the same app (has the same pid), be independent or is a child (it has parent, but not owner) and is also visible
+        if ((winPid == data->first/*If the window is part of the app we are looking for */
+			&& GetWindow(hwnd, GW_OWNER) == nullptr) /*returns the owner window of the specific window we passed. If it is nullptr it usually means the top-level*/
+			&& GetAncestor(hwnd, GA_ROOT) == nullptr /*Returns the parent (not the owner) window of the window we passed. Main windows do not have a parent*/
+			&& IsWindowVisible(hwnd) /*If the window was set to be visible*/) {
             *data->second = hwnd;
             return FALSE;
         }
@@ -736,7 +750,9 @@ static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 500) {
     for (int waited = 0; waited < timeoutMs && !hwndFound; waited += step) {
         std::pair<DWORD, HWND*> data{ pid, &hwndFound };
         EnumWindows(enumCallback, reinterpret_cast<LPARAM>(&data));
-        if (hwndFound) break;
+        if (hwndFound){
+			break;
+		}
         Sleep(step);
     }
     return hwndFound;
@@ -745,31 +761,16 @@ static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 500) {
 DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::string path) noexcept {
 
     if (path.empty()) {
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal,
-            DeskUp::ErrType::InvalidInput,
-            0,
-            "WIN_loadProcessFromPath: empty path"
-        ));
-    }
-
-    if (!_this || !_this->internalData) {
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal,
-            DeskUp::ErrType::InvalidInput,
-            0,
-            "WIN_loadProcessFromPath: invalid window device"
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_loadProcessFromPath|no_file_" + path));
     }
 
 	if(!fs::exists(path)){
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Error,
-            DeskUp::ErrType::FileNotFound,
-            0,
-            "WIN_loadProcessFromPath: invalid path passed, it does not exist"
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::FileNotFound, 0, "WIN_loadProcessFromPath|invalid_file_" + path));
 	}
+
+    if (!_this || !_this->internalData) {
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_loadProcessFromPath|no_device"));
+    }
 
     SHELLEXECUTEINFO ShExecInfo{};
     ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -782,32 +783,124 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
     ShExecInfo.nShow = SW_NORMAL;
     ShExecInfo.hInstApp = NULL;
 
-    auto status = retryOp([&] {
+	//this operation is just used to get the handle to the window we just opened. It does not check that the window really opened. It revolves around
+	//executing ShellExecuteEx, which just tells the shell to execute whatever we passed. For this, this just should check that the credentials to execute
+	//are correct.
+    auto status = retryOp([&]{
         SetLastError(0);
         BOOL ok = ShellExecuteEx(&ShExecInfo);
         DWORD err = GetLastError();
         if (!ok) {
-            if (err == 0)
-                err = ERROR_FUNCTION_FAILED;
-            SetLastError(err);
-        }
-        return ok != 0;
-    }, "WIN_loadProcessFromPath: ShellExecuteEx: ");
+			//any of privilege errors default to disabled by policy, as we stated in earlier functions, we assume the user has given us all the necessary
+			//privileges, and that if the function fails and returns this type of errors it is because the window is protected by windows and we cannot access it.
+			if(err == ERROR_ACCESS_DENIED || err == ERROR_PRIVILEGE_NOT_HELD || err == ERROR_ELEVATION_REQUIRED){
+				SetLastError(ERROR_ACCESS_DISABLED_BY_POLICY);
+				return false;
+			}
 
+			//file errors get rethrown, as the error converter already maps them correctly
+			if(err == ERROR_FILE_NOT_FOUND || err == ERROR_INVALID_NAME || err == ERROR_PATH_NOT_FOUND || err == ERROR_BAD_FORMAT){
+				SetLastError(err);
+				return false;
+			}
+
+			//system errors should be fatal and end execution, so just rethrow and let the converter handle it
+			if(err == ERROR_NOT_ENOUGH_MEMORY || err == ERROR_OUTOFMEMORY || err == ERROR_TOO_MANY_OPEN_FILES){
+				SetLastError(err);
+				return false;
+			}
+
+			//This is improbable but can happen and should only happen if any of the dependencies of DeskUp has been updated, and we haven't noticed.
+			//This could happen with indirect dependencies of Qt or other libraries, so it is worth calling it out. Still, when packaging te executable
+			//dependencies get called out dynamically and depending on the executable, so the workflows or new releases will fail.
+			if(err == ERROR_DLL_NOT_FOUND){
+				SetLastError(err);
+				return false;
+			}
+
+
+            err = ERROR_FUNCTION_FAILED;
+            SetLastError(err);
+			return false;
+        }
+
+		//if there is no error, just return true
+        return true;
+    },
+	"WIN_loadProcessFromPath>ShellExecuteEx|");
+
+	//the windows errors set inside the callback get translated here
     if (!status) {
-        return std::unexpected(status.error());
+        return std::unexpected(std::move(status.error()));
     }
+
+	//at this point, the handle to the process is required  (and is expected) to be correct, and the only errors that might arise come from
+	//the application itself.
 
     if (ShExecInfo.hProcess) {
-        WaitForInputIdle(ShExecInfo.hProcess, 1500);
+		//wait for the application to finish seting up, before returning the handle. This prevents invalid accesses or missed searches of the
+		//window we just created.
+		//The function can finish earlier than the specified time if the app loads faster than the specified time, so there is no need to
+		//check in time intervals for the finished window.
+
+		DWORD res = WAIT_FAILED;
+
+
+		while(res != 0){
+			//WaitForInputIdle returns exit code 0 when the window has set up
+			res = WaitForInputIdle(ShExecInfo.hProcess, 300);
+
+			if (res == WAIT_TIMEOUT) {
+				DWORD exitCode = 0;
+				//if failed, will set INVALID_HANDLE and return false
+				if (GetExitCodeProcess(ShExecInfo.hProcess, &exitCode)) {
+					if (exitCode == STILL_ACTIVE) {
+						//Remember we are inside WAIT_TIMEOUT, so this means the app is not in idle state yet, so repeat the process until
+						//it changes state
+						//This can also mean the app is a console app, which never initializes input output loop, so this might need
+						// if(CONSOLE_APP){
+
+						// } else{
+						// 	continue;
+						// }
+					} else {
+						//this means something has went wrong when loading a dll, or with permissions, or the context of the pp has changed (as we are
+						//not executing the app manually)
+						// SetLastError(ERROR_INVALID_HANDLE);
+						//for now, just return, but we should make a distinction in wether the app failed to load because of an external cause
+						//(the user maybe deleted a dll and the program cannot load, but we want to keep executing, or the working directory of the
+						//app has changed, as it is being loaded from the root path from deskup, and it fails on setup...)
+						return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::Unexpected, 0, path));
+					}
+				}
+			}
+
+			//this means there is a problem with the call itself (for example, an invalid handle), but not a problem of the loading itself
+			else if (res == WAIT_FAILED) {
+				return std::unexpected(DeskUp::Error::fromLastWinError(GetLastError(), "WIN_loadProcessFromPath>WaitForInputIdle|"));
+			}
+		}
+
+		//her, the window is successfully idle, and we can safely get the PID from the process handle
+
+		//get the windows PID from the kernel handle
         DWORD pid = GetProcessId(ShExecInfo.hProcess);
+
+		//close the kernel handle, as we already have the pid
         CloseHandle(ShExecInfo.hProcess);
+
+		//this returns nullptr if there it could'nt find the hwnd
         auto hwnd = WIN_FindMainWindow(pid);
-        reinterpret_cast<windowData*>(_this->internalData)->hwnd = hwnd;
         if(!hwnd){
-            return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::NotFound, 0, path));
-    }
-}
+			return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::NotFound, 0, path));
+		}
+
+		//set the hwnd inside the device, so that other functions can access this handle
+		auto data = getWindowData(_this);
+		data->hwnd = hwnd;
+	}
+
+	//if nothing went wrong, just return
 
     return {};
 }
