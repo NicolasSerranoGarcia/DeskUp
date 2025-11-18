@@ -156,7 +156,7 @@ if it is not given the correct permissions
 
 [X] cleanup, show messages in the frontend
 
-[/] Restructure the project: create a library for each component, and create a correct namespace for each part of the project (DeskUp:: for globals, then create namespaces inside namespaces...)
+[/] Restructure the project: create a library for each component, and create a correct namespace for each part of the project (DeskUp:: for globals, then create namespaces inside namespaces...). Also refactor the functions of the backend to take fs::path instead of std::string
 
 [X] (optional for this task) mingw gets saved as the default bash terminal, fix it
 
