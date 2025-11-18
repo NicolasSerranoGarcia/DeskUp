@@ -44,11 +44,15 @@ static std::pair<DeskUp::Level, DeskUp::ErrType> getErrType(const DWORD code) {
         case ERROR_FUNCTION_FAILED:
             lvl = DeskUp::Level::Retry; typ = DeskUp::ErrType::Unexpected; break;
 
+		case ERROR_INVALID_WINDOW_STYLE:
+			lvl = DeskUp::Level::Info; typ = DeskUp::ErrType::ResourceBusy; break;
+
 		case ERROR_ACCESS_DISABLED_BY_POLICY:
             lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::Default; break;
 
 
 		case ERROR_INVALID_HANDLE:
+		case ERROR_INVALID_WINDOW_HANDLE:
             lvl = DeskUp::Level::Skip; typ = DeskUp::ErrType::ConnectionRefused; break;
 
         default:

@@ -261,6 +261,7 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) noe
 
     HANDLE processHandle = nullptr;
     r = retryOp([&]{
+			SetLastError(0);
 			processHandle = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_QUERY_INFORMATION, FALSE, pid);
 			//TODO: even though the ERROR_ACCESS_DENIED is always returned when the program doesn't have enough priviledges or the destination
 			//window is WUP (windows apps), it can also return it because DeskUp isn't given priviledges, even though it might be able to access
@@ -760,6 +761,9 @@ static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 300) {
 
 DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::string path) noexcept {
 
+	auto data = getWindowData(_this);
+	data->hwnd = nullptr;
+
     if (path.empty()) {
         return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_loadProcessFromPath|no_file_" + path));
     }
@@ -896,7 +900,6 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
 		}
 
 		//set the hwnd inside the device, so that other functions can access this handle
-		auto data = getWindowData(_this);
 		data->hwnd = hwnd;
 	}
 
@@ -905,46 +908,98 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
     return {};
 }
 
-
 DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window) noexcept{
+	//this function expects to have the hwnd of loadProcessFromPath inside the windowData
 
     if(!_this || !_this->internalData){
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal,
-            DeskUp::ErrType::InvalidInput,
-            0,
-            "WIN_resizeWindow: invalid window device"
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::DeviceNotFound, 0, "WIN_resizeWindow|no_device"));
     }
 
-    windowData * data = reinterpret_cast<windowData*>(_this->internalData);
+    windowData * data = getWindowData(_this);
 
+	//the only way for the hwnd to be nullptr is if in loadProcessFromPath, the function didn't get to the end(at the start is set to nullptr
+	//and at the end is set to the valid hwnd), so if the function fails at any point, we can make sure we are not using an invalid hwnd here.
+	//Still, if we received an error in loadProcessFromPath, we should treat it before calling this function, or not even calling it at all,
+	//so this is just to double check
     if(!data->hwnd){
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Retry,
-            DeskUp::ErrType::InvalidInput,
-            0,
-            "WIN_resizeWindow: hwnd not found"
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::InvalidInput, 0, "WIN_resizeWindow|no_hwnd"));
     }
+
+	auto hwnd = data->hwnd;
 
     if (window.w <= 0 || window.h <= 0) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Warning, DeskUp::ErrType::InvalidInput, 0,
-            "WIN_resizeWindow: non-positive width/height"));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_resizeWindow|invalid_wh"));
     }
+
+	//it might happen that the window closes before accessing it (we don't care the reason), so it is worth checking if the hwnd is valid
+	if(!IsWindow(hwnd)){
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::NotFound, 0, "WIN_resizeWindow|invalid_wh"));
+	}
 
     auto status = retryOp([&] {
         SetLastError(0);
-        BOOL ok = SetWindowPos(data->hwnd, nullptr, window.x, window.y, window.w, window.h,
-                        SWP_SHOWWINDOW | SWP_NOZORDER);
-        DWORD err = GetLastError();
-        if (!ok) {
-            if (err == 0)
-                err = ERROR_FUNCTION_FAILED;
-            SetLastError(err);
-        }
-        return ok != 0;
-    }, "WIN_resizeWindow: SetWindowPos: ");
+
+		//get the window size before resizing in order to check if it has changed when resizing
+		RECT before;
+		GetWindowRect(hwnd, &before);
+
+		LONG beforeW = before.right - before.left;
+		LONG beforeH = before.bottom - before.top;
+
+		//if the window is already in the position (which might happen because when executing an app the window has a default (x,y,w,h),
+		//and if the user hasn't moved that window it will be reopened in the same position)
+		if (before.left == window.x && before.top == window.y && beforeW == window.w && beforeH == window.h){
+			return true;
+		}
+
+		//returns true if there was no error
+		if (SetWindowPos(hwnd, nullptr, window.x, window.y, window.w, window.h, SWP_SHOWWINDOW | SWP_NOZORDER)){
+			RECT after;
+			GetWindowRect(hwnd, &after);
+
+			LONG afterW = after.right - after.left;
+			LONG afterH = after.bottom - after.top;
+
+			//the window has changed, therefore everything was correct
+			if (before.left != after.left || before.top != after.top || beforeW != afterW || beforeH != afterH){
+				return true;
+			}
+
+			// if the position hasn't changed set an error which will be translated into an Level::Info error. It is not necessary to
+			// catch it(it can be omitted in the restoreWindows function, the caller of this), but it might be useful later
+			SetLastError(ERROR_INVALID_WINDOW_STYLE);
+			return false;
+		}
+
+		DWORD err = GetLastError();
+
+		//any of privilege errors default to disabled by policy, as we stated in earlier functions, we assume the user has given us all the necessary
+		//privileges, and that if the function fails and returns this type of errors it is because the window is protected by windows and we cannot access it.
+		if(err == ERROR_ACCESS_DENIED || err == ERROR_PRIVILEGE_NOT_HELD || err == ERROR_ELEVATION_REQUIRED){
+			SetLastError(ERROR_ACCESS_DISABLED_BY_POLICY);
+		}
+
+		//system errors should be fatal and end execution, so just rethrow and let the converter handle it
+		else if(err == ERROR_NOT_ENOUGH_MEMORY || err == ERROR_OUTOFMEMORY){
+			SetLastError(err);
+		}
+
+		else if(err == ERROR_INVALID_WINDOW_HANDLE){
+			SetLastError(err);
+		}
+
+		//it might happen that in the moment we try resizing the window, the window is unavailable, but it in fact can be moved
+		else if(err == ERROR_INVALID_PARAMETER){
+			SetLastError(ERROR_FUNCTION_FAILED);
+		}
+
+		else{
+			SetLastError(err);
+		}
+
+		return false;
+
+	}, "WIN_resizeWindow>SetWindowPos|");
 
     if (!status) {
         return std::unexpected(status.error());

@@ -82,6 +82,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
     }
 
     bool forceTermination = true;
+	//check, for each function, what errors it returns, and act in consequence
     for (const auto& file : fs::directory_iterator{p}) {
         auto res = current_window_backend->recoverSavedWindow(current_window_backend.get(), file.path());
         if (!res.has_value() && res.error().isFatal())
