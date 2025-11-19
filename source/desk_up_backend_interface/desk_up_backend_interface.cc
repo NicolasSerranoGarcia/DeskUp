@@ -9,15 +9,28 @@
 
 namespace fs = std::filesystem;
 
-static fs::path createDirFromWs(std::string workspace){
+//TODO: rewrite the error message to be the actual message you want shown, so as to be more specific with the message shown
+
+static fs::path constructWsDir(std::string workspace){
 	fs::path workspacePath = DESKUPDIR;
     workspacePath /= workspace;
-    fs::create_directory(workspacePath);
+	return workspacePath;
+}
 
+//if the dir already exists it just retuns the constructed path. Otherwise it creates it and returns the constructed path.
+//This way we avoid errors coming from fs::create_directory
+static fs::path createDirFromWs(std::string workspace){
+	fs::path workspacePath = constructWsDir(workspace);
+	if(fs::exists(workspacePath) && fs::is_directory(workspacePath)){
+		return workspacePath;
+	}
+
+    fs::create_directory(workspacePath);
 	return workspacePath;
 }
 
 DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName){
+	//it is mandatory that the files saved have w, h >= 0, 5 LINES, no endl
 
 	fs::path workspacePath = createDirFromWs(workspaceName);
 
@@ -71,31 +84,29 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
     //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace),
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
-    fs::path p(DESKUPDIR);
-    p /= workspaceName;
+    fs::path p = constructWsDir(workspaceName);
 
+	//this just simply means there is an error in the workspace name itself and/or the deskup path
     if (!fs::exists(p) || !fs::is_directory(p)) {
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal, DeskUp::ErrType::NotFound, 0,
-            "restoreWindows: workspace not found: " + p.string()
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "restoreWindows|no_path_" + p.string()));
     }
 
+	//might want to ask the user
     bool forceTermination = true;
-	//check, for each function, what errors it returns, and act in consequence
+
     for (const auto& file : fs::directory_iterator{p}) {
+		//can't throw fatal errors
         auto res = current_window_backend->recoverSavedWindow(current_window_backend.get(), file.path());
-        if (!res.has_value() && res.error().isFatal())
         if (!res.has_value()){
-            if(res.error().isFatal()){
-                return std::unexpected(std::move(res.error()));
-            }
+			std::cout << "Unrecoverable window: " << res.error().what();
+			return std::unexpected(std::move(res.error()));
+		}
 
-            std::cout << "Unrecovered window: " << res.error().what();
-        }
+		//from here we expect valid window
 
-        auto closeRes = current_window_backend->closeProcessFromPath(current_window_backend.get(),
-                                                                    res->pathToExec, forceTermination);
+		auto window = res.value();
+
+        auto closeRes = current_window_backend->closeProcessFromPath(current_window_backend.get(), window.pathToExec, forceTermination);
         if (!closeRes.has_value() && closeRes.error().isFatal())
         if (!closeRes.has_value()){
             if(closeRes.error().isFatal()){
@@ -105,7 +116,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
             std::cout << "Unclosed window: " << closeRes.error().what();
         }
 
-        auto loadRes = current_window_backend->loadWindowFromPath(current_window_backend.get(), res->pathToExec);
+        auto loadRes = current_window_backend->loadWindowFromPath(current_window_backend.get(), window.pathToExec);
         if (!loadRes.has_value()){
             if(loadRes.error().isFatal()){
                 return std::unexpected(std::move(loadRes.error()));
@@ -114,7 +125,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
             std::cout << "Unopened window: " << loadRes.error().what();
         }
 
-        auto resizeRes = current_window_backend->resizeWindow(current_window_backend.get(), *res);
+        auto resizeRes = current_window_backend->resizeWindow(current_window_backend.get(), window);
         if (!resizeRes.has_value() && resizeRes.error().isFatal())
         if (!resizeRes.has_value()){
             if(resizeRes.error().isFatal()){

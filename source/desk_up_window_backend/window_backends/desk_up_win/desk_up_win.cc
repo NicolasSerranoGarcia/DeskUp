@@ -241,7 +241,7 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) noex
 }
 
 
-DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) noexcept{
+DeskUp::Result<fs::path> WIN_getPathFromWindow(DeskUpWindowDevice* _this) noexcept{
 	const auto* data = getWindowData(_this);
 
 	if(!data){
@@ -325,17 +325,17 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice* _this) noe
     }
 
     CloseHandle(processHandle);
-    return result;
+    return fs::path(result);
 }
 
-static std::string WIN_getNameFromPath(const std::string& path) noexcept{
+static std::string WIN_getNameFromPath(const fs::path& path) noexcept{
     static int unnamedWindowNum = 0;
     if (path.empty()) {
         return "window" + std::to_string(unnamedWindowNum++);
     }
 
     try {
-        return std::filesystem::path(path).stem().string();
+        return path.stem().string();
     } catch (...) {
 		return "window" + std::to_string(unnamedWindowNum++);
 	}
@@ -606,17 +606,19 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
     return windows;
 }
 
-static inline void stripEndlChars(std::string& s){
-    if(!s.empty() && s.back() == '\r')
-        s.pop_back();
+static void stripEndlChars(std::string& s){
+    if(!s.empty() && (s.back() == '\r' || s.back() == '\n')){
+		s.pop_back();
+	}
 }
 
-DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::filesystem::path path) noexcept{
+DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, const fs::path& path) noexcept{
 	//this function expects to receive the path from DeskUpWindow::restoreWindows, which already checks the validity of the path. Still, do it here
     std::error_code fec;
     if (!fs::exists(path, fec) || !fs::is_regular_file(path, fec)) {
         return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|no_file_" + path.string()));
     }
+
     if (fec) {
         return std::unexpected(DeskUp::Error(DeskUp::Level::Skip, DeskUp::ErrType::Io, 0, "WIN_recoverSavedWindow|fs_error_" + fec.message()));
     }
@@ -639,12 +641,12 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
         delay *= 2;
     }
 
-    std::string s;
-
     auto parse_int = [](const std::string& str, const char*) -> std::optional<int> {
         try {
             size_t pos = 0;
+			//can throw invalid_argument if there could not be any conversion (there are no numbers in the string or the data is corrupt)
             int val = std::stoi(str, &pos);
+			//the string passed should be solely composed of numeric chars (check for endl or tabs is checked before calling this function)
             if (pos != str.size()){
 				return std::nullopt;
 			}
@@ -655,9 +657,13 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
 		}
     };
 
+	std::string s;
+
 	//calls default constructor
     windowDesc w;
 	int i = 0;
+
+	//relies on: w,h > 0, no final endl or EOF, just 5 lines
     while (std::getline(f, s)) {
         stripEndlChars(s);
         switch (i) {
@@ -683,7 +689,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
             }
             case 3: {
                 auto v = parse_int(s, "w");
-                if (!v || *v < 0){
+                if (!v){
 					return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|invalid_read_w"));
 				}
                 w.w = *v;
@@ -691,7 +697,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice*, std::file
             }
             case 4: {
                 auto v = parse_int(s, "h");
-                if (!v || *v < 0) {
+                if (!v) {
 					return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::InvalidInput, 0, "WIN_recoverSavedWindow|invalid_read_h"));
 				}
                 w.h = *v;
@@ -759,17 +765,17 @@ static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 300) {
     return hwndFound;
 }
 
-DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::string path) noexcept {
+DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const fs::path& path) noexcept {
 
 	auto data = getWindowData(_this);
 	data->hwnd = nullptr;
 
     if (path.empty()) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_loadProcessFromPath|no_file_" + path));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_loadProcessFromPath|no_file_" + path.string()));
     }
 
 	if(!fs::exists(path)){
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::FileNotFound, 0, "WIN_loadProcessFromPath|invalid_file_" + path));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::FileNotFound, 0, "WIN_loadProcessFromPath|invalid_file_" + path.string()));
 	}
 
     if (!_this || !_this->internalData) {
@@ -874,7 +880,8 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
 						//for now, just return, but we should make a distinction in wether the app failed to load because of an external cause
 						//(the user maybe deleted a dll and the program cannot load, but we want to keep executing, or the working directory of the
 						//app has changed, as it is being loaded from the root path from deskup, and it fails on setup...)
-						return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::Unexpected, 0, path));
+						return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::Unexpected, 0,
+							"WIN_loadProcessFromPath>WaitForInputIdle>GetExitCodeProcess|unexpected_" + path.string()));
 					}
 				}
 			}
@@ -896,7 +903,7 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice* _this, const std::str
 		//this returns nullptr if there it could'nt find the hwnd
         auto hwnd = WIN_FindMainWindow(pid);
         if(!hwnd){
-			return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::NotFound, 0, path));
+			return std::unexpected(DeskUp::Error(DeskUp::Level::Retry, DeskUp::ErrType::NotFound, 0, "WIN_loadProcessFromPath>WIN_FindMainWindow|no_hwnd_" + path.string()));
 		}
 
 		//set the hwnd inside the device, so that other functions can access this handle
@@ -1001,22 +1008,31 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
 
 	}, "WIN_resizeWindow>SetWindowPos|");
 
+	//all of the checking has been done inside the lambda, so just rethrow.
+	//Please note that some errors are just info, so in the caller check all the possible errors that can be thrown, or at least do not
+	//generalize all the errors to actual errors
     if (!status) {
-        return std::unexpected(status.error());
+        return std::unexpected(std::move(status.error()));
     }
 
     return {};
 }
 
-static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out) noexcept{
-    HANDLE h = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid);
-    if(!h) return false;
+//in here, we don't care the reasons of it failing, if it managed to get the path then it returns true
+//this function is used to check against the
+static bool WIN_queryPathFromPid(DWORD pid, std::string& out) noexcept{
+	//get the process handle (not the pid, this is a direct reference which can be used to alter the process) associated with the pid
+    HANDLE h = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, pid);
+    if(!h){
+		return false;
+	}
 
-    DWORD sz = 1024;
-    std::vector<wchar_t> buf(sz, L'\0');
+    DWORD s = 1024;
+    std::vector<wchar_t> buf(s, L'\0');
     bool converted = false;
-    while(1){
-        DWORD size = sz;
+    while(true){
+        DWORD size = s;
+		//returns the executable inside
         if(QueryFullProcessImageNameW(h, 0, buf.data(), &size)){
             out = WideStringToUTF8(buf.data());
             converted = true;
@@ -1024,8 +1040,8 @@ static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out) noexcept{
         }
         DWORD err = GetLastError();
         if(err == ERROR_INSUFFICIENT_BUFFER){
-            sz *= 2;
-            buf.assign(sz, L'\0');
+            s *= 2;
+            buf.assign(s, L'\0');
             continue;
         }
         break;
@@ -1034,24 +1050,36 @@ static bool WIN_QueryProcessImagePathA(DWORD pid, std::string& out) noexcept{
     return converted;
 }
 
-static std::vector<DWORD> WIN_getPidsByPath(const std::string& path) noexcept{
+//returns the pids(PROCESS IDs) of all the processes associated with the path.
+//For this, checks all the open processes with a snapshot, gets their associated exe and checks
+//if it is the same as the passed. There might be more than one process associated with a single path. note mentioning
+static std::vector<DWORD> WIN_getPidsByPath(const fs::path& path) noexcept{
     std::vector<DWORD> pids;
-    if(path.empty()) return pids;
+    if(path.empty()){
+		return pids;
+	}
 
-    const std::string target = normalizePathLower(path);
+    const std::string target = normalizePathLower(path.string());
 
     //this creates a snapshot of all the open processes
     HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if(snap == INVALID_HANDLE_VALUE) return pids;
+    if(snap == INVALID_HANDLE_VALUE){
+		return pids;
+	}
 
-    PROCESSENTRY32 pe{}; pe.dwSize = sizeof(pe);
+    PROCESSENTRY32 pe{};
+	pe.dwSize = sizeof(pe);
     if(Process32First(snap, &pe)){
         do{
             DWORD pid = pe.th32ProcessID;
-            if(pid == 0) continue;
+            if(pid == 0){
+				continue;
+			}
 
             std::string img;
-            if(!WIN_QueryProcessImagePathA(pid, img) || img.empty()) continue;
+            if(!WIN_queryPathFromPid(pid, img) || img.empty()){
+				continue;
+			}
 
             if(normalizePathLower(img) == target){
                 pids.push_back(pid);
@@ -1062,31 +1090,40 @@ static std::vector<DWORD> WIN_getPidsByPath(const std::string& path) noexcept{
     return pids;
 }
 
+//returns all of the open top-level windows of the process we passed. There might be more than one top level window in the process
 static std::vector<HWND> WIN_GetTopLevelWindowsByPid(DWORD pid) noexcept{
     std::vector<HWND> out;
 
-    struct Ctx{ DWORD pid; std::vector<HWND>* out; };
-    Ctx ctx{ pid, &out };
-    auto cb2 = [](HWND hwnd, LPARAM lp)->BOOL{
+    struct Ctx{
+		DWORD pid;
+		std::vector<HWND>* out;
+	};
+
+    Ctx ctx{pid, &out};
+
+    auto callback = [](HWND hwnd, LPARAM lp)->BOOL{
         Ctx* c = reinterpret_cast<Ctx*>(lp);
         DWORD wpid = 0;
         GetWindowThreadProcessId(hwnd, &wpid);
         if(wpid == c->pid /*the window is part of the current app*/ &&
-            GetWindow(hwnd, GW_OWNER) == nullptr /*The window does not have a father (top-level)*/ &&
-            IsWindowVisible(hwnd) /*The window is visible*/)
-        {
+           GetWindow(hwnd, GW_OWNER) == nullptr /*The window does not have a father (top-level)*/ &&
+    	   IsWindowVisible(hwnd) /*The window is visible*/){
             c->out->push_back(hwnd);
         }
         return TRUE;
     };
-    EnumWindows(cb2, reinterpret_cast<LPARAM>(&ctx));
+
+    EnumWindows(callback, reinterpret_cast<LPARAM>(&ctx));
     return out;
 }
 
+//having the pid (PROCESS ID), it closes the process by creating a handle to that same process. ONLY DELETES ONE, THE ONE PASSED
 static bool WIN_closeProcessByPid(DWORD pid, DWORD timeoutMs, bool allowForce) noexcept{
     //open a handle to the pid
     HANDLE h = OpenProcess(SYNCHRONIZE | PROCESS_TERMINATE, FALSE, pid);
-    if(!h) return false;
+    if(!h){
+		return false;
+	}
 
     auto wins = WIN_GetTopLevelWindowsByPid(pid);
     for(HWND w : wins){
@@ -1106,12 +1143,18 @@ static bool WIN_closeProcessByPid(DWORD pid, DWORD timeoutMs, bool allowForce) n
     CloseHandle(h);
 
     HANDLE h2 = OpenProcess(SYNCHRONIZE, FALSE, pid);
-    if(!h2) return true;
+    if(!h2){
+		return true;
+	}
+
     CloseHandle(h2);
     return false;
 }
 
-static int WIN_closeProcessesByPath(const std::string& path, DWORD timeoutMs, bool allowForce) noexcept{
+//closes all of the processes associated to a path.
+//for this, get all the processes associated with the path (getPidsByPath),
+//and close all of them one by one (closeProcessByPid)
+static int WIN_closeProcessesByPath(const fs::path& path, DWORD timeoutMs, bool allowForce) noexcept{
     int closed = 0;
     for(DWORD pid : WIN_getPidsByPath(path)){
         if(WIN_closeProcessByPid(pid, timeoutMs, allowForce)){
@@ -1121,17 +1164,15 @@ static int WIN_closeProcessesByPath(const std::string& path, DWORD timeoutMs, bo
     return closed;
 }
 
-DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce) noexcept{
+//if there is no currently open window associated with the path, then the function just returns 0, but it doesn't mean it is
+//incorrect (mainly because this function gets called without checking if there is another instance of the app), but because there is no
+//window to close before opening the app again
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const fs::path& path, bool allowForce) noexcept{
     if(path.empty()){
-        return std::unexpected(DeskUp::Error(
-            DeskUp::Level::Fatal,
-            DeskUp::ErrType::InvalidInput,
-            0,
-            "WIN_closeProcessFromPath: empty path"
-        ));
+        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "WIN_closeProcessFromPath|empty_path"));
     }
 
-    int n = WIN_closeProcessesByPath(path, (DWORD) 1000, allowForce);
+    int n = WIN_closeProcessesByPath(path, (DWORD) 500, allowForce);
     if(n > 0){
         std::cout << "WIN_closeProcessByPath: Closed " << n << " windows of path: " << path << "\n";
     }
