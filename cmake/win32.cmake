@@ -1,6 +1,6 @@
 # Unlike other cmake modules, this one just defines the win32 interface library
 
-    # --- Create an interface library representing win32. Any sub-library that uses win32 should link against this one --- 
+    # --- Create an interface library representing win32. Any sub-library that uses win32 should link against this one ---
 
         add_library(desk_up_win32_library INTERFACE)
 
@@ -8,6 +8,7 @@
             WIN32_LEAN_AND_MEAN
             NOMINMAX
             _UNICODE
+    		UNICODE
         )
 
         target_link_libraries(desk_up_win32_library INTERFACE
