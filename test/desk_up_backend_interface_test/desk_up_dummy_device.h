@@ -73,15 +73,20 @@ inline DeskUp::Result<int> DUMMY_getWindowYPos(DeskUpWindowDevice* _this) {
     return data->y;
 }
 
-inline DeskUp::Result<std::string> DUMMY_getPathFromWindow(DeskUpWindowDevice* _this) {
+inline DeskUp::Result<fs::path> DUMMY_getPathFromWindow(DeskUpWindowDevice* _this) {
     auto* data = static_cast<DummyDeviceData*>(_this->internalData);
     if (data->simulateError) return std::unexpected(data->errorToReturn);
-    return data->path;
+    return fs::path(data->path);
 }
 
 inline DeskUp::Result<std::string> DUMMY_getDeskUpPath() {
     // Return a test-specific path
-    return std::filesystem::temp_directory_path().string() + "/DeskUpTest";
+
+	fs::path ret = std::filesystem::temp_directory_path();
+
+	ret /= "DeskUpTest";
+
+    return ret.string();
 }
 
 inline DeskUp::Result<std::vector<windowDesc>> DUMMY_getAllOpenWindows(DeskUpWindowDevice* _this) {
@@ -102,7 +107,7 @@ inline DeskUp::Result<std::vector<windowDesc>> DUMMY_getAllOpenWindows(DeskUpWin
     return data->windows;
 }
 
-inline DeskUp::Status DUMMY_loadWindowFromPath(DeskUpWindowDevice* _this, const std::string path) {
+inline DeskUp::Status DUMMY_loadWindowFromPath(DeskUpWindowDevice* _this, const fs::path& path) {
     auto* data = static_cast<DummyDeviceData*>(_this->internalData);
     if (data->simulateError) return std::unexpected(data->errorToReturn);
     if (path.empty()) {
@@ -110,11 +115,11 @@ inline DeskUp::Status DUMMY_loadWindowFromPath(DeskUpWindowDevice* _this, const 
             DeskUp::Level::Fatal, DeskUp::ErrType::InvalidInput, 0, "Empty path"
         ));
     }
-    data->path = path;
+    data->path = path.string();
     return {};
 }
 
-inline DeskUp::Result<windowDesc> DUMMY_recoverSavedWindow(DeskUpWindowDevice* _this, std::filesystem::path filePath) {
+inline DeskUp::Result<windowDesc> DUMMY_recoverSavedWindow(DeskUpWindowDevice* _this, const fs::path& filePath) {
     auto* data = static_cast<DummyDeviceData*>(_this->internalData);
     if (data->simulateError) return std::unexpected(data->errorToReturn);
 
@@ -140,7 +145,7 @@ inline DeskUp::Status DUMMY_resizeWindow(DeskUpWindowDevice* _this, const window
     return {};
 }
 
-inline DeskUp::Result<unsigned int> DUMMY_closeProcessFromPath(DeskUpWindowDevice* _this, const std::string& path, bool allowForce) {
+inline DeskUp::Result<unsigned int> DUMMY_closeProcessFromPath(DeskUpWindowDevice* _this, const fs::path& path, bool allowForce) {
     auto* data = static_cast<DummyDeviceData*>(_this->internalData);
     if (data->simulateError) return std::unexpected(data->errorToReturn);
 

@@ -326,7 +326,7 @@ TEST_F(Win32WindowFixture, GetPathFromWindowIsCurrentProcess) {
     auto path_res = WIN_getPathFromWindow(&device);
     ASSERT_TRUE(path_res.has_value()) << "Failed to get path from window";
 
-    std::string path = path_res.value();
+    std::string path = path_res.value().string();
     EXPECT_FALSE(path.empty()) << "Path should not be empty";
 
     // The path should contain the test executable name (e.g., desk_up_window_backend_test.exe)
@@ -359,7 +359,7 @@ TEST_F(Win32WindowFixture, EnumerateWindowsFindsTestWindow) {
 
     bool found_our_window = false;
     for (const auto& w : windows) {
-        if (!w.pathToExec.empty() && normalizePathLower(w.pathToExec) == our_exe) {
+        if (!w.pathToExec.empty() && normalizePathLower(w.pathToExec.string()) == our_exe) {
             // Found a window belonging to our process
             found_our_window = true;
 
@@ -412,7 +412,7 @@ TEST_F(Win32WindowFixture, EnumerateWindows_FiltersHiddenZeroSizeAndUntitled) {
     size_t ourCount = 0;
     bool foundVisibleGeometry = false;
     for (const auto& w : windowsAfter) {
-        if (!w.pathToExec.empty() && normalizePathLower(w.pathToExec) == ourExe) {
+        if (!w.pathToExec.empty() && normalizePathLower(w.pathToExec.string()) == ourExe) {
             ++ourCount;
             // Validate non-zero geometry for our process windows
             EXPECT_GT(w.w, 0u);
@@ -453,7 +453,7 @@ TEST_F(Win32WindowFixture, EnumerateWindows_SkipsDeskUpGlobalWindow) {
 
     bool foundSpecialGeometry = false;
     for (const auto& w : windows) {
-        if (!w.pathToExec.empty() && normalizePathLower(w.pathToExec) == ourExe) {
+        if (!w.pathToExec.empty() && normalizePathLower(w.pathToExec.string()) == ourExe) {
             if (std::abs((int)w.w - 321) <= 30 && std::abs((int)w.h - 123) <= 40) {
                 foundSpecialGeometry = true;
                 break;

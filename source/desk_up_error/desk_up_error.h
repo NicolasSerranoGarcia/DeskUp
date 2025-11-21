@@ -70,6 +70,7 @@ namespace DeskUp {
         Info,
         Debug,
         Default,
+		Skip,
         None
     };
 
@@ -106,6 +107,8 @@ namespace DeskUp {
         ProtocolError,        /**< Violation of expected protocol behavior. */
         Unexpected,           /**< Unexpected runtime condition. */
         NotImplemented,       /**< Feature not yet implemented. */
+		PolicyUpdated,		  /**< External factors like dll dependencies have changed. */
+		FunctionFailed,		  /**< Generic function fail. */
         Default,              /**< Unspecified error type. */
         None                  /**< Represents no error. */
     };
@@ -183,8 +186,17 @@ namespace DeskUp {
         /// @brief Whether the error is fatal.
         bool isFatal() const noexcept { return lvl == Level::Fatal; }
 
+		/// @brief Whether the error is skipable.
+		bool isSkippable() const noexcept { return lvl == Level::Skip; }
+
+		/// @brief Whether the error is a warning.
+		bool isWarning() const noexcept { return lvl == Level::Warning; }
+
+		/// @brief Whether the error is a system error.
+		bool isError() const noexcept { return lvl == Level::Error; }
+
         /// @brief Whether the error can be retried.
-        bool isRetriable() const noexcept { return lvl == Level::Retry; }
+        bool isRetryable() const noexcept { return lvl == Level::Retry; }
 
         /// @brief Converts to `true` if this instance represents an actual error.
         explicit operator bool() const noexcept { return lvl != Level::None; }
@@ -220,7 +232,7 @@ namespace DeskUp {
          * @date 2025
          */
         static Error fromLastWinError(std::string_view context = "", std::optional<unsigned int> tries = std::nullopt);
-		
+
         #endif
 
         /**

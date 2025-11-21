@@ -94,4 +94,21 @@ extern std::unique_ptr<DeskUpWindowDevice> current_window_backend;
  */
 int DU_Init();
 
+/**
+ * @brief Destroys and cleans up the DeskUp backend resources.
+ *
+ * @details
+ * Releases the backend device and clears global state.
+ * Should be called when DeskUp is no longer needed to free resources.
+ * After calling this function, DU_Init() must be called again before
+ * using any DeskUp functionality.
+ *
+ * @note Safe to call even if DU_Init() was not called or failed.
+ *
+ * @see DU_Init()
+ * @version 0.1.1
+ * @date 2025
+ */
+void DU_Destroy();
+
 #endif

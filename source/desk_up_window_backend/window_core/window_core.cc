@@ -19,12 +19,12 @@ int DU_Init(){
     #endif
 
     DeskUpWindowDevice dev;
-    
+
     std::string devName;
 
     bool assigned = false;
     for(unsigned int i = 0; i < devices.size(); i++){
-        
+
         if(!devices[i].isAvailable()){
             std::cout << devices[i].name << " is not an available backend on this system: Exiting" << std::endl;
             continue;
@@ -46,10 +46,17 @@ int DU_Init(){
         return 0;
     }
 
-    std::cout << "DeskUp path: " << DESKUPDIR << std::endl; 
+    std::cout << "DeskUp path: " << DESKUPDIR << std::endl;
 
     current_window_backend = std::make_unique<DeskUpWindowDevice>(dev);
     std::cout << devName << " successfully connected as a backend!" << std::endl;
-    
+
     return 1;
+}
+
+void DU_Destroy(){
+	current_window_backend.get()->DestroyDevice(current_window_backend.get());
+    current_window_backend.reset();
+    DESKUPDIR.clear();
+    devices.clear();
 }

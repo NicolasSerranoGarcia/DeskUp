@@ -40,6 +40,8 @@
 #include "window_desc.h"
 #include "desk_up_error.h"
 
+namespace fs = std::filesystem;
+
 /**
  * @brief Windows backend bootstrap descriptor.
  *
@@ -74,7 +76,16 @@ bool WIN_isAvailable() noexcept;
  * @version 0.1.0
  * @date 2025
  */
-DeskUpWindowDevice WIN_CreateDevice();
+DeskUpWindowDevice WIN_CreateDevice() noexcept;
+
+/**
+ * @brief Deletes a Windows \c DeskUpWindowDevice. Deletion is done as a wrapper function in window_core.cc,
+ * done by DU_destroy via the pointer function
+ *
+ * @version 0.3.2
+ * @date 2025
+ */
+void WIN_destroyDevice(DeskUpWindowDevice* _this) noexcept;
 
 /**
  * @brief Returns the base DeskUp working path on the system.
@@ -88,7 +99,7 @@ DeskUpWindowDevice WIN_CreateDevice();
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<std::string> WIN_getDeskUpPath();
+DeskUp::Result<std::string> WIN_getDeskUpPath() noexcept;
 
 /**
  * @brief Gets the X position (top-left corner) of the active (client) window in the device.
@@ -96,12 +107,13 @@ DeskUp::Result<std::string> WIN_getDeskUpPath();
  * @param _this The same device instance.
  * @return \c int with the X coordinate of the window.
  * @errors
- * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
- * - Level::Retry, ErrType::Os → GetWindowInfo failed.
+ * - Level::Error, ErrType::DeviceNotFound → Missing or invalid device/internal data (explicit check).
+ * - Level::Skip, ErrType::InvalidInput → No valid HWND bound (explicit check).
+ * @note Indirect errors: This function wraps `GetWindowInfo` with `retryOp`, which may propagate additional system-derived errors (fatal/skip/warning/retry) classified via `Error::fromLastWinError`. Those are not enumerated here because they are not produced directly by this function but rethrown from `retryOp`.
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the Y position (top-left corner) of the active (client) window in the device.
@@ -109,12 +121,13 @@ DeskUp::Result<int> WIN_getWindowXPos(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c int with the Y coordinate of the window.
  * @errors
- * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
- * - Level::Retry, ErrType::Os → GetWindowInfo failed.
+ * - Level::Error, ErrType::DeviceNotFound → Missing or invalid device/internal data (explicit check).
+ * - Level::Skip, ErrType::InvalidInput → No valid HWND bound (explicit check).
+ * @note Indirect errors: Uses `retryOp` around `GetWindowInfo`; any Windows-origin errors are classified and rethrown by `retryOp` (see `Error::fromLastWinError`). They are not listed here.
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this);
+DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the width of the active (client) window in the device.
@@ -122,12 +135,13 @@ DeskUp::Result<int> WIN_getWindowYPos(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window width.
  * @errors
- * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
- * - Level::Retry, ErrType::Os → GetWindowInfo failed.
+ * - Level::Error, ErrType::DeviceNotFound → Missing or invalid device/internal data (explicit check).
+ * - Level::Skip, ErrType::InvalidInput → No valid HWND bound (explicit check).
+ * @note Indirect errors: Additional system errors may be returned via `retryOp` wrapping `GetWindowInfo`; see its implementation and `Error::fromLastWinError` for classification.
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the height of the active (client) window in the device.
@@ -135,26 +149,36 @@ DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c unsigned \c int with the window height.
  * @errors
- * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
- * - Level::Retry, ErrType::Os → GetWindowInfo failed.
+ * - Level::Error, ErrType::DeviceNotFound → Missing or invalid device/internal data (explicit check).
+ * - Level::Skip, ErrType::InvalidInput → No valid HWND bound (explicit check).
+ * @note Indirect errors: Relies on `retryOp` for `GetWindowInfo`; propagated errors are produced by `retryOp` and not enumerated here.
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this);
+DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Gets the absolute path of the executable that owns the active window.
  *
  * @param _this The same device instance.
- * @return \c std::string with the process image path. If access is denied
- *         (e.g., \c ERROR_ACCESS_DENIED), an empty string is returned.
+ * @return \c fs::path with the process image path on success.
  * @errors
- * - Level::Fatal, ErrType::InvalidInput → Invalid HWND.
- * - Level::Retry, ErrType::Os → OpenProcess or QueryFullProcessImageName failed.
+ * - Level::Error, ErrType::DeviceNotFound → Missing or invalid device/internal data (explicit check).
+ * - Level::Skip, ErrType::InvalidInput → No valid HWND bound (explicit check).
+ * @note Indirect errors (via `retryOp`): This function internally retries three Windows API sequences: `GetWindowThreadProcessId`, `OpenProcess` + `GetExitCodeProcess`, and path resolution (e.g. `QueryFullProcessImageName`). Failures inside those lambdas are converted by `Error::fromLastWinError`. The most relevant Windows codes and their mapped DeskUp classifications for this routine are:
+ *   - `ERROR_INVALID_WINDOW_HANDLE` → Level::Skip, ErrType::ConnectionRefused (invalid/closed HWND when obtaining PID).
+ *   - `ERROR_ACCESS_DENIED` (transformed to `ERROR_ACCESS_DISABLED_BY_POLICY` before returning) → Level::Skip, ErrType::Default (policy or permission restriction when opening the process).
+ *   - `ERROR_NOT_ENOUGH_MEMORY` / `ERROR_OUTOFMEMORY` / `ERROR_TOO_MANY_OPEN_FILES` → Level::Fatal, ErrType::InsufficientMemory (system resource exhaustion during any queried step).
+ *   - `ERROR_SHARING_VIOLATION`, `ERROR_INVALID_PARAMETER`, `ERROR_INVALID_NAME`, `ERROR_FILENAME_EXCED_RANGE`, `ERROR_BAD_FORMAT` → Level::Skip, ErrType::InvalidInput (unexpected invalid handle/arguments surfaced by underlying APIs).
+ *   - `ERROR_FILE_NOT_FOUND`, `ERROR_PATH_NOT_FOUND` → Level::Skip, ErrType::InvalidInput (executable image could not be resolved).
+ *   - `ERROR_DISK_FULL` → Level::Fatal, ErrType::Io (unlikely here, but propagated if encountered reading image name).
+ *   - `ERROR_WRITE_FAULT` / `ERROR_READ_FAULT` / `ERROR_CRC` / `ERROR_IO_DEVICE` / `ERROR_FUNCTION_FAILED` → Level::Retry, ErrType::Io or ErrType::Unexpected (transient or unexpected low-level I/O issues; retries attempted before surfacing).
+ *   - Other unmapped codes → Level::Default, ErrType::Default.
+ * These are not emitted directly by `WIN_getPathFromWindow`; they are rethrown from `retryOp` after classification. Only the explicit pre-check errors are listed in the main @errors section above.
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this);
+DeskUp::Result<fs::path> WIN_getPathFromWindow(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Enumerates all visible/non-minimized windows on the desktop.
@@ -162,12 +186,19 @@ DeskUp::Result<std::string> WIN_getPathFromWindow(DeskUpWindowDevice * _this);
  * @param _this The same device instance.
  * @return \c std::vector<windowDesc> with the abstract description of each window.
  * @errors
- * - Level::Fatal, ErrType::InvalidInput → Device invalid.
- * - Level::Retry, ErrType::Os → EnumDesktopWindows failed.
+ * - Level::Fatal, ErrType::Unexpected → Device or windowData became corrupt during enumeration (explicit check after EnumDesktopWindows fails and error.level() == Error).
+ * - Level::Warning, ErrType::Unexpected → EnumDesktopWindows returned false for an unexpected reason not classified as fatal/error (catch-all for unanticipated callback failures).
+ * @note Indirect errors (via `WIN_CreateAndSaveWindowProc` callback): During enumeration, each window is processed via a callback that invokes `WIN_getPathFromWindow`, `WIN_getWindowXPos`, `WIN_getWindowYPos`, `WIN_getWindowWidth`, and `WIN_getWindowHeight`. The callback may generate:
+ *   - Level::Error, ErrType::InvalidInput → Callback parameters missing (improbable).
+ *   - Level::Error, ErrType::DeviceNotFound → Missing device/internal data while processing a window.
+ *   - Fatal errors from any geometry/path call → Bubble up immediately, aborting enumeration.
+ *   - Skip errors (e.g., invalid HWND mid-enumeration) → Individual window skipped, enumeration continues.
+ *   - Other Error-level issues → Tolerated once (static flag `levelErrorHappened`), fatal on second consecutive occurrence.
+ * Since the geometry and path functions each call `retryOp`, refer to their individual documentation (`WIN_getWindowXPos`, `WIN_getWindowYPos`, `WIN_getWindowWidth`, `WIN_getWindowHeight`, `WIN_getPathFromWindow`) for complete Windows error code mappings that may propagate through the callback.
  * @version 0.1.0
  * @date 2025
  */
-DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice * _this);
+DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice * _this) noexcept;
 
 /**
  * @brief Loads a window description from a saved workspace file.
@@ -181,7 +212,7 @@ DeskUp::Result<std::vector<windowDesc>> WIN_getAllOpenWindows(DeskUpWindowDevice
  * @version 0.2.0
  * @date 2025
  */
-DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice * _this, std::filesystem::path path) noexcept;
+DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice * _this, const fs::path& path) noexcept;
 
 /**
  * @brief Creates a process from the specified path.
@@ -196,7 +227,7 @@ DeskUp::Result<windowDesc> WIN_recoverSavedWindow(DeskUpWindowDevice * _this, st
  * @version 0.2.0
  * @date 2025
  */
-DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string path) noexcept;
+DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice * _this, const fs::path& path) noexcept;
 
 /**
  * @brief Resizes a window according to the windowDesc parameter geometry.
@@ -214,7 +245,7 @@ DeskUp::Status WIN_loadProcessFromPath(DeskUpWindowDevice * _this, std::string p
  * @version 0.2.0
  * @date 2025
  */
-DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window);
+DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc window) noexcept;
 
 /**
  * @brief This function closes all the instances associated with an executable, specified by the \c path parameter.
@@ -229,7 +260,7 @@ DeskUp::Status WIN_resizeWindow(DeskUpWindowDevice * _this, const windowDesc win
  * @version 0.2.0
  * @date 2025
  */
-DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const std::string& path, bool allowForce);
+DeskUp::Result<unsigned int> WIN_closeProcessFromPath(DeskUpWindowDevice*, const fs::path& path, bool allowForce) noexcept;
 
 /**
  * @brief Test-only helper to set the internal HWND for the device.

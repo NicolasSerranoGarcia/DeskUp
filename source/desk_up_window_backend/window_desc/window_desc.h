@@ -73,8 +73,18 @@ struct windowDesc {
 	 * @param h Height in pixels.
 	 * @param p Absolute path to the owning executable.
 	 */
-	windowDesc(std::string n, int xPos, int yPos, int width, int height, std::string p) : name(n), x(xPos), y(yPos), w(width), h(height), pathToExec(p) {}
+	windowDesc(std::string n, int xPos, int yPos, int width, int height, std::string p) : name(n), x(xPos), y(yPos), w(width), h(height), pathToExec(fs::path(p)) {}
 
+	// /**
+	//  * @brief Constructs a window descriptor with explicit name, geometry, and executable path.
+	//  * @param n window name.
+	//  * @param x X coordinate (top-left) in pixels.
+	//  * @param y Y coordinate (top-left) in pixels.
+	//  * @param w Width in pixels.
+	//  * @param h Height in pixels.
+	//  * @param p Absolute path to the owning executable.
+	//  */
+	// windowDesc(std::string n, int xPos, int yPos, int width, int height, fs::path p) : name(n), x(xPos), y(yPos), w(width), h(height), pathToExec(p) {}
 
     /**
      * @brief The window name.
@@ -105,7 +115,7 @@ struct windowDesc {
     /**
      * @brief The absolute path to the executable that owns this window.
      */
-    std::string pathToExec;
+    fs::path pathToExec;
 
     /**
      * @brief Saves the current window description to a file.
