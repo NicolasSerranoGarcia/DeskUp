@@ -79,6 +79,15 @@ bool WIN_isAvailable() noexcept;
 DeskUpWindowDevice WIN_CreateDevice() noexcept;
 
 /**
+ * @brief Deletes a Windows \c DeskUpWindowDevice. Deletion is done as a wrapper function in window_core.cc,
+ * done by DU_destroy via the pointer function
+ *
+ * @version 0.3.2
+ * @date 2025
+ */
+void WIN_destroyDevice(DeskUpWindowDevice* _this) noexcept;
+
+/**
  * @brief Returns the base DeskUp working path on the system.
  *
  * @details Points to the top-level directory where user workspaces are stored.

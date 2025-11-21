@@ -164,7 +164,7 @@ struct DeskUpWindowDevice{
      */
     DeskUp::Status (*resizeWindow)(DeskUpWindowDevice * _this, const windowDesc window);
 
-        /**
+    /**
      * @brief A pointer to function that is used to close all the windows associated with a given path.
      *
      * @param _this The very same instance
@@ -189,6 +189,16 @@ struct DeskUpWindowDevice{
      * @date 2025
      */
     void * internalData;
+
+    /**
+     * @brief A pointer to function that is used to delete the device. Each device defines it's own deleter, which then gets called
+	 * in the wrapper DU_destroy inside window_core.cc
+     *
+     * @param _this The very same instance
+     * @version 0.3.2
+     * @date 2025
+     */
+	void (*DestroyDevice)(DeskUpWindowDevice * _this);
 };
 
 #endif

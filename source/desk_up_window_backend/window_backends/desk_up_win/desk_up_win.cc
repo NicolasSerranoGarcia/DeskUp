@@ -110,10 +110,15 @@ DeskUpWindowDevice WIN_CreateDevice() noexcept{
     device.recoverSavedWindow = WIN_recoverSavedWindow;
     device.resizeWindow    = WIN_resizeWindow;
     device.closeProcessFromPath = WIN_closeProcessFromPath;
+	device.DestroyDevice = WIN_destroyDevice;
 
     device.internalData = (void *) new windowData();
 
     return device;
+}
+
+void WIN_destroyDevice(DeskUpWindowDevice* _this) noexcept {
+	delete getWindowData(_this);
 }
 
 DeskUp::Result<std::string> WIN_getDeskUpPath() noexcept{
