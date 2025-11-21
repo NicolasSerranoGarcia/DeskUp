@@ -1,0 +1,7 @@
+<map id="desk_up_window_bootstrap.h" name="desk_up_window_bootstrap.h">
+<area shape="rect" id="Node000001" title="A struct wrapper used in the DeskUp backend." alt="" coords="28,5,222,32"/>
+<area shape="rect" id="Node000002" href="$desk__up__win_8h.html" title="Bootstrap and functions for the Windows window backend (DeskUp)." alt="" coords="5,80,114,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="105,45,73,81,69,78,101,42"/>
+<area shape="rect" id="Node000003" href="$window__core_8h.html" title="Declares basic code to interact with Desk Up." alt="" coords="137,80,246,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="149,42,182,78,178,81,145,45"/>
+</map>

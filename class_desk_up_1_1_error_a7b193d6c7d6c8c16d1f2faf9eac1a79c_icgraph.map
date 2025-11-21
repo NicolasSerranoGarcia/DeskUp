@@ -1,0 +1,7 @@
+<map id="DeskUp::Error::Error" name="DeskUp::Error::Error">
+<area shape="rect" id="Node000001" title="Default constructor (represents a non&#45;error)." alt="" coords="470,13,611,40"/>
+<area shape="rect" id="Node000002" href="$class_desk_up_1_1_error.html#a9cfc3d6e4af797f64c43213447c54c51" title="Converts a SaveErrorCode (from window_desc.cc) into a structured error." alt="" coords="225,13,422,40"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="454,29,422,29,422,24,454,24"/>
+<area shape="rect" id="Node000003" href="$struct_desk_up_backend_interface.html#a765857a4e3cc2d6bdae655162c357030" title="Saves all currently enumerated windows to a local workspace folder." alt="" coords="5,5,177,48"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="209,29,177,29,177,24,209,24"/>
+</map>

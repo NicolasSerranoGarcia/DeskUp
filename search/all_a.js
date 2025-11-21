@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['default_0',['Default',['../desk__up__error_8h.html#a180a5c39b30b226d2b8bb5c4684f5af3a7a1920d61156abc05a60135aefe8bc67',1,'DeskUp']]],
+  ['desk_5fup_5fbackend_5finterface_2eh_1',['desk_up_backend_interface.h',['../desk__up__backend__interface_8h.html',1,'']]],
+  ['desk_5fup_5ferror_2eh_2',['desk_up_error.h',['../desk__up__error_8h.html',1,'']]],
+  ['desk_5fup_5fwin_2eh_3',['desk_up_win.h',['../desk__up__win_8h.html',1,'']]],
+  ['desk_5fup_5fwindow_5fbootstrap_2eh_4',['desk_up_window_bootstrap.h',['../desk__up__window__bootstrap_8h.html',1,'']]],
+  ['desk_5fup_5fwindow_5fdevice_2eh_5',['desk_up_window_device.h',['../desk__up__window__device_8h.html',1,'']]],
+  ['deskup_20internal_20architecture_6',['DeskUp Internal Architecture',['../deskup_overview.html',1,'']]],
+  ['deskup_20internal_20architecture_20and_20flow_7',['DeskUp Internal Architecture and Flow',['../deskup_overview.html#autotoc_md0',1,'']]],
+  ['deskup_20internal_20functioning_8',['DeskUp internal functioning',['../dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html#autotoc_md19',1,'']]],
+  ['deskupbackendinterface_9',['DeskUpBackendInterface',['../struct_desk_up_backend_interface.html',1,'']]],
+  ['deskupbackendinterface_20facade_10',['2. High-level operations DeskUpBackendInterface facade',['../dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html#autotoc_md23',1,'']]],
+  ['deskupbackendinterface_3a_3asaveallwindowslocal_20std_3a_3astring_20workspacename_11',['&lt;span class=&quot;tt&quot;&gt;DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName)&lt;/span&gt;',['../dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html#autotoc_md24',1,'']]],
+  ['deskupdir_12',['DESKUPDIR',['../window__core_8h.html#aad6be27081e63b4687199eb1e82f02ff',1,'window_core.cc']]],
+  ['deskupwindow_20faade_13',['2. High-level operations DeskUpWindow faade',['../deskup_overview.html#autotoc_md4',1,'']]],
+  ['deskupwindow_3a_3asaveallwindowslocal_20std_3a_3astring_20workspacename_14',['&lt;span class=&quot;tt&quot;&gt;DeskUpWindow::saveAllWindowsLocal(std::string workspaceName)&lt;/span&gt;',['../deskup_overview.html#autotoc_md5',1,'']]],
+  ['deskupwindowbootstrap_15',['DeskUpWindowBootStrap',['../struct_desk_up_window_boot_strap.html',1,'']]],
+  ['deskupwindowdevice_16',['DeskUpWindowDevice',['../struct_desk_up_window_device.html',1,'']]],
+  ['destroydevice_17',['DestroyDevice',['../struct_desk_up_window_device.html#a320fb5ff3f7952e102441df1d55d3928',1,'DeskUpWindowDevice']]],
+  ['devicenotfound_18',['DeviceNotFound',['../desk__up__error_8h.html#a180a5c39b30b226d2b8bb5c4684f5af3aca4cc682495b7b98382718ed77afac35',1,'DeskUp']]],
+  ['diskfull_19',['DiskFull',['../desk__up__error_8h.html#a180a5c39b30b226d2b8bb5c4684f5af3a4f080d03a8ddd688d27f7d7cd8e6d41e',1,'DeskUp']]],
+  ['du_5fdestroy_20',['DU_Destroy',['../window__core_8h.html#a83da893500a8546853565f19bd70ed13',1,'window_core.cc']]],
+  ['du_5finit_21',['DU_Init',['../window__core_8h.html#aa2769afd069bb82c344b94c2a36334c8',1,'window_core.cc']]]
+];

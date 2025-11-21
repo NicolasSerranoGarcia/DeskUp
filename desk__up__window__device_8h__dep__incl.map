@@ -1,0 +1,11 @@
+<map id="desk_up_window_device.h" name="desk_up_window_device.h">
+<area shape="rect" id="Node000001" title="The struct descriptor of a window backend." alt="" coords="38,5,215,32"/>
+<area shape="rect" id="Node000002" href="$desk__up__win_8h.html" title="Bootstrap and functions for the Windows window backend (DeskUp)." alt="" coords="5,155,114,181"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="68,41,40,58,19,81,15,100,21,119,33,137,47,152,43,156,29,140,16,121,10,100,14,79,37,54,66,36"/>
+<area shape="rect" id="Node000003" href="$desk__up__window__bootstrap_8h.html" title="A struct wrapper used in the DeskUp backend." alt="" coords="30,80,223,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="129,48,129,80,124,80,124,48"/>
+<area shape="rect" id="Node000004" href="$window__core_8h.html" title="Declares basic code to interact with Desk Up." alt="" coords="139,155,247,181"/>
+<area shape="poly" id="edge5_Node000001_Node000004" title=" " alt="" coords="187,36,215,54,238,79,243,100,236,121,223,140,209,156,205,152,219,137,231,119,237,100,233,81,212,58,184,41"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="106,120,73,156,69,152,102,116"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="150,116,183,152,179,156,146,120"/>
+</map>

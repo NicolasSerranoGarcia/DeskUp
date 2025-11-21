@@ -1,0 +1,9 @@
+<map id="DeskUpBackendInterface::saveAllWindowsLocal" name="DeskUpBackendInterface::saveAllWindowsLocal">
+<area shape="rect" id="Node000001" title="Saves all currently enumerated windows to a local workspace folder." alt="" coords="5,35,177,77"/>
+<area shape="rect" id="Node000002" href="$struct_desk_up_backend_interface.html#a0bbdef324cd994596cea5bfccd39559b" title="Checks whether a given file path exists on disk." alt="" coords="238,5,409,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,43,222,37,223,42,178,48"/>
+<area shape="rect" id="Node000003" href="$class_desk_up_1_1_error.html#a9cfc3d6e4af797f64c43213447c54c51" title="Converts a SaveErrorCode (from window_desc.cc) into a structured error." alt="" coords="225,72,422,99"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="178,64,209,68,209,74,177,69"/>
+<area shape="rect" id="Node000004" href="$class_desk_up_1_1_error.html#a7b193d6c7d6c8c16d1f2faf9eac1a79c" title="Default constructor (represents a non&#45;error)." alt="" coords="470,72,611,99"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="423,83,455,83,455,88,423,88"/>
+</map>

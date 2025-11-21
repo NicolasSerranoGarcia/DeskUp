@@ -1,0 +1,7 @@
+<map id="DeskUp::Error::level" name="DeskUp::Error::level">
+<area shape="rect" id="Node000001" title="Returns the error severity level." alt="" coords="227,43,367,69"/>
+<area shape="rect" id="Node000002" href="$class_desk_up_1_1_u_i_1_1_error_adapter.html#a860f6e9a1940591863d49fcb0f5f0529" title="Displays a Qt dialog box for a given error." alt="" coords="6,5,178,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="211,46,178,42,179,36,212,41"/>
+<area shape="rect" id="Node000003" href="$desk__up__win_8cc.html#add49dd6e4c912a48c93ae1de68fe55b2" title="Enumerates all visible/non&#45;minimized windows on the desktop." alt="" coords="5,72,179,99"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="212,71,180,76,179,70,211,66"/>
+</map>

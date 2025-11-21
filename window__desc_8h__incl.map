@@ -1,0 +1,7 @@
+<map id="window_desc.h" name="window_desc.h">
+<area shape="rect" id="Node000001" title="Defines the abstract data structure used to represent a window in DeskUp." alt="" coords="22,5,133,32"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,80,59,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,34,50,68,46,65,67,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="83,80,165,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="88,31,110,66,106,68,83,34"/>
+</map>

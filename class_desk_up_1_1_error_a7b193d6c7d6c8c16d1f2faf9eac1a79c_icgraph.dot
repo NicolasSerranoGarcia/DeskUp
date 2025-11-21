@@ -1,0 +1,13 @@
+digraph "DeskUp::Error::Error"
+{
+ // LATEX_PDF_SIZE
+  bgcolor="transparent";
+  edge [fontname=Helvetica,fontsize=10,labelfontname=Helvetica,labelfontsize=10];
+  node [fontname=Helvetica,fontsize=10,shape=box,height=0.2,width=0.4];
+  rankdir="RL";
+  Node1 [id="Node000001",label="DeskUp::Error::Error",height=0.2,width=0.4,color="gray40", fillcolor="grey60", style="filled", fontcolor="black",tooltip="Default constructor (represents a non-error)."];
+  Node1 -> Node2 [id="edge1_Node000001_Node000002",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node2 [id="Node000002",label="DeskUp::Error::fromSaveError",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$class_desk_up_1_1_error.html#a9cfc3d6e4af797f64c43213447c54c51",tooltip="Converts a SaveErrorCode (from window_desc.cc) into a structured error."];
+  Node2 -> Node3 [id="edge2_Node000002_Node000003",dir="back",color="steelblue1",style="solid",tooltip=" "];
+  Node3 [id="Node000003",label="DeskUpBackendInterface\l::saveAllWindowsLocal",height=0.2,width=0.4,color="grey40", fillcolor="white", style="filled",URL="$struct_desk_up_backend_interface.html#a765857a4e3cc2d6bdae655162c357030",tooltip="Saves all currently enumerated windows to a local workspace folder."];
+}

@@ -1,0 +1,5 @@
+<map id="DeskUpBackendInterface::existsWorkspace" name="DeskUpBackendInterface::existsWorkspace">
+<area shape="rect" id="Node000001" title="This function checks whether if a given workspace with the name workspaceName already exists." alt="" coords="225,5,396,48"/>
+<area shape="rect" id="Node000002" href="$struct_desk_up_backend_interface.html#a191c74e756194148ba6d91d7a09bbae2" title="This function deletes a workspace." alt="" coords="5,5,177,48"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="209,29,177,29,177,24,209,24"/>
+</map>

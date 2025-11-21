@@ -1,0 +1,18 @@
+<map id="desk_up_error.h" name="desk_up_error.h">
+<area shape="rect" id="Node000001" title="Error management system for DeskUp (centralized error representation and conversion utilities)." alt="" coords="335,5,449,32"/>
+<area shape="rect" id="Node000002" href="$desk__up__backend__interface_8h.html" title="High&#45;level window operations for DeskUp (frontend utilities over the backend device)." alt="" coords="5,80,200,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="328,39,154,82,153,77,326,34"/>
+<area shape="rect" id="Node000003" href="$desk__up__error__gui__converter_8h_source.html" title=" " alt="" coords="224,80,424,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="371,45,337,81,334,78,368,42"/>
+<area shape="rect" id="Node000004" href="$desk__up__win_8h.html" title="Bootstrap and functions for the Windows window backend (DeskUp)." alt="" coords="458,229,566,256"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="414,43,438,79,481,163,509,228,504,230,477,165,434,81,409,46"/>
+<area shape="rect" id="Node000005" href="$desk__up__window__device_8h.html" title="The struct descriptor of a window backend." alt="" coords="528,80,706,107"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="446,35,578,77,577,82,445,40"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="582,117,559,135,539,156,522,195,516,230,510,229,517,193,535,153,555,131,578,113"/>
+<area shape="rect" id="Node000006" href="$desk__up__window__bootstrap_8h.html" title="A struct wrapper used in the DeskUp backend." alt="" coords="550,155,743,181"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="630,120,644,153,639,155,626,122"/>
+<area shape="rect" id="Node000007" href="$window__core_8h.html" title="Declares basic code to interact with Desk Up." alt="" coords="659,229,767,256"/>
+<area shape="poly" id="edge9_Node000005_Node000007" title=" " alt="" coords="700,110,732,127,758,153,763,174,757,196,744,215,729,231,725,227,739,212,752,194,758,174,754,156,729,131,698,115"/>
+<area shape="poly" id="edge7_Node000006_Node000004" title=" " alt="" coords="611,191,537,231,534,226,609,187"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="670,191,704,227,700,231,666,195"/>
+</map>

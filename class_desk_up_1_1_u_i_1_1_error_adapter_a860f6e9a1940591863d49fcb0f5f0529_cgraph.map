@@ -1,0 +1,5 @@
+<map id="DeskUp::UI::ErrorAdapter::showError" name="DeskUp::UI::ErrorAdapter::showError">
+<area shape="rect" id="Node000001" title="Displays a Qt dialog box for a given error." alt="" coords="5,5,178,48"/>
+<area shape="rect" id="Node000002" href="$class_desk_up_1_1_error.html#af7108f5f99fb01ebb7094bc3d9bb2fad" title="Returns the error severity level." alt="" coords="226,13,366,40"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="178,24,210,24,210,29,178,29"/>
+</map>
