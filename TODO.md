@@ -175,6 +175,8 @@ when executing it in the terminal, you should change the command depending on th
 
 [] using the schema photo, make a refactor, and implement the basic features planned
 
+[] add workspace names and directories table correspondence. Data structure planned, and conversion in the interface
+
 # MILESTONE 1.0.0 STABLE
 
 ## 1. Maintenance, cleanup, implementation of features, boost product...
