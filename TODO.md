@@ -177,6 +177,8 @@ when executing it in the terminal, you should change the command depending on th
 
 [] add workspace names and directories table correspondence. Data structure planned, and conversion in the interface
 
+[] workspaces should have any name. For this, create a correspondence file between the workspace and the file itself
+
 # MILESTONE 1.0.0 STABLE
 
 ## 1. Maintenance, cleanup, implementation of features, boost product...
