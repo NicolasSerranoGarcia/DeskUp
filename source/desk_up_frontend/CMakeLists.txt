@@ -4,6 +4,7 @@
         main.cpp
         mainWindow.cpp
         mainWindow.h
+        mainwindow.ui
     )
 
 # Include path
