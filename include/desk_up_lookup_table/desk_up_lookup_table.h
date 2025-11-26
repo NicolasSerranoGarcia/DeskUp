@@ -22,15 +22,14 @@ namespace DeskUp::Utils{
 		public:
 			LookUpTable(const fs::path& pathToFile);
 
-			size_t getNumEntries() const;
+			size_t getNumEntries();
 
 			//also creates the directory
 			Line addEntry(const std::string_view& entry);
-
 			//also deletes the directory
 			Line deleteEntry(const std::string_view& entry);
 
-			fs::path getDirFromEntry(const std::string_view& entry) const;
+			fs::path getDirFromEntry(const std::string_view& entry);
 
 			~LookUpTable();
 		private:
@@ -49,14 +48,16 @@ namespace DeskUp::Utils{
 
 			//Helpers that act over lookUpFile
 
-			void openFile(const fs::path& path, std::ios_base::openmode mode);
+		void openFile(const fs::path& path, std::ios_base::openmode mode);
 
-			bool hasValidFormat();
+		bool hasValidFormat();
 
-			bool clearFile();
+		bool clearFile();
 
-			//should be used by deleteEntry and getDir
-			Line getLine(const std::string_view& entry) const;
+		std::string getLineContent(const Line line);
+
+		void updateNumEntriesInFile();		//should be used by deleteEntry and getDir
+		Line getLine(const std::string_view& entry);
 	};
 }
 

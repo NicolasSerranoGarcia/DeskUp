@@ -56,7 +56,7 @@
 # Executable
 
     # --- DeskUp ---
-    
+
     add_executable(${PROJECT_NAME} WIN32 source/desk_up_frontend/main.cpp)
 
     # --- Resources file (currently just for the windows icon) ---
@@ -78,7 +78,7 @@
 
     target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_qt_library)
 
-# Windows API 
+# Windows API
 
     if(WIN32)
 
@@ -87,7 +87,7 @@
         # --- Link it with the executable ---
 
         target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_win32_library)
-        
+
     endif()
 
 # Sub-libraries
@@ -112,6 +112,10 @@
     include(${CMAKE_SOURCE_DIR}/cmake/test.cmake)
     include(${CMAKE_SOURCE_DIR}/cmake/tools.cmake)
     include(${CMAKE_SOURCE_DIR}/cmake/doxygen.cmake)
+
+# CLI tools
+
+    add_subdirectory(${CMAKE_SOURCE_DIR}/tools/lookup_cli)
 
 # Set build type
 
