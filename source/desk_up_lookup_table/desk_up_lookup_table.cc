@@ -196,7 +196,7 @@ size_t LookUpTable::decreaseNumEntries(){
 	return --numEntries;
 }
 
-Line LookUpTable::addEntry(const std::string_view& entry) {
+fs::path LookUpTable::addEntry(const std::string_view& entry) {
 	if (entry.empty()) {
 		throw std::runtime_error("Entry cannot be empty!");
 	}
@@ -239,10 +239,10 @@ Line LookUpTable::addEntry(const std::string_view& entry) {
 		throw std::runtime_error("Failed to create directory for entry: " + ec.message());
 	}
 
-	return lineNumber;
+	return dirPath;
 }
 
-Line LookUpTable::deleteEntry(const std::string_view& entry) {
+fs::path LookUpTable::deleteEntry(const std::string_view& entry) {
 	if (entry.empty()) {
 		throw std::runtime_error("Entry cannot be empty!");
 	}
@@ -312,7 +312,7 @@ Line LookUpTable::deleteEntry(const std::string_view& entry) {
 		throw std::runtime_error("Failed to delete directory for entry: " + ec.message());
 	}
 
-	return deletedLine;
+	return dirPath;
 }
 
 fs::path LookUpTable::getDirFromEntry(const std::string_view& entry){
