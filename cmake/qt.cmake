@@ -7,13 +7,11 @@
     set(CMAKE_AUTORCC ON)
 
     find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
-    
-    # --- Create an interface library representing qt. Any sub-library that uses qt should link against this one --- 
+
+    # --- Create an interface library representing qt. Any sub-library that uses qt should link against this one ---
 
     add_library(desk_up_qt_library INTERFACE)
     target_link_libraries(desk_up_qt_library INTERFACE Qt6::Core Qt6::Widgets)
-    
-    # --- Link it with the executable ---
 
     # --- Acknowledge ---
 

@@ -4,12 +4,13 @@
 #define RootDir "..\"
 #define BuildDir "..\build"
 #define InstallerIconFile "..\assets\DeskUp-installer.ico"
+#define WizardSmallIconFile "..\assets\DeskUp-installer-128x128-no-transparent.bmp"
 ; expected to have run "windeployqt DeskUp.exe --release --dir ../build_inno"
 #define BuildInno "..\build_inno"
 #define ReadmeFile "..\README.md"
 #define LicenseFile "..\LICENSE"
 #define AppURL "https://DeskUp.github.io"
-#define WorkspacesDir "{userappdata}\DeskUp" 
+#define WorkspacesDir "{userappdata}\DeskUp"
 #define FileDesc = FileOpen("..\VERSION")
 #define VersionNumber = FileRead(FileDesc)
 #expr FileClose(FileDesc)
@@ -30,6 +31,9 @@ VersionInfoCompany={#AppCompany}
 VersionInfoDescription={#AppDescription}
 AppPublisherURL={#AppURL}
 WizardStyle=modern
+WizardSmallImageFile={#WizardSmallIconFile}
+; WizardImageAlphaFormat=premultiplied
+WizardSmallImageBackColor=clWhite
 ;Program Files(x86)\DeskUp or Program Files\DeskUp, depending on the user arch
 DefaultDirName={autopf}\{#AppName}
 ;In windows 10, the search bar included all files from A-Z. This is the name that appears as a group there
@@ -50,7 +54,7 @@ AppModifyPath="{uninstallexe}"
 ; BuildInno contains the exe, dll and plugins needed
 Source: "{#BuildInno}\*"; DestDir: "{app}"; Flags: recursesubdirs; Excludes: "*.pdb;*.log;CMakeFiles\*"
 Source: "{#ReadmeFile}"; DestDir: "{app}"; Flags: isreadme
-Source: "{#AppPath}"; DestDir: "{app}"; 
+Source: "{#AppPath}"; DestDir: "{app}";
 
 [TASKS]
 Name: startmenu; Description: "Add to Start Menu"; GroupDescription: "Integration"

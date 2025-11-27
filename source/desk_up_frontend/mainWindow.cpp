@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar()->showMessage("Welcome to DeskUp!");
 
     #ifdef _WIN32
-        setWindowIcon(QIcon("../assets/DeskUp.ico"));
+        setWindowIcon(QIcon(":/assets/DeskUp.ico"));
     #endif
 
     if (!DU_Init()) {

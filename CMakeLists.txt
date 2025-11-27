@@ -72,12 +72,20 @@
 
 # qt
 
-    include(${CMAKE_SOURCE_DIR}/cmake/qt.cmake)
+		include(${CMAKE_SOURCE_DIR}/cmake/qt.cmake)
 
-    # --- Link it with the executable ---
+		# --- Link it with the executable ---
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_qt_library)
+		target_link_libraries(${PROJECT_NAME} PRIVATE desk_up_qt_library)
 
+		qt_add_resources(desk_up_qt_resources
+			${CMAKE_SOURCE_DIR}/qt_resources.qrc
+		)
+
+		target_sources(${PROJECT_NAME} PRIVATE
+			${desk_up_qt_resources}
+		)
+		
 # Windows API
 
     if(WIN32)
