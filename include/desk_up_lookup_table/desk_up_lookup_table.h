@@ -25,9 +25,9 @@ namespace DeskUp::Utils{
 			size_t getNumEntries();
 
 			//also creates the directory
-			Line addEntry(const std::string_view& entry);
+			fs::path addEntry(const std::string_view& entry);
 			//also deletes the directory
-			Line deleteEntry(const std::string_view& entry);
+			fs::path deleteEntry(const std::string_view& entry);
 
 			fs::path getDirFromEntry(const std::string_view& entry);
 
