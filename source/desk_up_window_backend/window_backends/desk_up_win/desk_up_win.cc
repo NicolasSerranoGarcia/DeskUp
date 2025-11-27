@@ -219,7 +219,7 @@ DeskUp::Result<unsigned int> WIN_getWindowWidth(DeskUpWindowDevice* _this) noexc
 		return std::unexpected(std::move(r.error()));
 	}
 
-    return static_cast<unsigned int>(wi.rcWindow.left - wi.rcWindow.right);
+    return static_cast<unsigned int>(wi.rcWindow.right - wi.rcWindow.left);
 }
 
 DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) noexcept {
@@ -242,7 +242,7 @@ DeskUp::Result<unsigned int> WIN_getWindowHeight(DeskUpWindowDevice* _this) noex
 		return std::unexpected(std::move(r.error()));
 	}
 
-    return static_cast<unsigned int>(wi.rcWindow.top - wi.rcWindow.bottom);
+    return static_cast<unsigned int>(wi.rcWindow.bottom - wi.rcWindow.top);
 }
 
 
@@ -447,6 +447,7 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam) noexc
 
 
     if (auto res = WIN_getWindowXPos(dev); res.has_value()) {
+		std::cout << "x: " << res.value();
         window.x = std::move(res.value());
     } else {
         err = std::move(res.error());
@@ -480,6 +481,7 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam) noexc
     }
 
     if (auto res = WIN_getWindowYPos(dev); res.has_value()) {
+		std::cout << "y: " << res.value();
         window.y = std::move(res.value());
     } else {
         err = std::move(res.error());
@@ -513,6 +515,7 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam) noexc
     }
 
     if (auto res = WIN_getWindowWidth(dev); res.has_value()) {
+		std::cout << "w: " << res.value();
         window.w = std::move(res.value());
     } else {
         err = std::move(res.error());
@@ -546,6 +549,7 @@ static BOOL CALLBACK WIN_CreateAndSaveWindowProc(HWND hwnd, LPARAM lparam) noexc
     }
 
     if (auto res = WIN_getWindowHeight(dev); res.has_value()) {
+		std::cout << "h: " << res.value();
         window.h = std::move(res.value());
     } else {
         err = std::move(res.error());
@@ -749,9 +753,8 @@ static HWND WIN_FindMainWindow(DWORD pid, int timeoutMs = 300) {
 		//it might be possible that this check give false positives, because there might be a window that we want to search
 		//which happens to: be part of the same app (has the same pid), be independent or is a child (it has parent, but not owner) and is also visible
         if ((winPid == data->first/*If the window is part of the app we are looking for */
-			&& GetWindow(hwnd, GW_OWNER) == nullptr) /*returns the owner window of the specific window we passed. If it is nullptr it usually means the top-level*/
-			&& GetAncestor(hwnd, GA_ROOT) == nullptr /*Returns the parent (not the owner) window of the window we passed. Main windows do not have a parent*/
-			&& IsWindowVisible(hwnd) /*If the window was set to be visible*/) {
+			&& IsWindowVisible(hwnd) /*If the window was set to be visible*/
+			&& GetWindow(hwnd, GW_OWNER) == nullptr) /*returns the owner window of the specific window we passed. If it is nullptr it usually means the top-level*/){
             *data->second = hwnd;
             return FALSE;
         }

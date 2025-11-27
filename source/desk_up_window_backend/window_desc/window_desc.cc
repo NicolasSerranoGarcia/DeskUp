@@ -43,7 +43,7 @@ int windowDesc::saveTo(fs::path path){
         }
     }
 
-    windowFile << this->pathToExec
+    windowFile << this->pathToExec.string()
                << std::endl << this->x
                << std::endl << this->y
                << std::endl << this->w

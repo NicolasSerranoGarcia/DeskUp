@@ -1,16 +1,19 @@
 #include "window_core.h"
+#include "desk_up_dir.h"
 
 #include <vector>
+#include <filesystem>
 
 #ifdef _WIN32
     #include "desk_up_win.h"
 #endif
 
+namespace fs = std::filesystem;
+
 std::vector<DeskUpWindowBootStrap> devices;
 
-std::string DESKUPDIR;
-
 std::unique_ptr<DeskUpWindowDevice> current_window_backend = nullptr;
+
 
 int DU_Init(){
 

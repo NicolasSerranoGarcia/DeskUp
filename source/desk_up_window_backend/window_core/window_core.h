@@ -32,31 +32,21 @@
 #include <vector>
 #include "desk_up_window_device.h"
 #include "desk_up_window_bootstrap.h"
+#include "desk_up_dir.h"
 
-/**
- * @var std::string DESKUPDIR
- * \anchor DESKUPDIR_anchor
- * @brief The path to the DeskUp saved workspace.
- * 
- * @details This global variable gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
- * In the process, it calls the device's getDeskUpPath() function,
- * which is resolved to the specific backend implementation (e.g. WIN_getDeskUpPath on Windows).
- * 
- * @see DU_Init()
- * @see DeskUpWindowDevice::getDeskUpPath
- * @version 0.1.0
- * @date 2025 
- */
-extern std::string DESKUPDIR;
+// The singleton DeskUp workspace directory lives in DeskUp namespace.
+// For backward compatibility, bring it into this header's scope.
+// Prefer using DeskUp::DESKUPDIR in new code.
+using DeskUp::DESKUPDIR; // deprecated alias
 
 /**
  * @var std::unique_ptr<DeskUpWindowDevice> current_window_backend
  * \anchor current_window_backend_anchor
  * @brief A unique pointer to the selected backend device for DeskUp.
- * 
+ *
  * @details This global pointer gets assigned when calling DU_Init(), so using it without initializing DeskUp will cause undefined behaviour.
  * It provides access to backend-specific functions such as window enumeration, size, and position.
- * 
+ *
  * @see DU_Init()
  * @see DeskUpWindowBootStrap
  * @version 0.1.0
@@ -66,7 +56,7 @@ extern std::unique_ptr<DeskUpWindowDevice> current_window_backend;
 
 /**
  * @brief Initializes the DeskUp backend system.
- * 
+ *
  * @details This function must be called once before using any DeskUp backend feature.
  * It iterates through the available backends (currently only the Windows backend) and:
  *  - Calls the backend bootstrap function `isAvailable()` to check if it can be used.
