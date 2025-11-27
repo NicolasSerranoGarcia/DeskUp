@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent)
     statusBar()->showMessage("Welcome to DeskUp!");
 
     #ifdef _WIN32
-        setWindowIcon(QIcon(":/resources/app.ico"));
+        setWindowIcon(QIcon("../assets/DeskUp.ico"));
     #endif
 
     if (!DU_Init()) {
@@ -80,19 +80,15 @@ void MainWindow::onAddWorkspace(){
         workspaceName = QInputDialog::getText(this, "Add workspace",
                                               "Enter the workspace name:", QLineEdit::Normal, "", &ok);
 
-        if (!ok)
-            return;
+        if (!ok){
+			return;
+		}
 
         if (workspaceName.isEmpty()) {
             QMessageBox::critical(this, "Workspace name", "The workspace name cannot be empty!");
             continue;
         }
 
-        if (!DeskUpBackendInterface::isWorkspaceValid(workspaceName.toStdString())) {
-            QMessageBox::critical(this, "Workspace name not valid",
-                                  "The workspace name is not valid! Blacklisted characters: \\/:?*\"<>|");
-            continue;
-        }
         break;
     }
 

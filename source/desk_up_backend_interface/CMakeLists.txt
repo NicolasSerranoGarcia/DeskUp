@@ -13,11 +13,10 @@
         ${CMAKE_BINARY_DIR}/source/desk_up_window_backend
     )
 
-	target_sources(desk_up_backend_interface_library PRIVATE
-		${CMAKE_SOURCE_DIR}/source/desk_up_lookup_table/desk_up_lookup_table.cc
-		${CMAKE_SOURCE_DIR}/source/exceptions/desk_up_file_not_open_exception/desk_up_file_not_open_exception.cc
-		${CMAKE_SOURCE_DIR}/source/exceptions/desk_up_file_not_clear_exception/desk_up_file_not_clear_exception.cc
-	)
+	add_subdirectory(${CMAKE_SOURCE_DIR}/source/desk_up_workspace_lookup_table
+        ${CMAKE_BINARY_DIR}/source/desk_up_workspace_lookup_table
+    )
+
 
 # Include path
 
@@ -35,4 +34,5 @@
 
         desk_up_error_library
         desk_up_window_backend_library
+		desk_up_workspace_lookup_table_library
     )

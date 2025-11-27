@@ -6,6 +6,7 @@
 #include <cctype>
 
 #include "window_core.h"
+#include "desk_up_workspace_lookup_table.h"
 
 namespace fs = std::filesystem;
 
@@ -32,7 +33,17 @@ static fs::path createDirFromWs(std::string workspace){
 DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspaceName){
 	//it is mandatory that the files saved have w, h >= 0, 5 LINES, no endl
 
-	fs::path workspacePath = createDirFromWs(workspaceName);
+	auto& wsTable = DeskUp::getWorkspaceDirTable();
+
+	fs::path workspacePath;
+
+	try{
+
+		//returns the path to the directory associated with the entry
+		workspacePath = wsTable.addEntry(workspaceName);
+	} catch(std::runtime_error& e){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Fatal, DeskUp::ErrType::Io, 0, "An error happened when trying to create the workspace. DeskUp will close"));
+	}
 
 	//get all the open windows
     auto windows = current_window_backend.get()->getAllOpenWindows(current_window_backend.get());
@@ -47,6 +58,7 @@ DeskUp::Status DeskUpBackendInterface::saveAllWindowsLocal(std::string workspace
 	int id = 0;
 
     for(unsigned int i = 0; i < windows.value().size(); i++){
+
 
 		//make a copy of the workspaceDir
 		fs::path copyWs(workspacePath);
@@ -84,12 +96,19 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
     //initially, the user will need to write the name of the workspace, but when it is shown as a choose option visually (select the workspace),
     //there will be no need to check if the workspace exists, because the same program will identify the name and therefore pass it correctly
 
-    fs::path p = constructWsDir(workspaceName);
+	if(workspaceName.empty()){
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "restoreWindows|empty_path"));
+	}
 
-	//this just simply means there is an error in the workspace name itself and/or the deskup path
-    if (!fs::exists(p) || !fs::is_directory(p)) {
-        return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "restoreWindows|no_path_" + p.string()));
-    }
+	auto& wsTable = DeskUp::getWorkspaceDirTable();
+
+	fs::path p;
+    try{
+		p = wsTable.getDirFromEntry(workspaceName);
+	}catch(std::runtime_error& e){
+		//this just simply means there is an error in the workspace name itself and/or the deskup path
+		return std::unexpected(DeskUp::Error(DeskUp::Level::Error, DeskUp::ErrType::InvalidInput, 0, "restoreWindows|no_path_" + p.string()));
+	}
 
 	//might want to ask the user
     bool forceTermination = true;
@@ -98,7 +117,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
 		//can't throw fatal errors
         auto res = current_window_backend->recoverSavedWindow(current_window_backend.get(), file.path());
         if (!res.has_value()){
-			std::cout << "Unrecoverable window: " << res.error().what();
+			std::cout << "Unrecoverable window: " << res.error().what() << std::endl;
 			return std::unexpected(std::move(res.error()));
 		}
 
@@ -113,7 +132,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
                 return std::unexpected(std::move(closeRes.error()));
             }
 
-            std::cout << "Unclosed window: " << closeRes.error().what();
+            std::cout << "Unclosed window: " << closeRes.error().what() << std::endl;
         }
 
         auto loadRes = current_window_backend->loadWindowFromPath(current_window_backend.get(), window.pathToExec);
@@ -122,7 +141,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
                 return std::unexpected(std::move(loadRes.error()));
             }
 
-            std::cout << "Unopened window: " << loadRes.error().what();
+            std::cout << "Unopened window: " << loadRes.error().what() << std::endl;
         }
 
         auto resizeRes = current_window_backend->resizeWindow(current_window_backend.get(), window);
@@ -132,7 +151,7 @@ DeskUp::Status DeskUpBackendInterface::restoreWindows(std::string workspaceName)
                 return std::unexpected(std::move(resizeRes.error()));
             }
 
-            std::cout << "Unresized window: " << resizeRes.error().what();
+            std::cout << "Unresized window: " << resizeRes.error().what() << std::endl;
         }
     }
 
@@ -158,15 +177,17 @@ bool DeskUpBackendInterface::isWorkspaceValid(const std::string& workspaceName){
 
 bool DeskUpBackendInterface::existsWorkspace(const std::string& workspaceName){
     if(workspaceName.empty()){
-        return false;
+        throw std::runtime_error("Workspace empty cannot be resolved to true or false");
     }
 
-    fs::path p{DESKUPDIR};
-    p /= workspaceName;
+    auto& wsTable = DeskUp::getWorkspaceDirTable();
 
-    if(!fs::exists(p) || !fs::is_directory(p)){
-        return false;
-    }
+	try{
+		//throws if it can't find the entry
+		wsTable.getDirFromEntry(workspaceName);
+	} catch(std::runtime_error& e){
+		return false;
+	}
 
     return true;
 }
@@ -176,17 +197,14 @@ int DeskUpBackendInterface::removeWorkspace(const std::string& workspaceName){
         return 0;
     }
 
-    fs::path p{DESKUPDIR};
-    p /= workspaceName;
+ 	auto& wsTable = DeskUp::getWorkspaceDirTable();
 
+	try{
+		wsTable.deleteEntry(workspaceName);
+	} catch(std::runtime_error& e){
+		return 0;
+	}
 
-    std::error_code err;
-
-    fs::remove_all(p, err);
-
-    if(err){
-        return 0;
-    }
 
     return 1;
 }
