@@ -320,6 +320,38 @@ fs::path LookUpTable::getDirFromEntry(const std::string_view& entry){
 	return filePath.parent_path() / std::to_string(getLine(entry));
 }
 
+std::vector<Workspace> LookUpTable::getAllEntries(){
+	std::vector<Workspace> workspaces;
+
+	// Save current position
+	auto currentPos = lookUpFile.tellg();
+	lookUpFile.clear();
+	lookUpFile.seekg(0);
+
+	// Skip first line (count)
+	std::string firstLine;
+	if (!std::getline(lookUpFile, firstLine)) {
+		lookUpFile.clear();
+		lookUpFile.seekg(currentPos);
+		return workspaces; // Empty vector if can't read
+	}
+
+	std::string line;
+	while (std::getline(lookUpFile, line)) {
+		// Skip empty lines (deleted entries)
+		if (!line.empty()) {
+			workspaces.push_back(line);
+		}
+	}
+
+	// Restore position
+	lookUpFile.clear();
+	lookUpFile.seekg(currentPos);
+
+	return workspaces;
+}
+
+
 //should be used by deleteEntry and getDirFromEntry
 Line LookUpTable::getLine(const std::string_view& entry){
 	if (entry.empty()) {

@@ -10,6 +10,8 @@ namespace fs = std::filesystem;
 //returned by some methods to indicate the line where the entry has been written
 typedef unsigned int Line;
 
+typedef std::string Workspace;
+
 namespace DeskUp::Utils{
 
 	//this class assumes the file you want to use as the underlying data has the following convention:
@@ -30,6 +32,8 @@ namespace DeskUp::Utils{
 			fs::path deleteEntry(const std::string_view& entry);
 
 			fs::path getDirFromEntry(const std::string_view& entry);
+
+			std::vector<Workspace> getAllEntries();
 
 			~LookUpTable();
 		private:
