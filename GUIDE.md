@@ -213,7 +213,7 @@ cp /mingw64/bin/libgcc_s_seh-1.dll build_inno/
 cp /mingw64/bin/libstdc++-6.dll build_inno/
 cp /mingw64/bin/libwinpthread-1.dll build_inno/
 
-cp /mingw64/bin/libicuin*.dll
+cp /mingw64/bin/libicuin*.dll build_inno/
 
 cp /mingw64/bin/zlib1.dll build_inno/
 cp /mingw64/bin/libzstd.dll build_inno/
@@ -316,3 +316,4 @@ git commit -m "feat(parser): add support for config files" \
             -m "Adds YAML and JSON config parsing modules.\n\nIncludes unit tests and default config loading." \
             -m "Closes #42"
 ```
+
